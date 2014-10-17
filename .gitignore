@@ -6,3 +6,6 @@ dest
 dest/*
 vim.exe.stackdump
 obj
+__ConfigTemp
+bin
+Tuan.v12.suo
