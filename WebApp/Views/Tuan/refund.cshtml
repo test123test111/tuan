@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Refund";
+}
+<script type="text/lizard-config">
+{
+    "url_schema": ["/refund/{orderid}.html", "refund!{orderid}", "refund!{{(int)orderid}}{x}"],
+    "viewName": "refund",
+    "model": {
+        "apis": [],
+        "filter": function (datas){
+            return datas;
+        }
+    },
+    "view":{
+        "header": Lizard.T("J_refundHeader"),
+        "viewport": Lizard.T("J_refundViewer")
+    },
+    "controller": "@Tuan.ConfigManager.IncludeStaticFile("views/refund.js")"
+}
+</script>
+<script type="text/lizard-template" id="J_refundHeader">
+    <h1>申请退款</h1>
+</script>
+<script type="text/lizard-template" id="J_refundViewer"></script>

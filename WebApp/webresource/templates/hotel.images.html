@@ -1,0 +1,11 @@
+<article class="cont_wrap">
+    <div class="detail_pics">
+        <ul class="detail_pics_in">
+            <% _.each(obj, function(v, i) { %>
+            <li data-index="<%=i+1%>">
+                <img class="fade-in" src="<%=v.small%>" />
+            </li>
+            <% }) %>
+        </ul>
+    </div>
+</article>

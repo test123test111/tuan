@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "HotelService";
+}
+<script type="text/lizard-config">
+{
+    "url_schema": "/hotelservice",
+    "viewName": "hotelservice",
+    "model": {
+        "apis": [],
+        "filter": function (datas){
+            return datas;
+        }
+    },
+    "view":{
+        "header": Lizard.T("J_hotelServiceHeader"),
+        "viewport": Lizard.T("J_hotelServiceViewer")
+    },
+    "controller": "@Tuan.ConfigManager.IncludeStaticFile("views/hotel.service.js")"
+}
+</script>
+<script type="text/lizard-template" id="J_hotelServiceHeader"></script>
+<script type="text/lizard-template" id="J_hotelServiceViewer"></script>

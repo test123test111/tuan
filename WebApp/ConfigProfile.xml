@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<profile>
+  <environments>
+    <add name="dev" dataCenter="sh" target="dev" iis="IIS6, IIS7" net="Net2,Net4" />
+    <add name="fws" dataCenter="sh,nt" target="fws" iis="IIS6, IIS7" net="Net2,Net4" />
+    <add name="fat" dataCenter="sh,nt" target="fat" iis="IIS6, IIS7" net="Net2,Net4" />
+    <add name="uat_nt" dataCenter="sh,nt" target="uat_nt" iis="IIS6,IIS7" net="Net2,Net4" />
+    <add name="lpt" dataCenter="sh,nt" target="lpt" iis="IIS6, IIS7" net="Net2,Net4" />
+    <add name="prd" dataCenter="sh,sh2" target="prd" iis="IIS6, IIS7" net="Net2,Net4" />
+  </environments>
+  <dev>
+    <Debug>true</Debug>
+    <CustomErrorsMode>Off</CustomErrorsMode>
+    <restfullApiHttps>http://m.ctrip.com/restapi/soa2/10101</restfullApiHttps>
+    <restfullApi>http://m.ctrip.com/restapi/soa2/10101</restfullApi>
+    <WebresourceBaseUrl>http://webresource.c-ctrip.com</WebresourceBaseUrl>
+    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+    <!-- Central Logging配置 -->
+    <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
+    <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
+    <FxConfigServiceUrl>http://ws.config.framework.fws.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+  </dev>
+  <fws>
+    <Debug>false</Debug>
+    <CustomErrorsMode>Off</CustomErrorsMode>
+    <restfullApiHttps>http://m.fat.ctripqa.com/soa2/10101</restfullApiHttps>
+    <restfullApi>http://m.fat.ctripqa.com/soa2/10101</restfullApi>
+    <WebresourceBaseUrl>http://webresource.c-ctrip.com</WebresourceBaseUrl>
+    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+      <!-- Central Logging配置 -->
+    <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
+    <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
+    <FxConfigServiceUrl>http://ws.config.framework.fws.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+  </fws>
+  <fat>
+    <Debug>false</Debug>
+    <CustomErrorsMode>Off</CustomErrorsMode>
+    <restfullApiHttps>http://m.fat.ctripqa.com/soa2/10101</restfullApiHttps>
+    <restfullApi>http://m.fat.ctripqa.com/soa2/10101</restfullApi>
+    <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
+    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+    <!-- Central Logging配置 -->
+    <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
+    <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
+    <FxConfigServiceUrl>http://ws.config.framework.fws.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+  </fat>
+  <uat_nt>
+    <Debug>false</Debug>
+    <CustomErrorsMode>Off</CustomErrorsMode>
+    <restfullApiHttps>http://m.uat.ctripqa.com/restapi/soa2/10101</restfullApiHttps>
+    <restfullApi>http://m.uat.ctripqa.com/restapi/soa2/10101</restfullApi>
+    <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
+    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+    <!-- Central Logging配置 -->
+    <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
+    <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
+    <FxConfigServiceUrl>http://ws.config.framework.uat.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+  </uat_nt>
+  <lpt>
+    <Debug>false</Debug>
+    <CustomErrorsMode>Off</CustomErrorsMode>
+    <restfullApiHttps>http://m.uat.ctripqa.com/restapi/soa2/10101</restfullApiHttps>
+    <restfullApi>http://m.uat.ctripqa.com/restapi/soa2/10101</restfullApi>
+    <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
+    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+    <!-- Central Logging配置 -->
+    <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
+    <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
+    <FxConfigServiceUrl>http://ws.config.framework.lpt.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+  </lpt>
+  <prd>
+    <Debug>false</Debug>
+    <CustomErrorsMode>Off</CustomErrorsMode>
+    <restfullApiHttps>http://m.ctrip.com/restapi/soa2/10101</restfullApiHttps>
+    <restfullApi>http://m.ctrip.com/restapi/soa2/10101</restfullApi>
+    <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
+    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+    <!-- Central Logging配置 -->
+    <LoggingServer.V2.IP>collector.logging.sh.ctriptravel.com</LoggingServer.V2.IP>
+    <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
+    <FxConfigServiceUrl>http://ws.config.framework.ctripcorp.com/configws</FxConfigServiceUrl>
+  </prd>
+</profile>

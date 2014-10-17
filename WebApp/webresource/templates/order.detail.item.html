@@ -1,0 +1,29 @@
+<%if(list && list.length){%>
+    <% if (orderStatus == 2) { %>
+<div class="tips_tickets">订单正在扣款，券号暂时无法使用</div>
+    <% } else { %>
+<div class="tips_tickets">直接出示券号和密码即可消费</div>
+    <% } %>
+<%}%>
+<%_.each(list, function(v, i){ %>
+    <% if (orderStatus == 3) {%>
+    <ul class="box_list box_listCoupon box_listCouponCancel">
+    <% } else { %>
+    <ul class="box_list box_listCoupon">
+        <% } %>
+        <li>
+            <span class="items">券号<%=i + 1%></span><span class="items"><%=v.code%></span>
+            <span class="items"><%=v.statusRmk%></span>
+        </li>
+
+        <% if (!_.isEmpty(v.pwd)) { %>
+            <li><span class="items">密码</span><span class="items"><%=v.pwd%></span></li>
+        <% } %>
+
+        <% if (v.status == 1 && _.isEmpty(v.pwd)) { %>
+            <li class="act J_sendToPhone" data-val="<%=v.val%>" data-id="<%=v.code%>">发送券号密码到手机</li>
+        <% } else if (v.status == 1) {  %>
+            <li class="act J_sendToPhone" data-val="<%=v.val%>" data-id="<%=v.code%>">发送到手机</li>
+        <% } %>
+    </ul>
+    <%})%>

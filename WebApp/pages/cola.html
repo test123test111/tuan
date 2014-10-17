@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<!--[if (gte IE 9)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="ie"><!--<![endif]-->
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>【美汁源】活动页面</title>
+    <meta name="viewport" content="width=320.1, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="Stylesheet" type="text/css" href="http://webresource.c-ctrip.com/styles/h5/common/main.css" />
+    <link rel="stylesheet" type="text/css" href="./orange.css?v=1" />
+    <link rel="apple-touch-startup-image" href="http://res.m.ctrip.com/html5/content/images/640.png?v=1.0" sizes="320x460">
+    <link rel="apple-touch-startup-image" href="http://res.m.ctrip.com/html5/content/images/940.png?v=1.0" sizes="640x920">
+    <link rel="apple-touch-startup-image" href="http://res.m.ctrip.com/html5/content/images/1004.png?v=1.0" sizes="768x1004">
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="http://res.m.ctrip.com/html5/Content/images/57.png?v=1.0?v=1.0" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://res.m.ctrip.com/html5/Content/images/72.png?v=1.0?v=1.0" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://res.m.ctrip.com/html5/Content/images/114.png?v=1.0?v=1.0" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://res.m.ctrip.com/html5/Content/images/144.png?v=1.0?v=1.0" />
+    <!--[if IE]><link rel="stylesheet" href="../res/dest/style/ie_hack.css" /><![endif]-->
+    <!--[if !IE]><!--><script>if (/*@cc_on!@*/false) { document.write('<link type= "text/css" rel="stylesheet" href="../res/dest/style/ie_hack.css" />'); }</script><!--<![endif]-->
+</head>
+<body onselectstart="return false">
+<section class="o_wrap">
+    <div class="o_pic01"></div>
+    <div class="o_pic02"></div>
+    <div class="lottery_wrap">
+        <div class="lottery_form">
+            <ul class="lottery_list">
+                <li><label class="title">手机号</label><input id="J_phoneNum" type="text" placeholder="手机号码" maxlength="11" /><span class="btn_close01"></span></li>
+                <li><label class="title">抽奖码</label><input id="J_drawCode" type="text" placeholder="瓶盖内所印13位字符" maxlength="13" /></li>
+            </ul>
+        </div>
+        <a href="javascript:;" class="btn_base01" id="J_openDraw">开盖抽奖</a>
+        <div class="service_tel">活动热线：4006589902</div>
+    </div>
+
+    <div class="price_wrap">
+        <div class="price01">
+            <h2>阳光畅住奖</h2>
+            <p>价值<span class="price_num">3,888</span>元</p>
+            <p class="larger">携程团购</p>
+            <p class="larger">五星级酒店畅住电子券一份</p>
+            <p>每日参加活动的瓶盖内13位字符均可参加当日抽奖</p>
+            <p>(本地区每天抽取6份)</p>
+        </div>
+        <div class="price02">
+            <h2>惊喜奖</h2>
+            <p>价值<span class="price_num">48</span>元</p>
+            <p class="larger">携程团购电子券一份</p>
+            <p>仅限携程团购</p>
+            <p>酒店客房类产品使用</p>
+            <p>中奖概率：0.169%</p>
+        </div>
+        <div class="price03">
+            <h2>体验奖</h2>
+            <p>价值<span class="price_num">4.8</span>元</p>
+            <p class="larger">携程团购电子券一份</p>
+            <p>仅限携程团购产品使用</p>
+            <p>中奖概率：99.831%</p>
+        </div>
+        <div class="o_pic03"></div>
+        <div class="o_pic04"></div>
+        <div class="o_ihg"></div>
+    </div>
+
+    <div class="txt_wrap">本促销活动主办方、本地区及活动详情请参阅宣传海报或登录tuan.ctrip.com 至[美汁源]活动专区。</div>
+    <div class="txt_wrap"><div class="o_pic05"></div>[Minute Maid](美汁源)创立于美国，拥有超过60年的专业果汁生产经验。[美汁源]、[果粒橙]、“Minute Maid”、[美汁源果粒橙]、[爽粒]、[美汁源热带·果粒]及[美汁源果汁健康专家]是可口可乐公司的商标。</div>
+    <div class="txt_wrap" style="color:#cdcdcd;font-family:Tahoma,sans-serif;">该活动苹果不是赞助商，并且苹果也不会以任何形式参与其中。</div>
+</section>
+
+<div id="J_drawAnim" style="position:absolute;z-index:1;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.5);display:none">
+    <div class="o_ani animated">
+        <div class="capsule"></div>
+        <div class="bottle"></div>
+        <div class="juice"></div>
+        <div class="particles"></div>
+        <div class="stars"></div>
+    </div>
+</div>
+<div id="footer"></div>
+<input type="hidden" id="page_id" value="260005"/>
+<script type="text/javascript" src="http://webresource.c-ctrip.com/code/lizard/2.0/web/lizard.seed.js"></script>
+<script>
+    require.config({
+        paths: {
+            TuanStore: '/webapp/tuan/webresource/models/tuanstore',
+            TuanModel: '/webapp/tuan/webresource/models/tuanmodel'
+        }
+    });
+</script>
+<script type="text/lizard-config">
+{
+    "controller": "/webapp/tuan/pages/cola.js"
+}
+</script>
+<script type="text/javascript" src="//webresource.c-ctrip.com/code/lizard/1.1/web/3rdlibs/include.ubt.js"></script>
+<script type="text/javascript" src="//webresource.c-ctrip.com/code/lizard/1.1/web/3rdlibs/include.ga.js"></script>
+</body>
+</html>

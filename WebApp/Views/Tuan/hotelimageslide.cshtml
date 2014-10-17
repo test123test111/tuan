@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "HotelImgaeSlide";
+}
+<script type="text/lizard-config">
+{
+    "url_schema": "hotelimageslide",
+    "viewName": "hotelimageslide",
+    "model": {
+        "apis": [],
+        "filter": function (datas){
+            return datas;
+        }
+    },
+    "view":{
+        "header": Lizard.T("J_hotelImasgeslideHeader"),
+        "viewport": Lizard.T("J_hotelImageslideViewer")
+    },
+    "controller": "@Tuan.ConfigManager.IncludeStaticFile("views/hotel.imageslide.js")"
+}
+</script>
+<script type="text/lizard-template" id="J_hotelImageslideHeader"></script>
+<script type="text/lizard-template" id="J_hotelImageslideViewer">
+    <article class="detail_pics_show">
+        <section class="pics_show_box" id="J_sliderWrap"></section>
+    </article>
+</script>

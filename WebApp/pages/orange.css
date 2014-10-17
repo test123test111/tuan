@@ -1,0 +1,122 @@
+﻿body{background:#fe8b01 url(//pic.c-ctrip.com/h5/orange/pic_orange03.jpg) 50% 0 no-repeat;background-size:320px 383px;}
+.o_wrap{width:320px;margin:0 auto;position:relative;z-index:1;}
+.o_pic01{position:absolute;z-index:1;right:10px;top:10px;width:216px;height:100px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange01.png) no-repeat;background-size:216px 100px;}
+.o_pic01_award{top:30px;right:52px;}
+.o_pic02{position:absolute;z-index:2;left:0;top:24px;width:151px;height:167px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange02.png) no-repeat;background-size:151px 167px;}
+/* 抽奖 */
+.lottery_wrap{height:210px;padding-top:174px;}
+.lottery_form{width:230px;margin:0 auto 10px;background-color:#e6fed4;-webkit-border-radius:5px;border-radius:5px;}
+.lottery_list{width:100%;overflow:hidden;-webkit-border-radius:5px;border-radius:5px;line-height:42px;}
+.lottery_list li{position:relative;z-index:1;padding-left:70px;border-top:1px solid #c3d4b6;}
+.lottery_list li:first-child{border-top:none;}
+.lottery_list .onerror{background-color:#fce2a5;}
+.lottery_list .title{float:left;width:70px;margin-left:-70px;text-align:center;color:#666;}
+.btn_base01{display:block;width:230px;height:42px;margin:0 auto;background-color:#fc5c15;color:#fff;text-align:center;line-height:42px;-webkit-border-radius:5px;border-radius:5px;font-size:16px;}
+.btn_base01:focus{text-decoration:none;}
+.btn_close01{display:none;position:absolute;z-index:2;right:7px;top:12px;width:20px;height:20px;background:#b2c4a4 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAELSURBVDhPlZQBEYMwDEUnAQmTgAQkIAEJOJiESZiESUDCJEwCDmAvTSi0a6H9d1wg/ydN04abYFmWx2rg/YNpHJEBmlHVTj9jQj3OSWkneJr7D9CtJdjQGbUD5z0S9UZ54GvQSOUOZ4uKuFeZL/9ulIMEK6vtMHceUcBk7suFkkAUb0UOJ27BYPJrIA6azPvxcF4mKwdxg4bvINEXc3ptsiD4rWk8WqPqQKD0Tirx4Hs0ug6JqjbUVScVWKBUM/ME9wtT1jeEyXHBV3ei6LLjwqdw5XdNgk3otmNuD9ydsrp9THoKIIrG5WpBSVQ1LpLEdEErHHBUNRdZvLj+03Ae/7LF44LOj5smXpsfTVlhu9i44coAAAAASUVORK5CYII=) 50% 50% no-repeat;background-size:10px 10px;-webkit-border-radius:50%;border-radius:50%;}
+.service_tel{padding-top:2px;text-align:center;color:#fff;font-size:16px;}
+/* 奖项 */
+.price_wrap,.award_wrap{margin:0 auto 30px;width:320px;position:relative;z-index:1;}
+.price_wrap .larger{font-size:13px;}
+.price01,.price02,.price03{position:relative;z-index:2;background-image:url(//pic.c-ctrip.com/h5/orange/pic_orange05.png);background-size:219px 612px;background-repeat:no-repeat;text-align:center;color:#b56a10;font-size:12px;line-height:1.4;}
+.price01{padding:0 5px 0 30px;width:176px;height:230px;margin-left:56px;background-position:-3px 0;line-height:1.3;}
+.price02{width:176px;padding-left:10px;height:176px;margin-top:-22px;background-position:0 -238px;}
+.award_wrap .price02{margin-top:50px;margin-left:74px;}
+.price03{width:184px;height:178px;padding-left:28px;margin-left:108px;margin-top:-38px;background-position:0 -430px;}
+.price01 h2,.price02 h2,.price03 h2{padding-top:10px;height:38px;position:relative;z-index:1;text-align:center;text-indent:-99em;overflow:hidden;}
+.price01 h2{padding-top:0;}
+.price01 h2:before,.price02 h2:before,.price03 h2:before{position:absolute;z-index:1;left:50%;bottom:0;content:"\20";height:25px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange07.png) no-repeat;background-size:104px 83px;}
+.price01 h2:before{width:104px;margin-left:-52px;background-position:0 0;}
+.price02 h2:before{width:64px;margin-left:-32px;background-position:-20px -29px;}
+.price03 h2:before{width:64px;margin-left:-32px;background-position:-20px -58px;}
+.price02_txt01,.price02_txt02,.price02_txt03,.price02_txt04{font-size:16px;line-height:1.6;}
+.price02_txt01{padding-top:36px;color:#fd8e18;}
+.price02_txt02{color:#fbac54;}
+.price02_txt03{padding-left:54px;text-align:left;color:#e37237;}
+.price02_txt04{padding-right:44px;text-align:right;color:#de5a1c;}
+.price_wrap .price_num{font-size:16px;font-weight:bold;padding:0 3px;}
+.o_pic03{position:absolute;z-index:1;left:22px;top:10px;width:45px;height:48px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange06.png) no-repeat;background-size:180px 205px;background-position:-135px 0;}
+.award_wrap .o_pic03{top:-20px;left:36px;}
+.o_pic04{position:absolute;z-index:1;right:8px;top:100px;width:126px;height:205px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange06.png) no-repeat;background-size:180px 205px;background-position:0 0;}
+.award_wrap .o_pic04{top:40px;}
+.o_ihg{position:absolute;z-index:2;left:228px;top:126px;width:64px;height:64px;background-color:#fff;-webkit-border-radius:50%;border-radius:50%;-webkit-box-shadow:-12px 8px 18px -4px #593300;box-shadow:-12px 8px 18px -4px #593300;}
+.award_wrap .o_ihg{left:30px;top:120px;}
+.o_ihg:after{display:block;content:"\20";width:51px;height:25px;margin:20px auto 0;background:url(//pic.c-ctrip.com/h5/orange/pic_orange04.png) 0 0 no-repeat;background-size:51px 57px;}
+/* txt */
+.txt_wrap{padding:0 20px;margin-bottom:15px;color:#fff;font-size:12px;}
+.txt_wrap:after{clear:both;display:block;height:0;visibility:hidden;content:"\20";}
+.o_pic05{float:left;margin-right:10px;width:47px;height:30px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange04.png) 0 -27px no-repeat;background-size:51px 57px;}
+/* 领奖 */
+.award_status{width:230px;margin:0 auto 10px;padding:5px 0;background:rgba(255,253,186,.8);-webkit-border-radius:5px;border-radius:5px;text-align:center;font-size:17px;color:#37463c;}
+.award_status_code{font-size:13px;}
+.award_status .price_num{font-size:20px;color:#fc5c15;}
+.award_txt{padding-left:70px;padding-right:45px;font-style:italic;font-size:15px;color:#fef28d;}
+.award_txt .fs01{font-size:20px;color:#fff;}
+.award_txt2{padding-left:70px;padding-right:45px;color:#fef28d;font-size:13px;}
+.award_txt2 span{font-size:18px;color:#fff;}
+/* animation */
+.o_ani{position:absolute;z-index:1;top:50%;left:50%;width:48px;height:156px;margin-top:-78px;margin-left:-24px;}
+.capsule{position:absolute;z-index:3;top:0;left:10px;width:28px;height:19px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange09.png) -10px 0 no-repeat;background-size:48px 185px;}
+.animated .capsule{-webkit-animation:capsule .4s ease-out 1.1s;-webkit-animation-fill-mode:forwards;animation:capsule .4s ease-out 1.1s;animation-fill-mode:forwards;}
+.bottle{position:absolute;z-index:2;top:6px;left:0;width:48px;height:150px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange09.png) 0 -35px no-repeat;background-size:48px 185px;}
+.particles{visibility:hidden;position:absolute;z-index:2;width:174px;height:172px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange08.png) no-repeat;background-size:174px 172px;top:-110px;left:-62px;}
+.animated .particles{visibility:visible;-webkit-transform:scale(0,0);-webkit-animation:scale .2s ease-out 1.15s;-webkit-animation-fill-mode:forwards;-webkit-transform-origin:50% 100%;transform:scale(0,0);animation:scale .2s ease-out 1.15s;animation-fill-mode:forwards;transform-origin:50% 100%;}
+.stars{visibility:hidden;position:absolute;z-index:1;width:181px;height:143px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange10.png) no-repeat;background-size:181px 143px;top:-116px;left:-66px;}
+.animated .stars{visibility:visible;-webkit-transform:scale(0,0);-webkit-animation:scale .2s ease-out 1.12s;-webkit-animation-fill-mode:forwards;-webkit-transform-origin:50% 100%;transform:scale(0,0);animation:scale .2s ease-out 1.12s;animation-fill-mode:forwards;transform-origin:50% 100%;}
+.juice{visibility:hidden;width:30px;height:16px;position:absolute;z-index:1;top:-10px;left:9px;background:url(//pic.c-ctrip.com/h5/orange/pic_orange09.png) -9px -19px no-repeat;background-size:48px 185px;-webkit-transform:scale(1,0);-moz-transform:scale(1,0);-ms-transform:scale(1,0);transform:scale(1,0);}
+.animated .juice{-webkit-animation:juice .1s ease-out 1.05s;-webkit-animation-fill-mode:forwards;animation:juice .1s ease-out 1.05s;animation-fill-mode:forwards;visibility:visible;-webkit-transform:scale(1,0);-moz-transform:scale(1,0);-ms-transform:scale(1,0);transform:scale(1,0);-webkit-transform-origin:50% 100%;-ms-transform-origin:50% 100%;transform-origin:50% 100%;}
+.animated{
+	-webkit-animation:swing .5s ease .5s;
+	-ms-animation:swing .5s ease .5s;
+	animation:swing .5s ease .5s;
+	-webkit-animation-fill-mode:both;
+	-ms-animation-fill-mode:both;
+	animation-fill-mode:both;
+	-webkit-transform-origin:50% 50%;
+	-ms-transform-origin:50% 50%;
+	transform-origin:50% 50%;
+}
+@-webkit-keyframes swing {
+  20%{-webkit-transform:rotate3d(0,0,1,25deg);transform:rotate3d(0,0,1,25deg);}
+  40%{-webkit-transform:rotate3d(0,0,1,-15deg);transform:rotate3d(0,0,1,-15deg);}
+  60%{-webkit-transform:rotate3d(0,0,1,10deg);transform:rotate3d(0,0,1,5deg);}
+  80%{-webkit-transform: rotate3d(0, 0, 1, -10deg);transform: rotate3d(0, 0, 1, -5deg);}
+  100%{-webkit-transform:rotate3d(0,0,1,0deg);transform:rotate3d(0,0,1,0deg);}
+}
+@keyframes swing{
+	20%{-webkit-transform:rotate3d(0,0,1,15deg);-ms-transform:rotate3d(0,0,1,15deg);transform:rotate3d(0,0,1,15deg);}
+	40%{-webkit-transform:rotate3d(0,0,1,-10deg);-ms-transform:rotate3d(0,0,1,-10deg);transform:rotate3d(0,0,1,-10deg);}
+	60%{-webkit-transform:rotate3d(0,0,1,5deg);-ms-transform:rotate3d(0,0,1,5deg);transform:rotate3d(0,0,1,5deg);}
+	80%{-webkit-transform:rotate3d(0,0,1,-5deg);-ms-transform:rotate3d(0,0,1,-5deg);transform:rotate3d(0,0,1,-5deg);}
+	100%{-webkit-transform:rotate3d(0,0,1,0deg);-ms-transform:rotate3d(0,0,1,0deg);transform:rotate3d(0,0,1,0deg);}
+}
+@-webkit-keyframes scale{
+	0%{-webkit-transform:scale(0,0) translateY(0);transform:scale(0,0) translateY(0);}
+	50%{-webkit-transform:scale(.2,.2) translateY(-160px);transform:scale(.2,.2) translateY(-160px);}
+	100%{-webkit-transform:scale(1,1) translateY(0);transform:scale(1,1) translateY(0);}
+}
+@keyframes scale{
+	0%{-webkit-transform:scale(0,0) translateY(0);-ms-transform:scale(0,0) translateY(0);transform:scale(0,0) translateY(0);}
+	50%{-webkit-transform:scale(.2,.2) translateY(-160px);-ms-transform:scale(.2,.2) translateY(-160px);transform:scale(.2,.2) translateY(-160px);}
+	100%{-webkit-transform:scale(1,1) translateY(0);-ms-transform:scale(1,1) translateY(0);transform:scale(1,1) translateY(0);}
+}
+@-webkit-keyframes juice{
+	0%{-webkit-transform:scale(1,0);transform:scale(1,0);}
+	100%{-webkit-transform:scale(1,1);transform:scale(1,1);}
+}
+@keyframes juice{
+	0%{-webkit-transform:scale(1,0);transform:scale(1,0);}
+	100%{-webkit-transform:scale(1,1);transform:scale(1,1);}
+}
+@-webkit-keyframes capsule{
+	0%{-webkit-transform:translate(0,0) rotateZ(0deg) scale(1,1);}
+	25%{-webkit-transform:translate(-40px,-30px) rotateZ(-360deg) scale(1,1);}
+	50%{-webkit-transform:translate(-70px,10px) rotateZ(-720deg) scale(1,1);}
+	100%{-webkit-transform:translate(-90px,118px) rotateZ(-1440deg) scale(.8,.8);}
+}
+@keyframes capsule{
+	0%{-webkit-transform:translate(0,0) rotateZ(0deg) scale(1,1);transform:translate(0,0) rotateZ(0deg) scale(1,1);}
+	25%{-webkit-transform:translate(-40px,-30px) rotateZ(-360deg) scale(1,1);transform:translate(-40px,-30px) rotateZ(-360deg) scale(1,1);}
+	50%{-webkit-transform:translate(-70px,10px) rotateZ(-720deg) scale(1,1);transform:translate(-70px,10px) rotateZ(-720deg) scale(1,1);}
+	100%{-webkit-transform:translate(-90px,118px) rotateZ(-1440deg) scale(.8,.8);transform:translate(-90px,118px) rotateZ(-1440deg) scale(.8,.8);}
+}

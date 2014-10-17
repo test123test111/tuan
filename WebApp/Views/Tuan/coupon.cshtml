@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Coupon";
+}
+<script type="text/lizard-config">
+{
+    "url_schema": "/coupon",
+    "viewName": "coupon",
+    "model": {
+        "apis": [],
+        "filter": function (datas){
+            return datas;
+        }
+    },
+    "view":{
+        "header": Lizard.T("J_couponHeader"),
+        "viewport": Lizard.T("J_couponViewer")
+    },
+    "controller": "@Tuan.ConfigManager.IncludeStaticFile("views/coupon.js")"
+}
+</script>
+<script type="text/lizard-template" id="J_couponHeader">
+    <h1>使用优惠券</h1>
+</script>
+<script type="text/lizard-template" id="J_couponViewer"></script>

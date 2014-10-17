@@ -1,0 +1,76 @@
+<!--
+    1. 产品数量>=2时展示模块
+    2. 外露产品数量=2或4
+    3. 产品数量=3或>4时展示“更多”按钮
+-->
+<%
+    var left = data && data[0];
+    var right = data && data[1];
+    var hasLeftMod = left && left.products && left.products.length > 1;
+    var hasRightMod = right && right.products && right.products.length > 1;
+%>
+<div class="sec-viewers">
+    <div class="tuan_title">小伙伴们还买了</div>
+    <div class="ui-tab-tar">
+        <ul class="dflex" id="J_tabNav">
+            <%if(hasLeftMod){%><li class="sta-on" data-index="0"><%=left.channelTitle%></li><%}%>
+            <%if(hasRightMod){%><li data-index="1"><%=right.channelTitle%></li><%}%>
+        </ul>
+    </div>
+    <div class="ui-tab-cont mod_group_list" id="J_tabCon">
+        <%if(hasLeftMod){%>
+        <div class="ui-item">
+            <ul>
+                <%
+                for(var i = 0; i < left.products.length; i++){
+                    var item = left.products[i];
+                    if(!item){ return; }
+                %>
+                <li class="J_viewDetail" data-pid="<%=item.id%>" data-type="<%=left.channelType%>">
+                    <div class="pic_thumb"><img src="<%=item.imgUrl%>" alt="<%=item.name%>" width="150" height="112"></div>
+                    <div class="hotel_info">
+                        <div class="hotel_tit"><%=item.name%></div>
+                        <div class="hotel_price">
+                            <span class="txt_color01"><dfn>¥</dfn><%=item.price.dPrice%></span>
+                            <del class="txt_color02"><dfn>¥</dfn><%=item.price.cPrice%></del>
+                        </div>
+                    </div>
+                    <div class="ui-distance"><span class="subb_address i_bef"></span>距离该商户<%=item.distance > 1 ? (item.distance.toFixed(1) + '公里') : (Math.round(item.distance * 1000) + '米')%></div>
+                </li>
+                <%
+                    if ((i == 2 && left.productCount == 2) || (i == 3  && left.productCount > 4)) break;
+                }
+                %>
+            </ul>
+            <%if(left.productCount == 3 || left.productCount > 4){%><div class="link-more" data-pid="<%=pid%>" data-cityname="<%=city.cityName%>" data-cityid="<%=city.cityid%>" data-type="<%=left.channelType%>" data-title="<%=left.channelTitle%>">查看更多</div><%}%>
+        </div>
+        <%}%>
+
+        <%if(hasRightMod){%>
+        <div class="ui-item" style="display:none">
+            <ul>
+                <%
+                for(var i = 0; i < right.productCount; i++){
+                    var item = right.products[i];
+                %>
+                <li class="J_viewDetail" data-pid="<%=item.id%>" data-type="<%=right.channelType%>">
+                    <div class="pic_thumb"><img src="<%=item.imgUrl%>" alt="<%=item.name%>" width="150" height="112"></div>
+                    <div class="hotel_info">
+                        <div class="hotel_tit"><%=item.name%></div>
+                        <div class="hotel_price">
+                            <span class="txt_color01"><dfn>¥</dfn><%=item.price.dPrice%></span>
+                            <del class="txt_color02"><dfn>¥</dfn><%=item.price.cPrice%></del>
+                        </div>
+                    </div>
+                    <div class="ui-distance"><span class="subb_address i_bef"></span>距离该商户<%=item.distance > 1 ? (item.distance.toFixed(1) + '公里') : (Math.round(item.distance * 1000) + '米')%></div>
+                </li>
+                <%
+                    if ((i == 2 && right.productCount == 2) || (i == 3  && right.productCount > 4)) break;
+                }
+                %>
+            </ul>
+            <%if(right.productCount == 3 || right.productCount > 4){%><div class="link-more" data-pid="<%=pid%>" data-cityname="<%=city.cityName%>" data-cityid="<%=city.cityid%>" data-type="<%=right.channelType%>" data-title="<%=right.channelTitle%>">查看更多</div><%}%>
+        </div>
+        <%}%>
+    </div>
+</div>

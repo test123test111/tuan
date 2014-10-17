@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Invoice";
+}
+<script type="text/lizard-config">
+{
+    "url_schema": "/invoice",
+    "viewName": "invoice",
+    "model": {
+        "apis": [],
+        "filter": function (datas){
+            return datas;
+        }
+    },
+    "view":{
+        "header": Lizard.T("J_invoiceHeader"),
+        "viewport": Lizard.T("J_invoiceViewer")
+    },
+    "controller": "@Tuan.ConfigManager.IncludeStaticFile("views/invoice.js")"
+}
+</script>
+<script type="text/lizard-template" id="J_invoiceHeader">
+    <h1>交通信息</h1>
+</script>
+<script type="text/lizard-template" id="J_invoiceViewer"></script>

@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<!--[if (gte IE 9)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="ie"><!--<![endif]-->
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>【美汁源】活动兑奖页面</title>
+    <meta name="viewport" content="width=320.1, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="Stylesheet" type="text/css" href="http://webresource.c-ctrip.com/styles/h5/common/main.css" />
+    <link rel="stylesheet" type="text/css" href="./orange.css?v=1" />
+    <link rel="apple-touch-startup-image" href="http://res.m.ctrip.com/html5/content/images/640.png?v=1.0" sizes="320x460">
+    <link rel="apple-touch-startup-image" href="http://res.m.ctrip.com/html5/content/images/940.png?v=1.0" sizes="640x920">
+    <link rel="apple-touch-startup-image" href="http://res.m.ctrip.com/html5/content/images/1004.png?v=1.0" sizes="768x1004">
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="http://res.m.ctrip.com/html5/Content/images/57.png?v=1.0?v=1.0" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://res.m.ctrip.com/html5/Content/images/72.png?v=1.0?v=1.0" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://res.m.ctrip.com/html5/Content/images/114.png?v=1.0?v=1.0" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://res.m.ctrip.com/html5/Content/images/144.png?v=1.0?v=1.0" />
+    <!--[if IE]><link rel="stylesheet" href="../res/dest/style/ie_hack.css" /><![endif]-->
+    <!--[if !IE]><!--><script>if (/*@cc_on!@*/false) { document.write('<link type= "text/css" rel="stylesheet" href="../res/dest/style/ie_hack.css" />'); }</script><!--<![endif]-->
+</head>
+<body onselectstart="return false">
+<section class="o_wrap">
+    <div class="o_pic01 o_pic01_award"></div>
+    <div class="lottery_wrap">
+        <div class="award_status">
+            恭喜您获得惊喜奖一份<br />价值<span class="price_num" id="J_priceNum"></span>元
+            <p class="award_status_code">优惠券兑换码：<strong id="J_awardCode"></strong></p>
+        </div>
+        <a href="javascript:;" class="btn_base01" id="J_acceptPrize">立刻领奖</a>
+        <div class="service_tel">活动热线：4006589902</div>
+    </div>
+
+    <div class="award_wrap">
+        <div class="award_txt">
+            <p class="fs01">别着急</p>
+            <p>还有<span class="fs01">阳光畅住奖</span>抽奖机会</p>
+        </div>
+        <div class="award_txt2">
+            价值<span>3,888</span>元的“携程团购五星级酒店畅住电子券”一份。
+        </div>
+        <div class="price02">
+            <p class="price02_txt01">团酒店</p>
+            <p class="price02_txt02">团门票　团美食</p>
+            <p class="price02_txt03">超方便</p>
+            <p class="price02_txt04">超便宜</p>
+        </div>
+        <div class="o_pic03"></div>
+        <div class="o_pic04"></div>
+        <div class="o_ihg"></div>
+    </div>
+
+    <div class="txt_wrap">本促销活动主办方、本地区及活动详情请参阅宣传海报或登录tuan.ctrip.com 至[美汁源]活动专区。</div>
+    <div class="txt_wrap"><div class="o_pic05"></div>[Minute Maid](美汁源)创立于美国，拥有超过60年的专业果汁生产经验。[美汁源]、[果粒橙]、“Minute Maid”、[美汁源果粒橙]、[爽粒]、[美汁源热带·果粒]及[美汁源果汁健康专家]是可口可乐公司的商标。</div>
+</section>
+
+<script type="text/javascript" src="http://webresource.c-ctrip.com/code/lizard/2.0/web/lizard.seed.js"></script>
+<script>
+    require.config({
+        paths: {
+            TuanStore: '/webapp/tuan/webresource/models/tuanstore',
+            TuanModel: '/webapp/tuan/webresource/models/tuanmodel'
+        }
+    });
+</script>
+<script type="text/lizard-config">
+{
+    "controller": "/webapp/tuan/pages/cola.prize.js"
+}
+</script>
+<script type="text/javascript" src="//webresource.c-ctrip.com/code/lizard/1.1/web/3rdlibs/include.ubt.js"></script>
+<script type="text/javascript" src="//webresource.c-ctrip.com/code/lizard/1.1/web/3rdlibs/include.ga.js"></script>
+</body>
+</html>

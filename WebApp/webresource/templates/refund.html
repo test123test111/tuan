@@ -1,0 +1,45 @@
+<article  class="cont_wrap">
+    <div class="tuan_title">团购信息</div>
+    <ul class="apply_refund">
+        <li><span id="J_productName"></span>
+            <p class="color_gray">您有<strong id="J_iscCount">0</strong>张可退的团购券，请选择要退回的数量</p>
+        </li>
+        <li>退回数量
+            <div class="btn_fine_tuning">
+                <!--- 可用状态btn_minus、btn_plus，不可用状态btn_minus_dis、btn_plus_dis --->
+                <div class="btn_minus"></div><input type="text" id="J_refundCount" value="1" readonly=""><div class="btn_plus"></div>
+            </div>
+        </li>
+        <li>退款金额&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="total_order_price" id="J_refundAmount">0</span>
+        </li>
+        <li style="display:none" id="J_refundInvoiceWrap">退回快递费&nbsp;&nbsp;
+            <span class="total_order_price" id="J_refundInvoiceAmount">0</span>
+        </li>
+        <li style="display:none" id="J_refundCouponWrap">退回优惠券&nbsp;&nbsp;
+            <span class="total_order_price" id="J_refundCouponAmount">0</span>
+        </li>
+    </ul>
+    <div class="tuan_title">退款方式</div>
+    <ul class="apply_refund choose_list">
+        <li class="choosed">原路退回
+            <!-- <p class="color_gray">团购<span style="display:none" id="J_refundInvoiceTips">与快递</span>费用将在3-10个工作日内退回您的支付帐户</p> -->
+            <!-- <p class="color_gray" style="display:none" id="J_refundCouponTips">优惠券将在1个工作日内退回您的携程帐户</p> -->
+            <p class="color_gray">款项将在3-10个工作日内退回您的支付帐户</p>
+        </li>
+    </ul>
+    <div class="tuan_title">退款原因</div>
+    <ul class="apply_refund choose_list apply_refund_reason">
+        <li>预订未成功，无法使用</li>
+        <li>行程有变，无法使用</li>
+        <li>买多了/买错了</li>
+        <li>酒店条件或服务差</li>
+        <li>其他</li>
+    </ul>
+    <div class="mg10 reason_other_text" style="display:none">
+        <textarea class="in_reason_other" placeholder="请输入其他退款原因。"></textarea>
+    </div>
+    <div class="mg10">
+        <input type="button" class="btn_blue" value="确认退款">
+    </div>
+</article>

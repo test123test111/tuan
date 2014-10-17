@@ -1,0 +1,402 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1E8855B2-3663-4656-AA37-43B539BB2C5F}</ProjectGuid>
+    <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tuan</RootNamespace>
+    <AssemblyName>Tuan</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Arch.CFX">
+      <HintPath>..\..\..\..\..\..\Common\Lib\Framework\Release\Arch.CFX.dll</HintPath>
+    </Reference>
+    <Reference Include="Framework.Logging.V2.API">
+      <HintPath>..\..\..\..\..\..\Common\Lib\Framework\Release\Framework.Logging.V2.API.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.WebPages" />
+    <Reference Include="System.Web.Helpers" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controllers\TuanController.cs" />
+    <Compile Include="CustomViewEngine.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\ConfigManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ConfigProfile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="dest\webresource\build.txt" />
+    <Content Include="dest\webresource\com\baseview.js" />
+    <Content Include="dest\webresource\com\compatible.js" />
+    <Content Include="dest\webresource\com\dropdown.js" />
+    <Content Include="dest\webresource\com\history.js" />
+    <Content Include="dest\webresource\com\lazyload.js" />
+    <Content Include="dest\webresource\com\numberstep.js" />
+    <Content Include="dest\webresource\com\pagetreeconfig.js" />
+    <Content Include="dest\webresource\com\switch.js" />
+    <Content Include="dest\webresource\com\tab.js" />
+    <Content Include="dest\webresource\config.js" />
+    <Content Include="dest\webresource\data\citylist.js" />
+    <Content Include="dest\webresource\data\localfeature.js" />
+    <Content Include="dest\webresource\models\tuanmodel.js" />
+    <Content Include="dest\webresource\models\tuanstore.js" />
+    <Content Include="dest\webresource\res\images\comm_bg.png" />
+    <Content Include="dest\webresource\res\images\dianping.png" />
+    <Content Include="dest\webresource\res\images\hotel-map-locate2.png" />
+    <Content Include="dest\webresource\res\images\img-loading.gif" />
+    <Content Include="dest\webresource\res\images\noimg.png" />
+    <Content Include="dest\webresource\res\images\pic-location.png" />
+    <Content Include="dest\webresource\res\images\service.jpg" />
+    <Content Include="dest\webresource\res\images\spr_index.png" />
+    <Content Include="dest\webresource\res\images\un_policy.png" />
+    <Content Include="dest\webresource\res\style\tuan.css" />
+    <Content Include="dest\webresource\templates\booking.html" />
+    <Content Include="dest\webresource\templates\booking.success.html" />
+    <Content Include="dest\webresource\templates\citylist.html" />
+    <Content Include="dest\webresource\templates\coupon.html" />
+    <Content Include="dest\webresource\templates\detail.html" />
+    <Content Include="dest\webresource\templates\detail.tips.html" />
+    <Content Include="dest\webresource\templates\home.html" />
+    <Content Include="dest\webresource\templates\hotel.comments.html" />
+    <Content Include="dest\webresource\templates\hotel.images.html" />
+    <Content Include="dest\webresource\templates\hotel.imageslide.html" />
+    <Content Include="dest\webresource\templates\hotel.map.html" />
+    <Content Include="dest\webresource\templates\hotel.service.html" />
+    <Content Include="dest\webresource\templates\hotel.subbranch.html" />
+    <Content Include="dest\webresource\templates\invoice.html" />
+    <Content Include="dest\webresource\templates\keywordsearch.html" />
+    <Content Include="dest\webresource\templates\lashou.html" />
+    <Content Include="dest\webresource\templates\list.business.html" />
+    <Content Include="dest\webresource\templates\list.map.html" />
+    <Content Include="dest\webresource\templates\list.product.html" />
+    <Content Include="dest\webresource\templates\near.list.html" />
+    <Content Include="dest\webresource\templates\order.detail.item.html" />
+    <Content Include="dest\webresource\templates\recommend.html" />
+    <Content Include="dest\webresource\templates\refund.html" />
+    <Content Include="dest\webresource\templates\refund.tip.html" />
+    <Content Include="dest\webresource\templates\tuanorderdetail.html" />
+    <Content Include="dest\webresource\text.js" />
+    <Content Include="dest\webresource\thirdpart\invoicestore.js" />
+    <Content Include="dest\webresource\tuanapp.js" />
+    <Content Include="dest\webresource\util\filterxss.js" />
+    <Content Include="dest\webresource\util\httperrortpl.js" />
+    <Content Include="dest\webresource\util\memcache.js" />
+    <Content Include="dest\webresource\util\scrollobserver.js" />
+    <Content Include="dest\webresource\util\storemanage.js" />
+    <Content Include="dest\webresource\views\booking.js" />
+    <Content Include="dest\webresource\views\booking.success.js" />
+    <Content Include="dest\webresource\views\citylist.js" />
+    <Content Include="dest\webresource\views\coupon.js" />
+    <Content Include="dest\webresource\views\detail.js" />
+    <Content Include="dest\webresource\views\detail.tips.js" />
+    <Content Include="dest\webresource\views\home.js" />
+    <Content Include="dest\webresource\views\hotel.comments.js" />
+    <Content Include="dest\webresource\views\hotel.images.js" />
+    <Content Include="dest\webresource\views\hotel.imageslide.js" />
+    <Content Include="dest\webresource\views\hotel.map.js" />
+    <Content Include="dest\webresource\views\hotel.service.js" />
+    <Content Include="dest\webresource\views\hotel.subbranch.js" />
+    <Content Include="dest\webresource\views\invoice.js" />
+    <Content Include="dest\webresource\views\keywordsearch.js" />
+    <Content Include="dest\webresource\views\lashou.js" />
+    <Content Include="dest\webresource\views\list.js" />
+    <Content Include="dest\webresource\views\list.map.js" />
+    <Content Include="dest\webresource\views\lottery.js" />
+    <Content Include="dest\webresource\views\near.list.js" />
+    <Content Include="dest\webresource\views\refund.js" />
+    <Content Include="dest\webresource\views\refund.tip.js" />
+    <Content Include="dest\webresource\views\tuanorderdetail.js" />
+    <Content Include="dest\webresource\widget\amap.js" />
+    <Content Include="dest\webresource\widget\payment.js" />
+    <Content Include="dest\webresource\widget\poi.js" />
+    <Content Include="dest\webresource\widget\slide.js" />
+    <Content Include="dest\webresource\widget\tabslide.js" />
+    <Content Include="dest\webresource\widget\tuanfilters.js" />
+    <Content Include="dest\webresource\widget\voicesearch.js" />
+    <Content Include="Global.asax" />
+    <Content Include="index.html" />
+    <Content Include="webresource\com\baseview.js" />
+    <Content Include="webresource\com\pagetreeconfig.js" />
+    <Content Include="webresource\com\history.js" />
+    <Content Include="webresource\config.js" />
+    <Content Include="webresource\data\localfeature.js" />
+    <Content Include="webresource\res\images\comm_bg.png" />
+    <Content Include="webresource\res\images\dianping.png" />
+    <Content Include="webresource\res\images\dw.png" />
+    <Content Include="webresource\res\images\hotel-map-locate2.png" />
+    <Content Include="webresource\res\images\img-loading.gif" />
+    <Content Include="webresource\res\images\noimg.png" />
+    <Content Include="webresource\res\images\pic-location.png" />
+    <Content Include="webresource\res\images\service.jpg" />
+    <Content Include="webresource\res\images\spr_index.png" />
+    <Content Include="webresource\res\images\un_policy.png" />
+    <Content Include="webresource\res\style\tuan.css" />
+    <Content Include="webresource\templates\lashou.html" />
+    <Content Include="webresource\templates\recommend.html" />
+    <Content Include="webresource\tuanapp.js" />
+    <Content Include="Views\Tuan\booking.cshtml" />
+    <Content Include="Views\Tuan\invoice.cshtml" />
+    <Content Include="Views\Tuan\tuanorderdetail.cshtml" />
+    <Content Include="Views\Tuan\bookingsuccess.cshtml" />
+    <Content Include="Views\Tuan\refund.cshtml" />
+    <Content Include="Views\Tuan\detailtips.cshtml" />
+    <Content Include="Views\Tuan\hotelcomments.cshtml" />
+    <Content Include="dest\Views\Shared\BodyLayout.cshtml" />
+    <Content Include="dest\Views\Shared\Error.cshtml" />
+    <Content Include="dest\Views\Shared\Footer.cshtml" />
+    <Content Include="dest\Views\Shared\Header.cshtml" />
+    <Content Include="dest\Views\Shared\_Layout.cshtml" />
+    <Content Include="dest\Views\Tuan\booking.cshtml" />
+    <Content Include="dest\Views\Tuan\bookingsuccess.cshtml" />
+    <Content Include="dest\Views\Tuan\citylist.cshtml" />
+    <Content Include="dest\Views\Tuan\coupon.cshtml" />
+    <Content Include="dest\Views\Tuan\detail.cshtml" />
+    <Content Include="dest\Views\Tuan\detailtips.cshtml" />
+    <Content Include="dest\Views\Tuan\home.cshtml" />
+    <Content Include="dest\Views\Tuan\hotelcomments.cshtml" />
+    <Content Include="dest\Views\Tuan\hotelimages.cshtml" />
+    <Content Include="dest\Views\Tuan\hotelimageslide.cshtml" />
+    <Content Include="dest\Views\Tuan\hotelmap.cshtml" />
+    <Content Include="dest\Views\Tuan\hotelservice.cshtml" />
+    <Content Include="dest\Views\Tuan\hotelsubbranch.cshtml" />
+    <Content Include="dest\Views\Tuan\invoice.cshtml" />
+    <Content Include="dest\Views\Tuan\keywordsearch.cshtml" />
+    <Content Include="dest\Views\Tuan\list.cshtml" />
+    <Content Include="dest\Views\Tuan\listmap.cshtml" />
+    <Content Include="dest\Views\Tuan\nearlist.cshtml" />
+    <Content Include="dest\Views\Tuan\refund.cshtml" />
+    <Content Include="dest\Views\Tuan\refundtip.cshtml" />
+    <Content Include="dest\Views\Tuan\tuanorderdetail.cshtml" />
+    <Content Include="dest\Views\_ViewStart.cshtml" />
+    <Content Include="dest\Views\Tuan\lashou.cshtml" />
+    <Content Include="dest\Views\Web.config" />
+    <Content Include="dest\webresource\zip\tuan.zip" />
+    <Content Include="dest\Views\Tuan\lottery.cshtml" />
+    <None Include="gruntCfg.json" />
+    <Content Include="Views\Tuan\lottery.cshtml" />
+    <Content Include="Views\Tuan\localfeature.cshtml" />
+    <None Include="Views\Tuan\detail.cshtml" />
+    <Content Include="Views\Tuan\hotelimages.cshtml" />
+    <Content Include="Views\Tuan\hotelimageslide.cshtml" />
+    <Content Include="Views\Tuan\hotelservice.cshtml" />
+    <Content Include="Views\Tuan\hotelsubbranch.cshtml" />
+    <Content Include="Views\Tuan\lashou.cshtml" />
+    <None Include="Views\Tuan\keywordsearch.cshtml" />
+    <None Include="Views\Tuan\citylist.cshtml" />
+    <Content Include="Views\Tuan\nearlist.cshtml" />
+    <Content Include="Views\Tuan\coupon.cshtml" />
+    <Content Include="Views\Tuan\hotelmap.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="webresource\com\compatible.js" />
+    <Content Include="webresource\com\dropdown.js" />
+    <Content Include="webresource\com\lazyload.js" />
+    <Content Include="webresource\com\numberstep.js" />
+    <Content Include="webresource\com\switch.js" />
+    <Content Include="webresource\com\tab.js" />
+    <Content Include="webresource\data\citylist.js" />
+    <Content Include="webresource\models\tuanmodel.js" />
+    <Content Include="webresource\models\tuanstore.js" />
+    <Content Include="pages\cola.html" />
+    <Content Include="pages\cola.js" />
+    <Content Include="pages\cola.prize.html" />
+    <Content Include="pages\cola.prize.js" />
+    <Content Include="pages\meizhiyuan.check.html" />
+    <Content Include="pages\meizhiyuan.check.js" />
+    <Content Include="pages\readme.txt" />
+    <Content Include="pages\orange.css" />
+    <Content Include="webresource\res\style\tuan_back.css" />
+    <Content Include="webresource\templates\booking.html" />
+    <Content Include="webresource\templates\booking.success.html" />
+    <Content Include="webresource\templates\citylist.html" />
+    <Content Include="webresource\templates\coupon.html" />
+    <Content Include="webresource\templates\detail.html" />
+    <Content Include="webresource\templates\detail.tips.html" />
+    <Content Include="webresource\templates\home.html" />
+    <Content Include="webresource\templates\hotel.comments.html" />
+    <Content Include="webresource\templates\hotel.images.html" />
+    <Content Include="webresource\templates\hotel.imageslide.html" />
+    <Content Include="webresource\templates\hotel.map.html" />
+    <Content Include="webresource\templates\hotel.service.html" />
+    <Content Include="webresource\templates\hotel.subbranch.html" />
+    <Content Include="webresource\templates\invoice.html" />
+    <Content Include="webresource\templates\keywordsearch.html" />
+    <Content Include="webresource\templates\list.business.html" />
+    <Content Include="webresource\templates\list.product.html" />
+    <Content Include="webresource\templates\list.map.html" />
+    <Content Include="webresource\templates\near.list.html" />
+    <Content Include="webresource\templates\order.detail.item.html" />
+    <Content Include="webresource\templates\refund.html" />
+    <Content Include="webresource\templates\refund.tip.html" />
+    <Content Include="webresource\templates\tuanorderdetail.html" />
+    <Content Include="webresource\thirdpart\invoicestore.js" />
+    <Content Include="webresource\util\filterxss.js" />
+    <Content Include="webresource\util\httperrortpl.js" />
+    <Content Include="webresource\util\memcache.js" />
+    <Content Include="webresource\util\scrollobserver.js" />
+    <Content Include="webresource\util\storemanage.js" />
+    <Content Include="webresource\views\booking.js" />
+    <Content Include="webresource\views\booking.success.js" />
+    <Content Include="webresource\views\citylist.js" />
+    <Content Include="webresource\views\coupon.js" />
+    <Content Include="webresource\views\detail.js" />
+    <Content Include="webresource\views\detail.tips.js" />
+    <Content Include="webresource\views\home.js" />
+    <Content Include="webresource\views\hotel.comments.js" />
+    <Content Include="webresource\views\hotel.images.js" />
+    <Content Include="webresource\views\hotel.imageslide.js" />
+    <Content Include="webresource\views\hotel.map.js" />
+    <Content Include="webresource\views\hotel.service.js" />
+    <Content Include="webresource\views\hotel.subbranch.js" />
+    <Content Include="webresource\views\invoice.js" />
+    <Content Include="webresource\views\keywordsearch.js" />
+    <Content Include="webresource\views\lashou.js" />
+    <Content Include="webresource\views\list.js" />
+    <Content Include="webresource\views\list.map.js" />
+    <Content Include="webresource\views\localfeature.js" />
+    <Content Include="webresource\views\lottery.js" />
+    <Content Include="webresource\views\near.list.js" />
+    <Content Include="webresource\views\refund.js" />
+    <Content Include="webresource\views\refund.tip.js" />
+    <Content Include="webresource\views\tuanorderdetail.js" />
+    <Content Include="webresource\widget\amap.js" />
+    <Content Include="webresource\widget\payment.js" />
+    <Content Include="webresource\widget\poi.js" />
+    <Content Include="webresource\widget\tabslide.js" />
+    <Content Include="webresource\widget\slide.js" />
+    <Content Include="webresource\widget\tuanfilters.js" />
+    <Content Include="webresource\widget\voicesearch.js" />
+    <Content Include="webresource\zip\tuan.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Tuan\home.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\BodyLayout.cshtml" />
+    <Content Include="Views\Shared\Footer.cshtml" />
+    <Content Include="Views\Shared\Header.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\AppSetting.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Config\AppSetting.config.tpl">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Views\Tuan\list.cshtml" />
+    <Content Include="Views\Tuan\listmap.cshtml" />
+    <Content Include="Views\Tuan\refundtip.cshtml" />
+    <Content Include="Web.config" />
+    <None Include="Web.config.tpl">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>7814</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:7814/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>C:\DevTools\ConfigGen\ConfigGen.exe -gd "$(ProjectDir)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

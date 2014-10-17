@@ -1,0 +1,117 @@
+<article  class="cont_wrap"> 
+    <% var hasInvoice = (typeof invoice!='undefined' && invoice) %>
+    <section class="order_bg">
+    <!--
+        mooncakeStatus 0 非月饼产品
+        mooncakeStatus 1 月饼产品但暂未结果
+        mooncakeStatus 2 月饼产品有抽奖结果 未中奖
+        mooncakeStatus 3 月饼产品有结果   中奖
+    -->
+    <%if(typeof mooncakeStatus != 'undefined' && mooncakeStatus == 1){%>
+        <div class="coupons_loading"><i></i>抽奖进行中，请稍候...</div>
+    <%}else if(typeof mooncakeStatus != 'undefined' && mooncakeStatus == 2){%>
+        <div class="order_htl_info order_mid_autumn arr_r" id="J_tuanDetail">
+            <div class="order_htl_info_t"><%=pname%></div>
+            <%if(typeof couponValidDate!='undefined') {%><div class="order_htl_info_txt"><%=couponValidDate%>过期</div><%}%>
+        </div>
+        <div class="get_coupons">
+            <span class="suc_ico"></span>
+            <div class="coupons_tit">恭喜您获得携程团购优惠券</div>
+            <p class="coupons_intro">现在购买携程团购产品即可享受优惠！</p>
+        </div>
+        <div class="coupons_btnwrap">
+            <span id="J_viewCoupon">查看优惠券</span>
+            <span id="J_immediateUse">立即使用</span>
+        </div>
+    <%}else{%>
+        <!--产品名称、信息-->
+        <%var hasAddrOrPhone = ContactInfo.hotelAddr||ContactInfo.splitphone%>
+        <div class="order_htl_info arr_r<%if(!hasAddrOrPhone){%> order_mid_autumn<%}%>" id="J_tuanDetail">
+            <div class="order_htl_info_t"><%=pname %></div>
+            <%if(typeof couponValidDate!='undefined') {%><div class="order_htl_info_txt"><%=couponValidDate%>过期</div><%}%>
+        </div>
+        <!--地址电话-->
+        <%if(hasAddrOrPhone){%>
+        <ul class="subblist">
+            <%if(ContactInfo.hotelAddr){%>
+            <li class="arr_r" id="J_hotelMap" data-coords="<%=ContactInfo.hotelLnglat[0].longitude + ',' + ContactInfo.hotelLnglat[0].latitude%>" data-hotel-name="<%=ContactInfo.hotelName%>">
+                <span class="subb_address i_bef"><%=ContactInfo.hotelAddr%></span>
+                <i class="icon_txt">地图</i>
+            </li>
+            <%}%>
+            <%if(ContactInfo.splitphone){%>
+            <li id="J_hotelTel" data-phone="<%=ContactInfo.splitphone%>">
+                <span class="subb_phone i_bef"><%=ContactInfo.hotline%></span>
+                <i class="icon_txt">预约/咨询</i>
+            </li>
+            <%}%>
+        </ul>
+        <%}%>
+        <div id="J_couponsWrap"></div>
+    <%}%>
+        <div class="tuan_title">订单信息</div>
+
+        <dl class="order_dl">
+            <dt>订单编号</dt><dd><%=oid %></dd>
+            <dt>订单状态</dt><dd><%=statusRmk %></dd>
+            <dt>预订日期</dt><dd><%=date %></dd>
+            <%if(payType){%>
+            <dt>支付方式</dt><dd><%=payType %></dd>
+            <%}%>
+        </dl>
+        <dl class="order_dl">
+            <dt>单价</dt><dd>¥<%=product.price.dPrice%></dd>
+            <dt>数量</dt><dd><%=qty%>份</dd>
+            <%if (couponAmt) {%><dt>已享优惠</dt><dd>-¥<%=couponAmt%></dd><%}%>
+            <dt>发票配送费</dt><dd>¥<%=invoiceAmt%></dd>
+            <dt>总额</dt><dd><span class="total_order_price"><%=retainTwoDecimal((amt - couponAmt > 0 ? amt - couponAmt : 0) + invoiceAmt)%></span></dd>
+        </dl>
+        <%if(typeof gtt != 'undefined' && gtt.adt == '送礼品卡' && gtt.aam > 0){%>
+        <dl class="order_dl">
+            <dt>送礼品卡</dt>
+            <dd><dfn>¥</dfn><%=gtt.aam%></dd>
+        </dl>
+        <%}%>
+        <%if(appNonsupport){%>
+        <ul class="dflex scheme_01 mgb10">
+            <%if(canRefund){%>
+            <li id="J_refund">申请退款</li>
+            <%}%>
+            <%if(status==1){%>
+            <li id="J_cancelOrder">取消订单</li>
+            <%}%>
+            <%if(status>2 && canDelete){%>
+            <li id="J_deleteOrder">删除订单</li>
+            <%}%>
+        </ul>
+        <%}%>
+    </section>
+    <%if(hasInvoice) {%>
+    <section class="order_bg sec-last">
+        <div class="tuan_title">发票信息</div>
+        <dl class="order_dl">
+            <dt>发票抬头</dt>
+            <dd><%=invoice.title %><br/><%=invoice.name %></dd>
+        </dl>
+        <dl class="order_dl">
+            <dt>寄送地址</dt>
+            <dd><%=invoice.addr %><br/><%=invoice.postCode%></dd>
+        </dl>
+        <dl class="order_dl">
+            <dt>配送方式</dt>
+            <dd><%=invoice.expressType == 1 ? '快递' : '平信' %></dd>
+        </dl>
+    </section>
+    <% }%>
+    <div id="J_recommendWrap" style="display:none"></div>
+    <%if(typeof statusRmk!='undefined' && (statusRmk=='待支付')){%>
+    <div style="height:45px"></div>
+    <ul class="btm_price">
+        <li class="item03">
+            <span class="text_transparent text_size12">订单总额：</span><%=amt %>
+        </li>
+        <!-- 已过期、已抢完、APP不支持售卖产品 class="btm_tuan_btn_dis" -->
+        <li class="<%=appNonsupport ? 'btm_tuan_btn' : 'btm_tuan_btn_dis'%>" id="J_retryPayment">继续支付</li>
+    </ul>
+    <%} %>
+</article>

@@ -1,0 +1,45 @@
+﻿<section class="cont_wrap">
+    <!-- 需要增加零元团的判断以及文案,模板：您的订单已成功提交！我们会尽快处理-->
+    <div class="suc_txt">
+        <%if(status==3){%>
+            <div class="fail_ico"></div>很抱歉，您的订单支付失败!
+            <p class="para01">请重新下单支付或致电携程客服</p>
+            <a href="tel:4008216666" class="telnum" id="J_tel">400-821-6666</a>
+        <%}else{%>
+            <div class="suc_ico"></div>您的订单已成功提交!
+        <%}%>
+    </div>
+    <%if(oid && +oid>0){%>
+    <div class="suc_order arr_r" id="J_orderDetail">
+        <div class="title ellipsis"><%=pname %></div>
+        <a href="javascript:;" class="ui-link">订单详情</a>
+    </div>
+    <% } %>
+    
+    <!-- 券号和密码 -->
+    <% if (!_.isArray(coupons) || coupons.length > 0 ) { %>
+        <div id="J_codeAndPwd">
+            <% _.each(coupons, function(v, i){ %>
+                <% if(!_.isEmpty(v.pwd)) { %>
+                <ul class="box_list box_listCoupon">
+                    <li><span class="items">券号<%=i + 1%></span><span class="items"><%=v.code%></span></li>
+                    <li><span class="items">密码</span><span class="items"><%=v.pwd%></span></li>
+                </ul>
+                <% } %>
+            <% }) %>
+        </div>
+    <% } %>
+    
+    <div id="J_recommendWrap" style="display:none"></div>
+    <ul class="subblist">
+        <li id="J_destLink" class="arr_r" data-dest-id="<%=dest.id%>" data-dest-url="<%=dest.url%>" data-dest-name="<%=dest.name%>"><%=dest.name%>旅游攻略</li>
+    </ul>
+    <%if(user && user.IsNonUser){%>
+    <div class="cont_box_white">
+        <p class="order_hint">填写手机号即可成为携程会员，马上获得<i>1000</i>积分和<i>800元</i>携程消费券哦！预订还可以累计积分。</p>
+        <div class="input_box">
+                <button class="btn_blue" id="J_registerBtn" value="">提交注册</button>
+        </div>
+    </div>
+    <% }%>
+</section>

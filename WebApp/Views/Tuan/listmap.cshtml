@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "ListMap";
+}
+<script type="text/lizard-config">
+{
+    "url_schema": "/listmap",
+    "viewName": "listmap",
+    "model": {
+        "apis": [],
+        "filter": function (datas){
+            return datas;
+        }
+    },
+    "view":{
+        "header": Lizard.T("J_listMapHeader"),
+        "viewport": Lizard.T("J_listMapViewer")
+    },
+    "controller": "@Tuan.ConfigManager.IncludeStaticFile("views/list.map.js")"
+}
+</script>
+<script type="text/lizard-template" id="J_listMapHeader"></script>
+<script type="text/lizard-template" id="J_listMapViewer"></script>

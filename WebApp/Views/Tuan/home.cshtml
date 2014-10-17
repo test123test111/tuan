@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+<script type="text/lizard-config">
+{
+    "url_schema": ["/home", "home"],
+    "viewName": "home",
+    "model": {
+        "apis": [],
+        "filter": function (datas){
+            return datas;
+        }
+    },
+    "view":{
+        "header": Lizard.T("J_homeHeader"),
+        "viewport": Lizard.T("J_homeViewer")
+    },
+    "controller": "@Tuan.ConfigManager.IncludeStaticFile("views/home.js")"
+}
+</script>
+<script type="text/lizard-template" id="J_homeHeader">
+    <h1 id="J_headerTitle">
+        <div id="J_cityBtn" class="list_hd_button">
+            <em class="header_mutrow">上海团购</em><i class="i_tri"></i>
+        </div>
+    </h1>
+</script>
+<script type="text/lizard-template" id="J_homeViewer">
+    <section class="cont_wrap">
+        <div class="sec_foc" id="J_searchBoxWrap">
+            <!--/END 图片轮播-->
+            <div class="list_s">
+                <input type="text" placeholder="位置/品牌/名称"  readonly="readonly"  class="list_s_input" />
+                <div id="J_voiceTrigger" class="btn_voice_s"></div>
+             </div>
+             <!--/END 搜索-->
+        </div>
+        <div class="index_link">
+		    <ul class="qr_link js_qr_link">
+			    <li data-id="1" data-type="1" data-category='hotel' data-name='酒店'><span><b class="ico_bed"></b>酒店</span></li>
+			    <li data-id="2" data-type="8" data-category='catering' data-name='美食'><span><b class="ico_dining"></b>美食</span></li>
+			    <li data-id="4" data-type="6" data-category='ticket' data-name='门票'><span><b class="ico_travel"></b>门票</span></li>
+			    <li data-id="5" data-type="9" data-category='entertainment' data-name='娱乐'><span><b class="ico_attractions"></b>娱乐</span></li>
+		    </ul>
+		    <ul class="at_link  js_qr_link">
+                <li data-id="" data-type="0" data-category='weeknew' data-name='本周新单'><i></i>本周新单</li>
+			    <li data-id="" data-type="106" data-category='onepaygroup' data-name='1元团购'><i></i>1元团购</li>
+			    <li data-id="" data-type="0" data-category='feature' data-name='当地特色'><i></i>当地特色</li>
+                <li data-id="3" data-type="7" data-category='vacation' data-name='旅游度假'><i></i>旅游度假</li>
+			    <li data-id="" data-type="" data-category='lottery' data-name='彩票'><i></i>彩 票</li>
+			    <li data-id=""  data-type=""  data-category="nearby"><i></i>附近团购</li>
+		    </ul>
+	    </div>
+        <!--/END 入口-->
+        <ul class="ad_link" style="display:none"></ul>
+        <!--/END 广告-->
+        <div class="" id="J_hotSaleWrap"></div>
+    </section>
+</script>
+<script type="text/lizard-template" id="J_Loading">
+    <div class="sec-waiting" style="display:block;"><div class="ui-loading"><span class="ico-loading"></span></div>加载中...</div>
+</script>
+<script type="text/lizard-template" id="J_Reload">
+    <div class="hot_tit">热卖推荐</div>
+    <div class="sec-reload tuan-noresult" style="display:block;"><span class="ico-reload"></span>网络连接超时，点击<span id="js_reload" class="ui-link">重新加载</span></div>
+</script>
+<script type="text/lizard-template" id="J_NoGroupProduct">
+    <div class="hot_tit">热卖推荐</div>
+    <div class="sec-reload tuan-noresult" style="display:block;">
+         <div class="list_s">当前城市暂无团购产品</div>
+    </div>
+</script>
