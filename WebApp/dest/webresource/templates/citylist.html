@@ -1,0 +1,65 @@
+﻿ <%if(data && data.length>0){ %>
+    <h2 class="city_type arr_down">当前</h2>
+    <ul class="city_list current" style="display:block">
+        <li class="city-item <%if(nearby==true){%>choosed<%}%>" data-name="定位中" data-id="positioning" data-filter="">定位中</li>
+        <% if(currentcityid!=undefined && currentcityid!="" && currentcityname!=undefined && currentcityname!=""){ %>
+        <li class="city-item  <% if(cityid && cityid == currentcityid){ %> choosed<%} %>" data-name="<%=currentcityname%>" data-id="<%=currentcityid%>" data-filter="">当前城市：<%=currentcityname %><i>(<%=currentgroups %>)</i></li>
+        <% }else{ %>
+        <li class="city-item currentcity" style="display:none;" data-name="" data-id="" data-filter="">当前城市：<!--cityname--><i>(<!--groups-->)</i></li>    
+        <% } %>
+    </ul>
+    <% if(history && history.length>0){ %>
+    <h2 class="city_type arr_down">历史选择</h2>
+    <ul class="city_list historycitys" style="display:block">
+    <%
+        for(var j in history){
+        var c=history[j];
+    %>
+    <li class="city-item <% if(cityid && cityid == c.id){ %> choosed<%} %>" data-name="<%=c.name%>" data-id="<%=c.id%>" data-filter="<%=((c.jp?c.jp.toLowerCase():'')  + ' ' + ( c.initial?"":c.initial.toLowerCase())  + ' ' + c.name + ' ' + (c.py?c.py.toLowerCase():"") ) %>"><%=c.name %><i>(<%=c.cGroups %>)</i></li>
+    <%}%>
+    </ul>
+    <%}%>
+    <h2 class="city_type arr_down">热门城市</h2>
+    <ul class="city_list hotcitys" style="display:block">
+    <%for(var i = 0, olen = data.length, Item; i < olen; i++){
+        Item=data[i];
+        if(Item.tag=="热门" && Item.cities){
+            for(var j in Item.cities){
+            var c=Item.cities[j];
+    %>
+    <li class="city-item  <% if(cityid && cityid == c.id){ %> choosed<%} %>" data-name="<%=c.name%>" data-id="<%=c.id%>" data-filter="<%=((c.jp?c.jp.toLowerCase():'')  + ' ' + ( c.initial?"":c.initial.toLowerCase())  + ' ' + c.name + ' ' + (c.py?c.py.toLowerCase():"") ) %>"><%=c.name %><i>(<%=c.cGroups %>)</i></li>
+    <%
+            }
+        }
+    }
+    %>
+    </ul>
+    <h2 class="city_type">全部城市</h2>
+    <div class="box-city-all">
+        <%
+            _.each(data, function(itm) {
+            if (itm.tag !== '热门' && itm.cities[0]) {
+        %>
+            <dl>
+                <dt class="ui-title J_cityTagTitle"><%=itm.tag %> <span class="J_cityTagIcon view_unfold"></span></dt>
+                <dd>
+                    <ul class="city_list allcity">
+                        <%
+                            _.each(itm.cities, function(ctm) {
+                        %>
+                            <li style="display: none;" class="city-item <% if(ctm.isHot){ %> choosed<%} %>" data-name="<%=ctm.name %>" data-id="<%=ctm.id %>" data-filter="<%=((ctm.jp?ctm.jp.toLowerCase():'')  + ' ' + ( ctm.initial?"":ctm.initial.toLowerCase())  + ' ' + ctm.name + ' ' + (ctm.py?ctm.py.toLowerCase():"") ) %>"><%=ctm.name %> (<%=ctm.cGroups %>)</li>
+                        <%
+                            }); //end each citites
+                        %>
+                    </ul>
+                </dd>
+            </dl>
+        <%
+            }//end if
+        %>
+        <%
+            });//end each data
+        %>
+    </div>
+<% } %>
+<p class="city_noresult" style="display;none">没有结果</p>

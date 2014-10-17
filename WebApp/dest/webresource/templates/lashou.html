@@ -1,0 +1,21 @@
+﻿<article class="cont_wrap lashou"> 
+<%=content.memo %>
+<div style="height:44px"></div>
+<ul class="btm_price">
+    <li class="item01"><del>原价&yen;<%=price.cPrice %></del></li>
+    <li class="item02">
+        <%if(activities && activities[0]){
+            var type = activities[0].type;
+        %>
+        <%if(type==2) {%>
+        <span class="ico-text">返<i>¥</i><%=activities[0].arg%></span><!--返现-->
+        <%}%>
+        <%if(type==3) {%>
+        <span class="ico-text">礼<i>&yen;</i><%=activities[0].arg%></span><!--礼品卡-->
+        <%}%>
+        <%}%>
+        &yen;<%=price.dPrice %><!--原价-->
+    </li>
+    <li class="btm_tuan_btn" id="J_submit">马上团</li>
+</ul>
+</article>

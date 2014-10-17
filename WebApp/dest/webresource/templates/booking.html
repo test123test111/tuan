@@ -1,0 +1,77 @@
+﻿<section class="cont_wrap" style="padding-bottom:55px;">
+    <%if(!user || user.IsNonUser==true) { %>
+    <ul class="fillin_list">
+        <li>
+            <%if(activities[0] && (activities[0].type == 2 || activities[0].type == 3)) {%>
+            登录后使用消费券可获得返现<span class="colmoney">¥<%=activities[0].arg %></span>
+            <% }else{%>
+            登录后预订更便捷
+            <% }%>
+            <a href="javascript:;" class="btns_login J_loginBtn ">马上登录</a>
+        </li>
+    </ul>
+    <% }%>
+    <div class="order_htl_info">
+        <div class="order_htl_info_t"><%=name %></div>
+        <div class="fillin_price">单价：<span>&yen;<%=price.dPrice %></span></div>
+    </div>
+    <ul class="fillin_list">
+        <li>购买数量
+            <div class="room_num J_numberStep"></div>
+        </li>
+
+        <!--TODO: 优惠 -->
+        <%if(activities && activities.length > 0 && (((activities[0].type == 2 || activities[0].type == 3) && user) || activities[0].type == 1)) { %>
+        <li <%if(activities[0].type == 1){%>style="display:none"<%}%> class="orderwrite_hint" id="privilege">
+            <%if((activities[0].type == 2 || activities[0].type == 3) && user) {%>
+            入住后返
+            <%} %>
+            <span class="price1"><i>¥</i><span id="J_pPrice"><%=activities[0].arg * curNum%></span><%if(activities[0].type == 2 && user) {%>现金<%} %><%if(activities[0].type == 3 && user){%>携程礼品卡<%} %></span>
+        </li>
+        <%} %>
+
+        <li>手机
+            <span class="inputbox"><input type="tel" placeholder="用于接收团购券号和密码" maxlength="11" required id="J_tel" value="<%=tel%>" /></span>
+            <!--<i class="icon icon_user" style="display:none" id="J_selectContact"></i>-->
+        </li>
+
+        <!--
+        三种情况判断：
+            1. 默认展示不需要发票，点击发票栏进入发票填写页
+            2. 酒店开具发票，提供文案: "产品发票由酒店提供，请入住酒店时向酒店前台索取。"
+            3. 携程开具发票，显示发票填写控件
+        groupFlag: 位操作(1,多家分店;  2,分店信息分组;  4,存在关联团购;  8,有房态条目;  16,携程提供发票;  32,已售完 64,酒店提供发票； 128,无发票)
+        -->
+        <%if(isLogin && (groupFlag & 16) == 16) { %>
+        <li class="arr_r" id="J_invoice">发票
+            <%if(invoice) {%>
+                <%if(invoice.deliveryMethod == 0){%>
+                <span class="txt"><%=invoice.title || ''%></span>
+                <%}else{%>
+                <span class="promo_code"><%=invoice.title || ''%></span><span class="txt2">&yen; 10</span>
+                <%}%>
+            <%}else{%>
+                <span class="txt">不需要</span>
+            <%}%>
+        </li>
+        <%}%>
+
+        <%if (price.dPrice > 0) {%>
+        <li class="arr_r" id="J_coupon">优惠券
+            <%if (coupon) {%>
+            <span class="promo_code"><%=coupon.isInput ? coupon.code : coupon.title%></span><span class="txt2">- &yen; <span id="J_couponAmount"><%=retainTwoDecimal(coupon.amount * curNum)%></span></span>
+            <%} else {%>
+            <span class="num" id="J_couponCount"></span><span class="txt">未使用</span>
+            <%}%>
+        </li>
+        <%}%>
+    </ul>
+    <%if((groupFlag & 16) != 16 && !_.isEmpty(invoiceText)) { %>
+        <p class="tips_attention"><%=invoiceText%></p>
+    <%}%>
+</section>
+<div class="order_btnbox">
+    <%tmpPrice = retainTwoDecimal(curNum * (price.dPrice - (coupon ? coupon.amount : 0)) + (invoice && invoice.deliveryMethod == 1 ? 10 : 0))%>
+    订单总额: <span class="price2"><i>&yen;</i><span id="J_totalPrice"><%=tmpPrice > 0 ? tmpPrice : 0%></span></span>
+    <button class="order_btn <%if(tel == ''){%>disabled<%}%>" id="J_submitOrder" value="" <%if(tel == ''){%>disabled="disabled"<%}%>">下一步</button>
+</div>

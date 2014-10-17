@@ -1,0 +1,44 @@
+<section class="cont_wrap">
+    <section class="comm_review" id="J_commTotal"></section>
+    <div class="tuan_title">用户点评</div>
+    <section class="comm_review" id="J_commList"></section>
+</section>
+
+<script type="text/template" id="J_commTotalTpl">
+    <div class="comm_overall">
+        <div class="comm_title">总评</div>
+        <div class="comm_fen">
+            <div class="comm_fen_in" style="width:<%=(custPt/5)*100%>%;"></div>
+        </div>
+        <div class="comm_fen_num"><%= custPt.toFixed(1) %></div>
+        <div class="comm_recomm"><%= (percent*100).toFixed(0)%>%用户推荐</div>
+    </div>
+    <ul class="dflex comm_score">
+        <li>卫生：<%= ratPt.toFixed(1) %></li>
+        <li>环境：<%= raatPt.toFixed(1) %></li>
+        <li>服务：<%= servPt.toFixed(1) %></li>
+        <li>设施：<%= faclPt.toFixed(1) %></li>
+    </ul>
+</script>
+
+<script type="text/template" id="J_commListTpl">
+    <% _.each(cmts,function(cmt){ %>
+    <article class="comm_list">
+        <div class="comm_user"><span><%=dateFormat(cDate.parse(cmt.date,true), "Y-m-d") %></span><%= cmt.nick %></div>
+        <div class="comm_overall">
+            <div class="comm_title">评分</div>
+            <!-- 根据实际的分数改变宽度值即可 -->
+            <div class="comm_fen">
+                <div class="comm_fen_in" style="width:<%= ((cmt.custPt/5)*100) %>%;"></div>
+            </div>
+        </div>
+        <ul class="dflex comm_score">
+            <li>卫生：<%= cmt.ratPt.toFixed(1) %></li>
+            <li>环境：<%= cmt.raatPt.toFixed(1) %></li>
+            <li>服务：<%= cmt.servPt.toFixed(1) %></li>
+            <li>设施：<%= cmt.faclPt.toFixed(1) %></li>
+        </ul>
+        <p class="comm_review_p"><%= cmt.content %></p>
+    </article>
+    <%}) %>
+</script>

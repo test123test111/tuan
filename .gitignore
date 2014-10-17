@@ -2,8 +2,6 @@ npm-debug.log
 */node_modules
 .idea
 .idea/*
-dest
-dest/*
 vim.exe.stackdump
 obj
 __ConfigTemp

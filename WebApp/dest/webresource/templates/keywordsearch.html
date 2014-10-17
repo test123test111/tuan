@@ -1,0 +1,71 @@
+﻿<div style="position: fixed;width:100%;height:56px;z-index:2;">
+       <section id="J_keywordSearch" class="search_wrap">
+           <div class="history_close" id="J_cancel">
+               <span class="hclose">取消</span>
+           </div>
+           <form>
+           <div class="place_search_box  clear-input-box">
+                <input id="J_keywordInput" type="search" class="place_search abs_size" placeholder="位置/品牌/名称" value=""  />
+                <div class="s_city_loading"  style="display:none"></div>
+           </div>
+            </form>
+       </section>
+ </div>
+<div style="height:53px;width:100%"></div>
+<section id="J_keywordSuggestWrap" class="city_box">
+    <div id="js_hotkeyword"></div>
+    <div id="js_historykeysearch"></div>
+</section>
+<script type="text/template" id="J_hotKeywordsTpl">
+    <div class="his_list border_b">
+        <p class="title">热门搜索</p>
+        <div class="switch_hot">
+            <div class="sw_clip">
+                <%var num =Math.ceil(data.length / 6);%>
+                <%for(var i = 1; i <= num ; i++){%>
+                <ul class="sw_con" >
+                    <%for(var j = 1; j <= 6 ; j++){ var index = (i-1)*6 + (j-1); if(index >=data.length){break;}%>
+                    <li data-json=<%=encodeURIComponent(JSON.stringify(data[index]))%>><%=data[index].word%></li>
+                    <%}%>
+                </ul>
+                <%}%>
+            </div>
+            <%if(num > 1){%>
+            <p class="sw_nav">
+                <%for(var ni=0; ni< num; ni++){%>
+                <i js_index="<%=ni%>" class="<%if(ni==0){%>current<%}%>"></i>
+                <%}%>
+            </p>
+            <%}%>
+        </div>
+    </div>
+</script>
+<script type="text/template" id="J_keywordSuggestTpl">
+     <%if(data){%>
+        <%if(data.history && data.history.length>0){%>
+            <ul class="filterbox J_historykeysearch">
+            <%for(var i=0, olen=data.history.length, c; i < olen; i++) {
+                    c=data.history[i];
+            %>
+                <li class="city_item <% if(keyid && keyid == c.id){ %> choosed<%} %>" data-type="<%=c.type%>" data-name="<%=c.word%>" data-id="<%=c.id%>" data-filter="<%=c.word%>"><%=c.word %></li>
+            <%}%>
+            </ul>
+            <div class="base_btn01_wrap_b neg_mgt20 J_clearhistory">
+                <div class="base_btn01">清除搜索历史</div>
+            </div>
+        <%}%>
+        <%if(data.Results&&data.Results.length>0){%>
+        <ul class="city_list searchresult">
+        <%for(var i=0, len=data.Results.length, c; i<len; i++) {
+            c = data.Results[i];
+        %>
+            <li class="city_item <% if(keyid && keyid == c.id){ %> choosed<%} %>" data-type="<%=c.type%>" data-name="<%=c.word%>" data-id="<%=c.id%>" data-filter="<%=c.word%>"><%=c.word %></li>
+        <%}%>
+        </ul>
+        <%}else if(data.Results){%>
+         <p class="city_noresult">抱歉，没有搜索到相关信息</p>
+        <%
+        }
+    }
+    %>
+</script>
