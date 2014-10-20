@@ -49,6 +49,7 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
                 if (orderId && orderId > 0) {
                     detailModel.setParam({
                         oid: orderId,
+                        module: '1', //module 1: 订单完成页   2: 订单详情页
                         auth: user ? user.Auth : '',
                         cityid: searchStore.getAttr('ctyId'),
                         head: CStore.HeadStore.getInstance().get()

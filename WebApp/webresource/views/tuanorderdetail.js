@@ -97,7 +97,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
 
             this.showLoading();
             detailStore.remove();
-            detailModel.setParam({ oid: this.orderId });
+            detailModel.setParam({ oid: this.orderId, module: 2 }); //module 1: 订单完成页   2: 订单详情页
             //head丢掉了，重新设置
             detailModel.param.head = detailModel.getHead().get();
             detailModel.excute(function (data) {
