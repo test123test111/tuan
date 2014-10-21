@@ -10,7 +10,9 @@
         <li class="ticket" data-type="6" data-category='ticket' data-name="门票">门票</li>
         <li class="recreation" data-type="9" data-category='entertainment' data-name="娱乐">娱乐</li>
     </ul>
-    <div class="ico_map_return" id="J_return"></div>    
+    <div class="ico_map_return" id="J_return"></div>
+    <div class="map_tips01" id="J_infoWrap" style="position:fixed;left:65px;top:10px;">查询：1公里内，共29家商户，展示前10家</div>
+    <div class="map_btn_search" id="J_btnSearch">查询屏幕范围内的团购</div>
 </section>
 <script type="text/template" id="J_markerTpl">
     <%
@@ -22,15 +24,23 @@
             9: 'landmarks_recreation'
         };
     %>
-        <div style="width:21px; height:31px;" data-pid="<%=obj.id%>">
-            <div class="ico_map2 J_detailMarker" style="display:none; -webkit-transform:translate(-50%, 0%);transform:translate(-50%, 0%)">
-                <p><%=obj.shortName||obj.name%></p>
-                <p><dfn>¥</dfn><%=obj.price%></p>
-            </div>
-            <div class="<%=MARKERS_CLS[obj.ctype] || MARKERS_CLS[1]%> J_simpleMarker"></div>
+    <!--点状-->
+    <div class="J_dotMarker" data-pid="<%=obj.id%>" style="width:21px; height:31px;">
+        <div class="ico_map2 J_detailMarker" style="display:none; -webkit-transform:translate(-50%, 0%)">
+            <p><%=obj.shortName||obj.name%></p>
+            <p><dfn>¥</dfn><%=obj.price%></p>
         </div>
+        <div class="<%=MARKERS_CLS[obj.ctype] || MARKERS_CLS[1]%> J_simpleMarker"></div>
+    </div>
+    <!--气泡-->
+    <div class="J_popMarker" data-pid="<%=obj.id%>" style="width:21px; height:31px;display:none">
+        <div class="ico_map" style="background-color:#fff;-webkit-transform:translate(-41%, -20px)">
+            <p class="ui-title"><%=obj.shortName||obj.name%></p>
+            <p class="ui-price"><dfn>¥</dfn><%=obj.price%></p>
+        </div>
+    </div>
 </script>
 <script type="text/template" id="J_centerMarkerTpl">
-    <img class='fx-drop' src='http://res.m.ctrip.com/html5/Content/images/map_address.png' style="margin-left: -2px;  margin-top: -7px;">
-    <div class="ico_map J_centerMarkerTip" style="margin-left: 8px; -webkit-transform: translate(-50%, -95px) !important;display:none;"><p><%=obj.name%></p></div>
+    <img class="fx-drop" src="http://pic.c-ctrip.com/h5/tuan/hotel-map-locate2.png" style="width:14px;height:36px;">
+    <div class="ico_map2 J_centerMarkerTip" style="-webkit-transform:translate(-50%,-45px) !important;left:50%;max-width:none;display:none;"><p><%=obj.name%></p></div>
 </script>
