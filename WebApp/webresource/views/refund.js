@@ -45,8 +45,8 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             },
             events: {
                 'click .btn_blue': 'onSubmitRefund',
-                'click .btn_minus': 'onCouponMinus',
-                'click .btn_plus': 'onCouponPlus',
+                'click .minus': 'onCouponMinus',
+                'click .plus': 'onCouponPlus',
                 'click .apply_refund_reason>li': 'onRefundReasonChange'
             },
             onCouponMinus: function (e) {
@@ -54,9 +54,9 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     tmpPrice = this.tuanCouponPrice,
                     promoCouponPrice = this.promoCouponPrice,
                     num = this.els.refundCount,
-                    refundNum = (+num.val()); //退回数量
+                    refundNum = (+num.text()); //退回数量
                 refundNum = refundNum <= 0 ? 0 : refundNum - 1;
-                num.val(refundNum);
+                num.text(refundNum);
                 if (promoCouponPrice) {
                     tmpPrice = customMult(tmpPrice - promoCouponPrice > 0 ? tmpPrice - promoCouponPrice : 0, refundNum);
                 } else {
@@ -85,9 +85,9 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     tmpPrice = this.tuanCouponPrice,
                     promoCouponPrice = this.promoCouponPrice, //优惠券单价
                     num = this.els.refundCount,
-                    refundNum = (+num.val()); //退回数量
+                    refundNum = (+num.text()); //退回数量
                 refundNum = refundNum >= this.maxCoupons ? this.maxCoupons : refundNum + 1;
-                num.val(refundNum);
+                num.text(refundNum);
                 if (promoCouponPrice) {
                     tmpPrice = customMult(tmpPrice - promoCouponPrice > 0 ? tmpPrice - promoCouponPrice : 0, refundNum);
                 } else {
@@ -183,7 +183,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 } else {
                     this.els.productName.text(data.pname);
                     this.els.iscCount.text(this.maxCoupons);
-                    this.els.refundCount.val(1);
+                    this.els.refundCount.text(1);
 
                     if (data.couponAmt > 0) {
                         var tmp = this.tuanCouponPrice - this.promoCouponPrice;
