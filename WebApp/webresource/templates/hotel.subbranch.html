@@ -1,63 +1,41 @@
 <%
-if (cityId) {
     var hotel = data && data[0];
     var hotelInfos = hotel ? hotel.HotelInfos : [];
     var isCurrentCity = hotelInfos[0] && hotelInfos[0].score < 0;
 %>
-    <%
-        if (isCurrentCity) {
-    %>
-    <div class="cur_pos cur_pos_has"><a href="javascript:;" class="cur_reload" id="J_relocation"></a><span id="J_gpsAddr">距离: 您的位置 <%=gps.address%></span></div>
-    <%}%>
-    <section class="cont_wrap"<%if (isCurrentCity) {%> style="padding-top:30px"<%}%> >
-        <%
-            _.each(hotelInfos, function(hotelinfo){
-            var isValidLngLat = hotelinfo.lon>0 && hotelinfo.lat>0 && hotelinfo.lon<1000 && hotelinfo.lat<1000;
-        %>
-        <ul class="subblist">
-            <li class="arr_r J_jumpHotel" data-id="<%=hotelinfo.hotelId || ''%>">
-                <div class="hotelname"><%= hotelinfo.name %></div>
-                <span class="icon_txt"><%=isCurrentCity ? (hotelinfo.distance > 1 ? (hotelinfo.distance.toFixed(1) + '公里') : (hotelinfo.distance * 1000 + '米')) : (hotelinfo.score.toFixed(1) + '分')%></span>
-            </li>
-            <li class="<%if(isValidLngLat){%>arr_r J_showMap<%} %>" data-coords="<%= hotelinfo.lon %>,<%= hotelinfo.lat %>" data-hotel-name="<%= hotelinfo.name %>">
-                <span class="subb_address i_bef"><%=hotelinfo.adr %></span>
-                <%if(isValidLngLat) {%><i class="icon_txt">地图</i><%} %>
-            </li>
-            <li <%if(hotelinfo.splitphone){%>class="J_phone"<%}%> data-tel="<%=hotelinfo.splitphone %>">
-                <span class="subb_phone i_bef"><%= hotelinfo.tel %></span>
-                <%if(hotelinfo.splitphone){%><i class="icon_txt">预约/咨询</i><%} %>
-            </li>
-            <%if (hotelinfo.userGuide){%><li class="li_info"><%=hotelinfo.userGuide%></li><%}%>
-        </ul>
-        <%})%>
-    </section>
-<%} else {%>
-    <section class="cont_wrap">
-    <%_.each(data, function(hotel){%>
-        <div class="business_list">
-            <div class="busi_city J_busiCity"><%=hotel.ctyName %><span class="arrow_skin01_down J_arrow"></span></div>
-            <div class="busi_hotel J_busiHotel" style="display:none;">
-                <% _.each(hotel.HotelInfos, function(hotelinfo){ %>
-                <%var isValidLngLat = hotelinfo.lon>0 && hotelinfo.lat>0 && hotelinfo.lon<1000 && hotelinfo.lat<1000 %>
-                <ul class="subblist">
-                    <li class="arr_r J_jumpHotel" data-id="<%=hotelinfo.hotelId || ''%>" ><div class="hotelname"><%=hotelinfo.name %></div></li>
-                    <li class="<%if(isValidLngLat){%>arr_r J_showMap<%} %>" data-coords="<%= hotelinfo.lon %>,<%= hotelinfo.lat %>" data-hotel-name="<%= hotelinfo.name %>">
-                        <span class="subb_address i_bef"><%= hotelinfo.adr %></span>
-                        <%if(isValidLngLat) {%>
-                        <i class="icon_txt">地图</i>
-                        <%} %>
-                    </li>
-                    <li <%if(hotelinfo.splitphone){%>class="J_phone"<%} %> data-tel="<%=hotelinfo.splitphone %>">
-                        <span class="subb_phone i_bef"><%= hotelinfo.tel %></span>
-                        <%if(hotelinfo.splitphone){%>
-                        <i class="icon_txt">预约/咨询</i>
-                        <%} %>
-                    </li>
-                    <%if (hotelinfo.userGuide){%><li class="li_info"><%=hotelinfo.userGuide%></li><%}%>
-                </ul>
-                <%}) %>
-            </div>
-        </div>
-    <%}) %>
-    </section>
+<%if (isCurrentCity) {%>
+<div class="cur_pos cur_pos_has"><a href="javascript:;" class="cur_reload" id="J_relocation"></a><span id="J_gpsAddr">距离: 您的位置 <%=gps.address%></span></div>
 <%}%>
+<section class="cont_wrap"<%if (isCurrentCity) {%> style="padding-top:30px"<%}%> >
+<%_.each(data, function(hotel, index){%>
+    <div class="business_list">
+        <div class="busi_city J_busiCity"><%=hotel.ctyName %><span class="<%if(isCurrentCity && index == 0){%>arrow_skin01_up<%}else{%>arrow_skin01_down<%}%> J_arrow"></span></div>
+        <div class="busi_hotel J_busiHotel"<%if(isCurrentCity && index == 0){%> style="display:block;"<%}%>>
+            <% _.each(hotel.HotelInfos, function(hotelinfo){ %>
+            <%var isValidLngLat = hotelinfo.lon>0 && hotelinfo.lat>0 && hotelinfo.lon<1000 && hotelinfo.lat<1000 %>
+            <ul class="subblist">
+                <li class="arr_r J_jumpHotel" data-id="<%=hotelinfo.hotelId || ''%>" >
+                    <div class="hotelname"><%=hotelinfo.name %></div>
+                    <%if (isCurrentCity) {%>
+                        <%if (index == 0) {%>
+                        <span class="icon_txt"><%=hotelinfo.distance > 1 ? (hotelinfo.distance.toFixed(1) + '公里') : (parseInt(hotelinfo.distance * 1000) + '米')%></span>
+                        <%}%>
+                    <%} else {%>
+                        <%if(hotelinfo.score){%><span class="icon_txt"><%=hotelinfo.score.toFixed(1) + '分'%></span><%}%>
+                    <%}%>
+                </li>
+                <li class="<%if(isValidLngLat){%>arr_r J_showMap<%} %>" data-coords="<%= hotelinfo.lon %>,<%= hotelinfo.lat %>" data-hotel-name="<%= hotelinfo.name %>">
+                    <span class="subb_address i_bef"><%= hotelinfo.adr %></span>
+                    <%if(isValidLngLat) {%><i class="icon_txt">地图</i><%} %>
+                </li>
+                <li <%if(hotelinfo.splitphone){%>class="J_phone"<%} %> data-tel="<%=hotelinfo.splitphone %>">
+                    <span class="subb_phone i_bef"><%= hotelinfo.tel %></span>
+                    <%if(hotelinfo.splitphone){%><i class="icon_txt">预约/咨询</i><%} %>
+                </li>
+                <%if (hotelinfo.userGuide){%><li class="li_info"><%=hotelinfo.userGuide%></li><%}%>
+            </ul>
+            <%}) %>
+        </div>
+    </div>
+<%}) %>
+</section>

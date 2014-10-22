@@ -177,11 +177,12 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
          * @param {int} 国内酒店ID
          */
         jumpHotel: function(e){
-            var hotelId = $(e.currentTarget).data('id'),
-                today = new Date(),
-                tomorrow = new Date(today.setDate(today.getDate()+1)),
-                fromUrl = encodeURIComponent(location.href),
-                url = isInApp ?
+            var hotelId = $(e.currentTarget).data('id');
+            if (!hotelId) return;
+            var today = new Date();
+            var tomorrow = new Date(today.setDate(today.getDate()+1));
+            var fromUrl = encodeURIComponent(location.href);
+            var url = isInApp ?
                 'ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate='+formatDate(new Date)+'&checkOutDate='+formatDate(tomorrow)+'&hotelId='+hotelId+'&from='+fromUrl :
                 'http://m.ctrip.com/webapp/hotel/hoteldetail/' + hotelId + '.html?from=' + fromUrl;
             var history = this.getHistory();
