@@ -822,6 +822,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                     break;
                 case 'price':
                     searchStore.setAttr('qparams', []);
+                    label.find('li[data-tab="price"] i').hide();
                     customFiltersStore.removeAttr('price');
                     this.updateTitle(MSG.titleArray[0]);
                     break;

@@ -19,7 +19,7 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
         customFiltersStore = TStore.GroupCustomFilters.getInstance(), //团购自定义筛选项
         historyCityListStore = TStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
         positionfilterStore = TStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
-        RADIO_ITEM = ['price', 'day', 'trait', 'distance'], //单选查询条件
+        RADIO_ITEM = ['price', 'day', 'trait', 'distance', 'brand'], //单选查询条件
         GROUP_TYPE = {
             '0': { 'index': 0, 'name': '全部团购', 'category': 'all' },
             '1': { 'index': 1, 'name': '酒店', 'category': 'hotel' },
@@ -62,9 +62,9 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
             '</ul>'
         ].join('')),
         brandTpl = _.template([
-            '<li data-filter="brand" data-value=""><div class="pop_filter_back">返回</div></li>',
+            '<li data-filter="brand"<%if(!val){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
             '<%_.each(arr, function(a,i){%>',
-            '<li data-filter="brand" data-flag="<%=a.flag%>" data-value="<%=a.val%>"<%if(a.val==val){%> class="choosed"<%}%> data-text="<%=a.text%>">',
+            '<li data-filter="brand" data-value="<%=a.val%>" data-text="<%=a.txt%>"<%if(a.val==val){%> class="choosed"<%}%>>',
                 '<div class="txt01"><%=a.txt%></div>',
             '</li>',
             '<%})%>'
@@ -647,8 +647,6 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
                         customFiltersStore.setAttr('star', star);
                         label.find('li[data-tab="star"]>i')[!$.isEmptyObject(star) ? 'show' : 'hide']();
                     }
-                } else if (filter == 'brand') {
-                    self.selectBrand(item, label);
                 }
                 clearBtn[self.customFilterSelectedCount() ? 'removeClass' : 'addClass']('sta-disabled');
             });
@@ -700,21 +698,14 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
                     }
                     break;
                 case 'brand':
-                    var brand = customdata && customdata.brand;
-                    if (brand && brand.flag == 1) {
-                        wrap.find('li:first-child').removeClass('choosed');
-                        wrap.find('li:nth-child(3)').removeClass('backwards').find('.txt03').text('');
-                        wrap.find('li:nth-child(2)').addClass('backwards').find('.txt03').text(brand.txt);
-                    } else if (brand && brand.flag == 2) {
-                        wrap.find('li:first-child').removeClass('choosed');
-                        wrap.find('li:nth-child(2)').removeClass('backwards').find('.txt03').text('');
-                        wrap.find('li:nth-child(3)').addClass('backwards').find('.txt03').text(brand.txt);
-                    } else {
-                        wrap.find('li:first-child').addClass('choosed');
-                        wrap.find('li').removeClass('backwards').find('.txt03').text('');
-                        wrap.find('#J_brand').show();
-                        wrap.find('#J_subBrand').hide();
-                    }
+                    var brandWrap = wrap.find('#J_brand');
+                    var wrapper = brandWrap.parent();
+                    wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
+                    brandWrap.html(brandTpl(this.getBrandData()));
+                    new Scroll({
+                        wrapper: wrapper,
+                        scroller: brandWrap
+                    });
                     break;
                 case 'trait':
                     wrap.find('.choosed').removeClass('choosed');
@@ -739,49 +730,6 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
                         wrap.find('li[data-value=""]').addClass('choosed');
                     }
                     break;
-            }
-        },
-        selectBrand: function (item, label) {
-            var viewWrap = this.page.$el;
-            var brand = viewWrap.find('#J_brand');
-            var subBrand = viewWrap.find('#J_subBrand');
-            var flag = item.data('flag');
-            var value = item.data('value');
-            var txt = item.text();
-
-            if (item.hasClass('arr_r')) {//一级
-                var wrapper = brand.parent();
-                brand.hide();
-                wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
-                subBrand.html(brandTpl(this.renderSubBrand(flag)));
-                subBrand.show();
-
-                new Scroll({
-                    wrapper: wrapper,
-                    scroller: subBrand
-                });
-            } else if (value != undefined) {//二级
-                subBrand.hide();
-                brand.show();
-                if (value != '') {
-                    item.addClass('choosed').siblings('.choosed').removeClass('choosed');
-                    if (flag == 1) {
-                        brand.find('li:first-child').removeClass('choosed');
-                        brand.find('li:nth-child(3)').removeClass('backwards').find('.txt03').text('');
-                        brand.find('li:nth-child(2)').addClass('backwards').find('.txt03').text(txt);
-                    } else if (flag == 2) {
-                        brand.find('li:first-child').removeClass('choosed');
-                        brand.find('li:nth-child(2)').removeClass('backwards').find('.txt03').text('');
-                        brand.find('li:nth-child(3)').addClass('backwards').find('.txt03').text(txt);
-                    }
-                    customFiltersStore.setAttr('brand', { flag: flag, val: value, txt: txt });
-                    label.find('li[data-tab="brand"]>i').show();
-                }
-            } else { //点击“不限”
-                brand.find('li:first-child').addClass('choosed');
-                brand.find('li').removeClass('backwards').find('.txt03').text('');
-                customFiltersStore.removeAttr('brand');
-                label.find('li[data-tab="brand"]>i').hide();
             }
         },
         /**
@@ -813,10 +761,9 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
             this.renderTabWrap(label.find('li:first-child').addClass('choosed').data('tab'), panel, true);
         },
         /**
-        * 渲染品牌
-        * @param {String} flag 1:快捷连锁 2:其他品牌
+        * 取出渲染品牌数据
         */
-        renderSubBrand: function (flag) {
+        getBrandData: function () {
             var ret = { val: '', arr: [] };
             var conditionData = conditionStore.get();
             var brandData = customFiltersStore.getAttr('brand');
@@ -826,7 +773,7 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var groupCondition = conditionData.categroy[0].groupCondition;
                 if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
-                    ret.arr = $.grep(groupCondition, function (v, j) { return (v.type == 1 && v.flag == flag); });
+                    ret.arr = $.grep(groupCondition, function (v, j) { return (v.type == 1); });
                 }
             }
             return ret;
@@ -846,7 +793,7 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
             searchStore.removeAttr('weekendsAvailable')
             customFiltersStore.removeAttr('multiShop');
             customFiltersStore.removeAttr('voucher');
-            var arr = RADIO_ITEM.concat(['star', 'brand']);
+            var arr = RADIO_ITEM.concat(['star']);
             if (isSwitchTuanType && isNearBy) {//我的附近查询时，切换团购类型，不清除距离筛选条件
                 arr.splice(arr.indexOf('distance'), 1);
             }

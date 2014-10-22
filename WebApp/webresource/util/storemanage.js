@@ -458,8 +458,14 @@ define(['TuanApp', 'TuanStore', 'CityListData'], function (TuanApp, TuanStore, C
                 //清除城市选择历史
                 historyCityListStore.remove();
             };
-            cityId && searchStore.setAttr('ctyId', cityId);
-            cityName && searchStore.setAttr('ctyName', cityName);
+            if (cityId) {
+                searchStore.setAttr('ctyId', cityId);
+                if (cityName) {
+                    searchStore.setAttr('ctyName', cityName);
+                } else if (CityListData[cityId]) {
+                    searchStore.setAttr('ctyName', CityListData[cityId]);
+                }
+            };
 
             //我的附近
             if (lat && +lat > 0 && lon && +lon > 0 && place && place != "") {
