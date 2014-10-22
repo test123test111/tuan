@@ -53,7 +53,6 @@
             LashouTpl: buildPath("templates/lashou.html"),
             InvoiceTpl: buildPath("templates/invoice.html"),
             KeywordSearchTpl: buildPath("templates/keywordsearch.html"),
-            ListMapTpl: buildPath("templates/list.map.html"),
             NearListTpl: buildPath("templates/near.list.html"),
             RefundTpl: buildPath("templates/refund.html"),
             RefundTipTpl: buildPath("templates/refund.tip.html"),

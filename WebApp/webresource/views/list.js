@@ -391,7 +391,8 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
         gotoMapPage: function () {
             if (this.isDataReady) {
                 //地图的widget只会实例化一次，这里需要使用缓存
-                this.forwardJump('listmap', '/webapp/tuan/listmap?ctype=' + searchStore.getAttr('ctype'));
+                // this.forwardJump('listmap', '/webapp/tuan/listmap?ctype=' + searchStore.getAttr('ctype'));
+                this.forwardJump('listmap', '/webapp/tuan/listmap');
             };
         },
         createPage: function () {

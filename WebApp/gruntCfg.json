@@ -44,7 +44,6 @@
         "lashouTpl":       "templates/lashou.html",
         "InvoiceTpl":      "templates/invoice.html",
         "KeywordSearchTpl": "templates/keywordsearch.html",
-        "ListMapTpl":      "templates/list.map.html",
         "NearListTpl":     "templates/near.list.html",
         "RefundTpl":       "templates/refund.html",
         "RefundTipTpl":    "templates/refund.tip.html",

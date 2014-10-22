@@ -2,11 +2,13 @@
  * 列表地图页面
  * @url: m.ctrip.com/webapp/tuan/listmap
  */
-define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMapWidget', 'POIWidget', 'cUtility', 'cWidgetFactory', 'cWidgetGeolocation', 'TuanModel', 'CommonStore', 'StoreManage', 'text!ListMapTpl'],
-    function (TuanApp, c, TuanBaseView, CommonPageFactory, TuanStore, AMapWidget, POIWidget, Util, WidgetFactory, Geolocation, TuanModel, CommonStore, StoreManage, html) {
+define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemCache', 'AMapWidget', 'POIWidget', 'cUtility', 'cWidgetFactory', 'TuanModel', 'CommonStore', 'StoreManage'],
+    function (TuanApp, c, TuanBaseView, CommonPageFactory, TuanStore, MemCache, AMapWidget, POIWidget, Util, WidgetFactory, TuanModel, CommonStore, StoreManage) {
         var MSG = {
                 cityCenter: '市中心'
             },
+            MARKERS_CLS = {1: 'landmarks_hotel', 8: 'landmarks_dining', 7: 'landmarks_vacation', 6: 'landmarks_ticket', 9: 'landmarks_recreation'},
+            GROUP_TEXT = {'0': '团购商户', '1': '酒店团购', '8': '美食团购', '7': '旅游度假团购', '6': '门票团购', '9': '娱乐团购'},
             CURRENT_CATEGORY_CLS = 'current',
             GRAY_CLS = 'gray',
             SHOW_DETAIL_ZOOM_LEVEL = 15,
@@ -21,7 +23,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
             tuanPOIModel = TuanModel.TuanPOIListModel.getInstance(),
             historyCityListStore = TuanStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
             positionfilterStore = TuanStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
-            GROUP_TEXT = {'0': '团购商户', '1': '酒店团购', '8': '美食团购', '7': '旅游度假团购', '6': '门票团购', '9': '娱乐团购'},
+            // categoryfilterStore = TuanStore.GroupCategoryFilterStore.getInstance(), //团购类型
             infoTpl = _.template([
                 '查询：<%=distance%>公里内，',
                 '<%if(count>0){%>',
@@ -29,17 +31,37 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
                 '<%}else{%>',
                     '无<%=ctext%>，请滑动地图后查询',
                 '<%}%>',
+            ].join('')),
+            markerTpl = _.template([
+                '<div class="J_dotMarker" data-pid="<%=obj.id%>" style="width:21px; height:31px;">',
+                    '<div class="ico_map2 J_detailMarker" style="display:none; -webkit-transform:translate(-50%, 0%)">',
+                        '<p><%=obj.shortName||obj.name%></p>',
+                        '<p><dfn>¥</dfn><%=obj.price%></p>',
+                    '</div>',
+                    '<div class="<%=MARKERS_CLS[obj.ctype] || MARKERS_CLS[1]%> J_simpleMarker"></div>',
+                '</div>',
+                '<div class="J_popMarker" data-pid="<%=obj.id%>" style="width:21px; height:31px;display:none">',
+                    '<div class="ico_map" style="background-color:#fff;-webkit-transform:translate(-41%, -20px)">',
+                        '<p class="ui-title"><%=obj.shortName||obj.name%></p>',
+                        '<p class="ui-price"><dfn>¥</dfn><%=obj.price%></p>',
+                    '</div>',
+                '</div>'
+            ].join('')),
+            centerMarkerTpl = _.template([
+                '<img class="fx-drop" src="http://pic.c-ctrip.com/h5/tuan/hotel-map-locate2.png" style="width:14px;height:36px;">',
+                '<div class="ico_map2 J_centerMarkerTip" style="-webkit-transform:translate(-50%,-45px) !important;left:50%;max-width:none;display:none;"><p><%=obj.name%></p></div>'
             ].join(''));
 
         var PageView = CommonPageFactory.create("TuanBaseView");
         View = PageView.extend({
             pageid: '260002',
             hpageid: '261002',
-            tpl: html,
-            inited: false,
+            // inited: false,
             render: function () {
-                this.$el.html(this.tpl);
-
+                // this.$el.html(html);
+                // this.markerTpl = this.$el.find('#J_markerTpl').html();
+                //poi分类容器
+                this.categoryWrap = this.$el.find('#J_category');
                 //ios7, 显示头部电信网络信息
                 if (Util.isInApp() && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
                     this.$el.find('#J_listmapWrap').css({
@@ -82,62 +104,48 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
             onCreate: function () {
                 //渲染页面
                 this.render();
-                //poi分类容器
-                this.categoryWrap = this.$el.find('#J_category');
-                //列表页没有导航， 在native页面显示导航按钮
-                //Util.isInApp() && $('#J_navigator').css('display', '');
-                this.geolocation = WidgetFactory.create('Geolocation');
-                //this.injectHeaderView();
                 //创建地图
                 this.createMap();
-
-                this.markerTpl = this.$el.find('#J_markerTpl').html();
             },
-            //数据加载阶段
-            onLoad: function () { },
             createPOI: function () {
-                var self = this,
-                    infoWrap = self.$el.find('#J_infoWrap');
-
-                self.poi = new POI({
+                this.poi = new POI({
                     model: tuanPOIModel,
-                    onSuccess: function (data) {
-                        var center = self.getCenterMarkerData();
-                        self.clearPOIMarkers();
-                        self.loadingLayer.hide();
-                        self.addPOIMarkers(data.products);
-
-                        /*
-                        if (self.centerMarker && self.centerMarker.getPosition().getLat() == center.lat && self.centerMarker.getPosition().getLng() == center.lon) {
-                            self.centerMarker.show();
-                            self.mapWidget.setPosition(self.centerMarker, center.lon, center.lat);
-                        } else {
-                        */
-                        /*};*/
-                        self.centerMarker && self.centerMarker.setMap(null);
-                        if (!self.tapScreen) {
-                            self.mapWidget.setFitView();
-                            self.addCenterMarker(center);
-                        } else {
-                            self.reverseGeocode(center, function(name) {
-                                center.name = name;
-                                self.addCenterMarker(center);
-                            });
-                        }
-                        self.getDistance();
-                        infoWrap.text(infoTpl({
-                            distance: self.distance,
-                            count: data.count || 0,//TODO: 等待接口提供count
-                            ctext: GROUP_TEXT[self.category],
-                            length: data.products.length
-                        }));
-                        self.inited = true; //地图初始化完成
-                    }
+                    onSuccess: $.proxy(this.onPoiSuccess, this)
                 });
+            },
+            onPoiSuccess: function (data) {
+                var self = this;
+                var center = this.getCenterMarkerData();
+                var infoWrap = this.$el.find('#J_infoWrap');
+                this.clearPOIMarkers();
+                this.loadingLayer.hide();
+                this.addPOIMarkers(data.products);
+                MemCache.setItem('POIDATA', data);
+
+                this.centerMarker && this.centerMarker.setMap(null);
+                if (!this.tapScreen) {
+                    this.mapWidget.setFitView();
+                    this.addCenterMarker(center);
+                } else {
+                    this.reverseGeocode(center, function(name) {
+                        center.name = name;
+                        self.addCenterMarker(center);
+                    });
+                }
+                this.getDistance();
+                infoWrap.text(infoTpl({
+                    distance: this.distance,
+                    count: data.count || 0,//TODO: 等待接口提供count
+                    ctext: GROUP_TEXT[this.category],
+                    length: data.products.length
+                }));
+                // this.inited = true; //地图初始化完成
             },
             poiMarkers: [],
             renderMarkerDOM: function (data) {
-                return _.template(this.markerTpl)(data);
+                // return _.template(this.markerTpl)(data);
+                data.MARKERS_CLS = MARKERS_CLS;
+                return markerTpl(data);
             },
             removeCurrentLocationTool: function () {
                 var mapWidget = this.mapWidget,
@@ -222,6 +230,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
 
                 this.clearPOIMarkers();
                 this.category = target.attr('data-type');
+                // TODO：以后要同步到列表页
+                // searchStore.setAttr('ctype', this.category);
+                // categoryfilterStore.setAttr('tuanType', this.category);
+                // categoryfilterStore.setAttr('category', target.attr('data-category'));
+                // categoryfilterStore.setAttr('name', target.attr('data-name'));
+                // categoryfilterStore.setAttr('tuanTypeIndex', target.attr('data-index'));
                 this.selectCategory();
             },
             selectCategory: function () {
@@ -308,7 +322,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
             */
             createMap: function () {
                 var self = this,
-                    compass,
+                    compass, layer,
                     btnSearch = self.$el.find('#J_btnSearch'),
                     infoWrap = self.$el.find('#J_infoWrap'),
                     curpos = listStore.getAttr('curpos'),
@@ -355,13 +369,16 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
                         wrap = $(wrap).children();
                         wrap.css('background-color', '#1491c5');
                         compass = wrap;
+                        layer = new c.ui.LoadingLayer(function () { this.hide(); }, '定位中...');
                     },
                     onGeoComplete: function (e) {
+                        layer.hide();
                         compass && compass.css('background-color', 'rgba(0,0,0,.8)');
                         //当前位置点自适应
                         this.setFitView();
                     },
                     onGeoError: function () {
+                        self.showToast('无法获取您的位置，请稍后重试');
                         compass && compass.css('background-color', 'rgba(0,0,0,.8)');
                     }
                 });
@@ -404,7 +421,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
                 marker = mapWidget.addMarker({
                     position: new mapWidget.host.LngLat(lng, lat), //基点位置
                     offset: { x: -7, y: -36 }, //相对于基点的位置
-                    content: _.template(self.$el.find('#J_centerMarkerTpl').html())({ name: data.name || data.address })
+                    // content: _.template(self.$el.find('#J_centerMarkerTpl').html())({ name: data.name || data.address })
+                    content: centerMarkerTpl({ name: data.name || data.address })
                 });
                 mapWidget.addEvent(marker, 'click', this.centerMarkerHandler, this);
                 this.centerMarker = marker;
@@ -430,16 +448,19 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
                 hotelMapInfo && mapWidget.gps.show_map(hotelMapInfo);
             },
             onShow: function () {
-                var refer = this.getLastViewName();
-                var category = Lizard.P('ctype') || searchStore.getAttr('ctype');
-
-                if (this.header) {
-                    this.header.hide();
-                };
-                this.category = category;
-                this.tapScreen = false;
-                this.inited && this.selectCategory();
+                this.refer = this.getLastViewName();
+                this.header && this.header.hide();
+                this.category = searchStore.getAttr('ctype');
                 this.loadingLayer = new c.ui.LoadingLayer(function () { this.hide(); }, '查询中...');
+                this.tapScreen = false;
+                // if (this.inited) {
+                    // if (this.isDetailBack() && MemCache.getItem('POIDATA')) {
+                        // this.onPoiSuccess(MemCache.getItem('POIDATA'));
+                    // } else {
+                        // this.selectCategory();
+                    // }
+                // }
+                // this.inited && this.selectCategory();
             },
             onHide: function () {
                 if (!Util.isInApp() && this.header && this.header.rootBox) this.header.rootBox.show();
@@ -447,6 +468,10 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'AMap
                 this.centerMarker && this.centerMarker.hide();
                 //隐藏页面移除当前位置定位点
                 this.removeCurrentLocationTool();
+            },
+            isDetailBack: function () {
+                var refer = this.refer;
+                return refer && refer.match(/detail/i);
             },
             /**
              * 逆地理编码
