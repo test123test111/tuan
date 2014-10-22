@@ -6,9 +6,8 @@
         </li>
         <li>退回数量
             <div class="btn_fine_tuning">
-                <!--- 可用状态btn_minus、btn_plus，不可用状态btn_minus_dis、btn_plus_dis --->
-                <!-- <div class="btn_minus"></div><input type="text" id="J_refundCount" value="1" readonly=""><div class="btn_plus"></div> -->
-                <i class="minus"></i><span id="J_refundCount" class="numtext">1</span><i class="plus"></i>
+                <!-- 不可用状态num_invalid -->
+                <i id="J_minus" class="minus num_invalid"></i><span id="J_refundCount" class="numtext">1</span><i id="J_plus" class="plus"></i>
             </div>
         </li>
         <li>退款金额&nbsp;&nbsp;&nbsp;&nbsp;
@@ -24,8 +23,6 @@
     <div class="tuan_title">退款方式</div>
     <ul class="apply_refund choose_list">
         <li class="choosed">原路退回
-            <!-- <p class="color_gray">团购<span style="display:none" id="J_refundInvoiceTips">与快递</span>费用将在3-10个工作日内退回您的支付帐户</p> -->
-            <!-- <p class="color_gray" style="display:none" id="J_refundCouponTips">优惠券将在1个工作日内退回您的携程帐户</p> -->
             <p class="color_gray">款项将在3-10个工作日内退回您的支付帐户</p>
         </li>
     </ul>

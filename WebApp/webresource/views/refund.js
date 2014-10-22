@@ -37,7 +37,9 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     refundCouponWrap: this.$el.find('#J_refundCouponWrap'),
                     refundCouponAmount: this.$el.find('#J_refundCouponAmount'),
                     refundInvoiceWrap: this.$el.find('#J_refundInvoiceWrap'),
-                    refundInvoiceAmount: this.$el.find('#J_refundInvoiceAmount')
+                    refundInvoiceAmount: this.$el.find('#J_refundInvoiceAmount'),
+                    btnMinus: this.$el.find('#J_minus'),
+                    btnPlus: this.$el.find('#J_plus')
                 };
             },
             onCreate: function () {
@@ -55,8 +57,15 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     promoCouponPrice = this.promoCouponPrice,
                     num = this.els.refundCount,
                     refundNum = (+num.text()); //退回数量
+                if (refundNum <= 1) {
+                    this.els.btnMinus.addClass('num_invalid');
+                    return;
+                }
                 refundNum = refundNum <= 0 ? 0 : refundNum - 1;
                 num.text(refundNum);
+                if (refundNum < this.maxCoupons) {
+                    this.els.btnPlus.removeClass('num_invalid');
+                }
                 if (promoCouponPrice) {
                     tmpPrice = customMult(tmpPrice - promoCouponPrice > 0 ? tmpPrice - promoCouponPrice : 0, refundNum);
                 } else {
@@ -86,8 +95,15 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     promoCouponPrice = this.promoCouponPrice, //优惠券单价
                     num = this.els.refundCount,
                     refundNum = (+num.text()); //退回数量
+                if (refundNum >= this.maxCoupons) {
+                    this.els.btnPlus.addClass('num_invalid');
+                    return;
+                }
                 refundNum = refundNum >= this.maxCoupons ? this.maxCoupons : refundNum + 1;
                 num.text(refundNum);
+                if (refundNum > 1) {
+                    this.els.btnMinus.removeClass('num_invalid');
+                }
                 if (promoCouponPrice) {
                     tmpPrice = customMult(tmpPrice - promoCouponPrice > 0 ? tmpPrice - promoCouponPrice : 0, refundNum);
                 } else {
@@ -125,10 +141,9 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             loadDetail: function () {
                 this.showLoading();
                 detailModel.setParam({
-                    oid: this.orderId
+                    oid: this.orderId,
+                    head: detailModel.getHead().get() //head丢掉了，重新设置
                 });
-                //head丢掉了，重新设置
-                detailModel.param.head = detailModel.getHead().get();
                 detailModel.execute(function (data) {
                     this.createPage(data);
                     this.hideLoading();
@@ -158,7 +173,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             },
             createPage: function (data) {
                 this.invoiceAmt = data.invoiceAmt;
-                this.maxCoupons = 0;
+                this.maxCoupons = 0;  //可退券的数量
                 this.tuanCouponList = [];
                 this.tuanCouponPrice = 0; //团购券单价
                 this.refundable = true; //优惠券、快递费用是否可退
@@ -183,7 +198,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 } else {
                     this.els.productName.text(data.pname);
                     this.els.iscCount.text(this.maxCoupons);
-                    this.els.refundCount.text(1);
+                    this.els.refundCount.text(1); //默认退一张
 
                     if (data.couponAmt > 0) {
                         var tmp = this.tuanCouponPrice - this.promoCouponPrice;
@@ -235,9 +250,8 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                         }
                     }
                 });
-                
+
                 this.from = decodeURIComponent(Lizard.P('from') || '');
-                this.headerview.show();
                 this.checkLogin() && this.loadDetail();
             },
             onSubmitRefund: function () {
@@ -265,7 +279,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 var self = this;
                 var reasonText = "";
                 var ticketlist = [];
-                var num = this.$el.find(".btn_fine_tuning>input").val();
+                var num = +this.els.refundCount.text(); //退回数量
 
                 if (+num <= 0) {
                     this.showToast("请输入需要回退的数量！");
