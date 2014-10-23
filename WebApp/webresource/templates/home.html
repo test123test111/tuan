@@ -24,9 +24,7 @@ if(typeof products!="undefined" && products && products.length>0 && count && +co
         </p>
         <p class="pro_list_rank">
             <%if(+p.score>0){%><span class="font_blue"><i><%=p.score %></i>分</span><%}%>
-            <%if(labelsNum < 1){%><span class="pro_list_sold">已售<%=p.cSold %></span><%}%>
-            <!--当有2个营销标签时，隐藏酒店类型-->
-                
+            <span class="pro_list_sold">已售<%=p.cSold %></span>
         </p>
         <%if(p.distance>0){%>
         <p class="pro_list_txt">
@@ -37,8 +35,6 @@ if(typeof products!="undefined" && products && products.length>0 && count && +co
             <%}%>
         </p>
         <%} %>
-        <!--当有营销标签时，隐藏已售-->
-       
         <p class="pro_list_price" data-discount="<%=p.price.discount %>">
                 <span class="pro_list_oldprice">
                     <del data-price="<%=p.price.cPrice %>">&yen;<%=p.price.cPrice %></del>
