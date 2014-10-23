@@ -42,10 +42,10 @@ define(['libs'], function() {
         constructor: NumberStep,
         bindEvents: function() {
             var self = this;
-            this.wrap.on('click', 'i', function(event) {
+            this.wrap.on('click', '.plus,.minus', function(event) {
                 var _this = $(event.target),
                     num = parseInt(self.els.curNumDom.text().trim()),
-                    flag= _this.text().trim();
+                    flag= _this.text().trim() || _this.attr('data-flag');
                 if (_this.hasClass(self.options.disableClass)) {
                   return false;
                 }

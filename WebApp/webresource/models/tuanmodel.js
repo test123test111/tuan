@@ -501,5 +501,20 @@
         }
     });
 
+    /**
+     * 景点门票预订价格日历
+     */
+    T.TicketBookingModel = new cBase.Class(AbstractModel, {
+        __propertys__: function () {
+            this.url = '/json/TicketBooking';
+            this.method = 'POST';
+            this.param = {};
+            this.result = TuanStore.TicketBookingStore.getInstance();
+        },
+        initialize: function ($super, options) {
+            $super(options);
+        }
+    });
+
     return T;
 })

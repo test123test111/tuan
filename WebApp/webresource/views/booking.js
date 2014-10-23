@@ -4,8 +4,8 @@
  * @author: li.xx
  * @date: 2014-02-12
  */
-define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', 'cUIScrollRadioList', 'cWidgetGuider', 'cWidgetMember', 'cUserModel', 'cUtility', 'cWidgetFactory', 'CommonStore', 'TuanStore', 'TuanModel', 'text!BookingTpl', 'NumberStep', 'Payment'],
-    function (TuanApp, c, InputClear, TuanBaseView, CommonPageFactory, ScrollRadioList, WidgetGuider, WidgetMember, UserModel, Util, WidgetFactory, CStore, TStore, TModel, html, NumberStep) {
+define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', 'cUIScrollRadioList', 'cWidgetGuider', 'cWidgetMember', 'cUserModel', 'cUtility', 'cWidgetFactory', 'CommonStore', 'TuanStore', 'TuanModel', 'text!BookingTpl', 'NumberStep', 'cHolidayPriceCalendar', 'ValidatorUtil', 'FieldUtil', 'Payment'],
+    function (TuanApp, c, InputClear, TuanBaseView, CommonPageFactory, ScrollRadioList, WidgetGuider, WidgetMember, UserModel, Util, WidgetFactory, CStore, TStore, TModel, html, NumberStep, HolidayPriceCalendar, Validator, Field) {
         'use strict';
         var orderInfo = TStore.TuanOrderInfoStore.getInstance(), //订单信息
             invoiceStore = TStore.TuanInvoiceStore.getInstance(), //发票信息,
@@ -20,6 +20,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             selectedCouponStore = TStore.TuanSelectedCouponStore.getInstance(), //选择的优惠券
             notUserLoginModel = UserModel.NotUserLoginModel.getInstance(), //非会员登录
             searchStore = TStore.GroupSearchStore.getInstance(),
+            ticketBookingModel = TModel.TicketBookingModel.getInstance(),
             isInApp = Util.isInApp(),
             headStore = CStore.HeadStore.getInstance(),
             Payment = WidgetFactory.create('Payment'),
@@ -96,7 +97,15 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             failTips: '抱歉，订单未能成功提交，请重试！',
             timeoutTips: '非常抱歉，由于您刚才提交的服务已超时，请稍后在“我的携程”中查看订单信息或拨打服务电话400-008-6666，以确认您的订单是否提交成功。',
             couponCount: '(<%=count%>张)',
-            phoneListTitle: '选择手机号'
+            phoneListTitle: '选择手机号',
+            dateNone: '请选择游玩日期',
+            telNone: '请输入手机号码',
+            telError: '请输入正确的手机号码',
+            nameNone: '请输入取票人姓名',
+            nameError: '请输入正确的取票人姓名',
+            submitting: '提交中...',
+            selectDateTitle: '选择日期',
+            submitError: '网络不给力，请稍后再试'
         };
         //保留两位有效数字
         //TODO: 与原方法不一致.
@@ -108,6 +117,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
             return Math.round(num * 100) / 100;
         }
+        function isNotEmpty(v) {return !!v;}
         var PageView = CommonPageFactory.create("TuanBaseView");
         var View = PageView.extend({
             pageid: '214015',
@@ -155,7 +165,9 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         telDom: this.$el.find('#J_tel'),
                         submitBtn: this.$el.find('#J_submitOrder'),
                         couponCount: this.$el.find('#J_couponCount'),
-                        couponAmount: this.$el.find('#J_couponAmount')
+                        couponAmount: this.$el.find('#J_couponAmount'),
+                        selectDate: this.$el.find('.J_selectDate'),
+                        ticketUserDom: this.$el.find('#J_ticketUser')
                     };
                     if (userStore.isLogin()) {
                         this.getCouponList(function (count) {
@@ -163,6 +175,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         });
                     }
                     this._createNumberStep();
+                    this.initValidator();
                 } else {
                     this.alert.setViewData({
                         title: MSG.submitTitle,
@@ -188,7 +201,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             },
             events: {
                 'click #J_submitOrder': 'goNextStep',
-                'focus #J_tel': function () {
+                /*'focus #J_tel': function () {
                     var self = this;
                     this.submitBtnTimer = setInterval(function () {
                         self.changeBtnState();
@@ -199,7 +212,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     if (this.submitBtnTimer) {
                         clearInterval(this.submitBtnTimer);
                     }
-                },
+                },*/
                 'click #J_invoice': function () {
                     this.forwardJump('invoice', '/webapp/tuan/invoice');
                 },
@@ -207,12 +220,77 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.forwardJump('coupon', '/webapp/tuan/coupon');
                 },
                 'click .J_loginBtn': 'loginAction',
-                'click #J_selectContact': 'selectContact'
-
+                'click #J_selectContact': 'selectContact',
+                'click .J_selectDate': 'selectDate'   //门票选择日期
             },
 
+            /**
+             * 初始化表单验证
+             */
+            initValidator: function() {
+                var self = this;
+
+                this.els.selectDate.length && (this.validator.addField(new Field({
+                    dom: self.els.selectDate,
+                    rules: [isNotEmpty],
+                    onCheck: function(rs, d) {
+                        if (!rs) {
+                            self.showToast(MSG.dateNone, 3,function() {
+                                self._addOrRemoveHighLight(d.dom, true);
+                                d.dom.focus();
+                            });
+                        } else {
+                            self._addOrRemoveHighLight(d.dom, false);
+                        }
+                    }
+                })));
+
+                this.els.ticketUserDom.length && (this.validator.addField(new Field({
+                    dom: self.els.ticketUserDom,
+                    rules: [isNotEmpty, function(v) {return v.length <= 10}],
+                    onCheck: function(rs, d) {
+                        var msg = '';
+                        if (!rs) {
+                            msg = (d.rule == 0) ? MSG.nameNone : MSG.nameError;
+                            self.showToast(msg, 3, function() {
+                                self._addOrRemoveHighLight(d.dom, true);
+                                d.dom.focus();
+                            });
+                        } else {
+                            self._addOrRemoveHighLight(d.dom, false);
+                        }
+                    }
+                })));
+
+                this.validator.addField(new Field({
+                    dom: self.els.telDom,
+                    rules: [isNotEmpty, c.utility.validate.isMobile],
+                    onCheck: function(rs, d) {
+                        var msg = '';
+                        if (!rs) {
+                            msg = (d.rule == 0) ? MSG.telNone : MSG.telError;
+                            self.showToast(msg, 3, function() {
+                                self._addOrRemoveHighLight(d.dom, true);
+                                d.dom.focus();
+                            });
+                        } else {
+                            self._addOrRemoveHighLight(d.dom, false);
+                        }
+                    }
+                }));
+            },
+            /**
+             * flag为true时增加高亮，否则移除高亮
+             * @param $el
+             * @param flag
+             * @private
+             */
+            _addOrRemoveHighLight: function($el, flag) {
+                $el.closest('li')[flag ? 'addClass' : 'removeClass']('errorli');
+            },
             onCreate: function () {
                 orderInfo ? orderInfo.remove() : '';
+                this.validator = new Validator();
             },
             getTuanDetail: function (detailId, callback) {
                 var callback = $.type(callback) === "function" ? callback.bind(this) : function () { };
@@ -292,6 +370,74 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 });
 
             },
+
+            /**
+             * 门票选择日期 日历功能
+             */
+            selectDate: function() {
+                var self = this,
+                    date = this.els.selectDate.attr('data-date'),
+                    selectCls = 'cui_cld_daycrt';
+
+                //daterange: {sdate: '', edate: ''}
+                ticketBookingModel.setParam({pid: self.pid});
+                ticketBookingModel.excute(function(data) {
+//                    var priceDate = data.plist.pDList;
+                    var priceDate = [{"date": new Date('2014/10/23'),"price": 77500}];
+                    self.calendar = new HolidayPriceCalendar({
+                        monthsNum: 6,
+                        voidInvalid: true, //没有价格的日期是否有效可点,false可点
+                        priceDate: priceDate,
+                        startPriceTime: priceDate[0] && priceDate[0].date,
+                        onShow: function() {
+                            this.header.set({title: '选择日期'});
+                            this.$el.find('[data-date="' + date + '"]').addClass(selectCls);
+                        },
+                        onHide: function() {
+                            this.remove();
+                        },
+                        callback: function(date, dateStyle, target) {
+                            target.addClass(selectCls);
+                            self.els.selectDate.val(self._formatCalendarDate(date) + (dateStyle.holiday || dateStyle.days))
+                                .attr('data-date', dateStyle.value);
+                            self._addOrRemoveHighLight(self.els.selectDate);
+                            this.hide();
+                        }
+                    });
+
+                    self.calendar.show();
+                }, function(err) {
+                    var priceDate = [{"date": new Date('2014/10/23'),"price": 77500}];
+                    self.calendar = new HolidayPriceCalendar({
+                        monthsNum: 6,
+                        voidInvalid: true, //没有价格的日期是否有效可点,false可点
+                        priceDate: priceDate,
+                        header: {title: MSG.selectDateTitle},
+                        startPriceTime: priceDate[0] && priceDate[0].date,
+                        onShow: function() {
+                            this.$el.find('[data-date="' + date + '"]').addClass(selectCls);
+                        },
+                        onHide: function() {
+                            this.remove();
+                        },
+                        callback: function(date, dateStyle, target) {
+                            target.addClass(selectCls);
+                            self.els.selectDate.val(self._formatCalendarDate(date) + (dateStyle.holiday || dateStyle.days))
+                                .attr('data-date', dateStyle.value);
+                            self._addOrRemoveHighLight(self.els.selectDate);
+                            this.hide();
+                        }
+
+
+                    });
+
+                    self.calendar.show();
+                });
+
+            },
+            _formatCalendarDate: function(date) {
+                return (date.getMonth()+ 1) +'月' + date.getDay() + '日 ';
+            },
             /**
             * 格式化成scrolllistn能展示的格式
             */
@@ -338,7 +484,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             _fixIOS7Bug: function () {
                 var submitBtnPanel = $('.order_btnbox');
 
-                this.els.telDom.on('focus', function () {
+                this.els.telDom.add(this.els.ticketUserDom).on('focus', function () {
                     submitBtnPanel.css({
                         position: 'absolute',
                         bottom: '0px'
@@ -427,6 +573,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             },
 
             changeBtnState: function () {
+                return false;
                 var tel = this.els.telDom.val();
                 if ('' === tel) {
                     this.els.submitBtn.addClass('disabled').attr('disabled', 'disabled');
@@ -435,14 +582,24 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 }
                 orderInfo.setAttr('tel', tel);
             },
+            showLoadingLayer: function(fun, msg) {
+                !this.loadingLayer && (this.loadingLayer = new c.ui.LoadingLayer(function() {
+                    fun && fun();
+                }, msg || MSG.submitting));
+                this.loadingLayer.show();
+            },
+            hideLoadingLayer: function() {
+                this.loadingLayer && this.loadingLayer.hide();
+            },
             goNextStep: function () {
                 var uStore = userStore.getUser(); //用户Store
-                this.showLoading();
-                //无登录，跳登录页
-                if (!uStore || !uStore.Auth || uStore.IsNonUser) {
-                    this.noMemberLogin($.proxy(this.submitOrder, this));
-                } else {
-                    this.submitOrder();
+                if (this.validator.validate()) {
+                    //无登录，跳登录页
+                    if (!uStore || !uStore.Auth || uStore.IsNonUser) {
+                        this.noMemberLogin($.proxy(this.submitOrder, this));
+                    } else {
+                        this.submitOrder();
+                    }
                 }
             },
             submitOrder: function () {
@@ -550,12 +707,12 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     max = self.store.max < ORDER_NUM.max ? self.store.max : ORDER_NUM.max,
                     min = self.store.min > ORDER_NUM.min ? self.store.min : ORDER_NUM.min,
                     curNum = tuanDetailStore.getAttr('curNum') || 1;
-
                 this.numberStep = new NumberStep({
                     max: max,
                     min: min,
                     initialVal: curNum < min ? min : curNum,
                     wrap: self.els.numStepDom,
+                    html: '<i class="minus <%if(initialVal <= min ){ %>num_invalid<%} %>" data-flag="-"></i><span id="J_curNum" class="numtext"><%=initialVal %></span><i data-flag="+" class="plus <%if(initialVal >= max ){ %>num_invalid<%} %>"></i>',
                     onChange: function () {
                         var store = self.store,
                             activity,
@@ -664,19 +821,22 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             },
             h5NoMemberLogin: function (callback) {
                 var self = this;
-
+                this.showLoadingLayer(function() {
+                    notUserLoginModel.abort();
+                    createOrderModel.abort();
+                });
                 notUserLoginModel.excute(function (data) {
                     callback && callback.call(self);
                 }, function () {
-                    self.hideLoading();
+//                    self.hideLoading();
+                    self.hideLoadingLayer();
                     self.showToast('自动登录失败');
                 }, false, self, function () {
-                    self.hideLoading();
+//                    self.hideLoading();
+                    self.hideLoadingLayer();
                 });
             },
             noMemberLogin: function (callback) {
-                this.showLoading();
-
                 isInApp ? Member.nonMemberLogin({
                     domain: '//' + document.domain,
                     param: '?t=1&from=' + encodeURIComponent(location.href),

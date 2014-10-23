@@ -31,7 +31,9 @@
             PageHistory: buildPath("com/history"),
             PageTreeConfig: buildPath("com/pagetreeconfig"),
             TuanBaseView:buildPath("com/baseview"),
-
+            LocalFeature:buildPath("data/localfeature"),
+            ValidatorUtil: buildPath("util/form/validator"),
+            FieldUtil: buildPath("util/form/field"),
 
             //模版
             HomeTpl: buildPath("templates/home.html"),

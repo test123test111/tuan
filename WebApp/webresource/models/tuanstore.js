@@ -383,5 +383,18 @@
             this.lifeTime = '1M';
         }
     });
+
+    /**
+     *  景点门票预订价格日历
+     */
+    T.TicketBookingStore = new cBase.Class(AbstractStore, {
+        __propertys__: function () {
+            this.key = 'TUAN_TICKET_BOOKING';
+            this.lifeTime = '1D';
+        },
+        initialize: function ($super, options) {
+            $super(options);
+        }
+    });
     return T;
 })
