@@ -2,8 +2,8 @@
  * 首页
  * @url: m.ctrip.com/webapp/tuan 或 m.ctrip.com/webapp/taun/home
  */
-define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'cHybridFacade', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'LocalFeature', 'text!HomeTpl', 'cWidgetGeolocation'],
-function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, Facade, WidgetGuider, Util, cGeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, LocalFeature, html) {
+define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'cHybridFacade', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation'],
+function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, Facade, WidgetGuider, Util, cGeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
 
     var isInApp = Util.isInApp(),
         listModel = TuanModels.TuanHotListModel.getInstance(),
@@ -113,6 +113,10 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, Fa
             this.listWrap.html(this.tplLoading);
             this._refer = refer;
             refer = this.getLastViewName();
+            if (+searchStore.getAttr('ctyId') <= 0) {
+                searchStore.setAttr('ctyId', defaultCity.id);
+                searchStore.setAttr('ctyName', defaultCity.name);
+            }
             var self = this,
                 searchData = searchStore.get(),
                 cityId = searchData.ctyId || defaultCity.id,

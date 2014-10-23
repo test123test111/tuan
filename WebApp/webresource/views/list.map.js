@@ -176,13 +176,13 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     curPos,
                     marker;
 
-                data.forEach(function (item) {
+                // 展示前50家
+                (data || []).slice(0, 50).forEach(function (item) {
                     curPos = item.pos;
                     marker = mapWidget.addMarker({
                         position: new host.LngLat(curPos.lon, curPos.lat),
                         content: self.renderMarkerDOM(item)
                     });
-                    //mapWidget.addEvent(marker, 'click', self.markerClickHandler, self);
                     mapWidget.addEvent(marker, 'click', (function(marker) {
                         return function(e) {
                             self.markerClickHandler(e, marker);
@@ -333,7 +333,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     container: mapWrap,
                     height: document.body.clientHeight + (Util.isInApp() ? 48 : 0),
                     center: curpos ? curpos.lon + '|' + curpos.lat : '116.397428|39.90923',
-                    locationButton: '<div class="map_curpos_btn" style="opacity: 0.8"></div>',
+                    locationButton: '<div class="map_curpos_btn" style="opacity: 0.8; cursor: pointer;"></div>',
                     onReady: function () {
                         setTimeout(function() {
                             self.createPOI();
@@ -370,9 +370,11 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                         wrap.css('background-color', '#1491c5');
                         compass = wrap;
                         layer = new c.ui.LoadingLayer(function () { this.hide(); }, '定位中...');
+                        console.log(0)
                     },
                     onGeoComplete: function (e) {
-                        layer.hide();
+                        console.log(1)
+                        layer && layer.hide();
                         compass && compass.css('background-color', 'rgba(0,0,0,.8)');
                         //当前位置点自适应
                         this.setFitView();
@@ -451,7 +453,11 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 this.refer = this.getLastViewName();
                 this.header && this.header.hide();
                 this.category = searchStore.getAttr('ctype');
-                this.loadingLayer = new c.ui.LoadingLayer(function () { this.hide(); }, '查询中...');
+                this.loadingLayer = new c.ui.LoadingLayer(function () {
+                    this.hide();
+                    //取消正在发送的请求
+                    this.poi && this.poi.abort();
+                }, '查询中...');
                 this.tapScreen = false;
                 // if (this.inited) {
                     // if (this.isDetailBack() && MemCache.getItem('POIDATA')) {

@@ -35,7 +35,6 @@
             ValidatorUtil: buildPath("util/form/validator"),
             FieldUtil: buildPath("util/form/field"),
 
-
             //模版
             HomeTpl: buildPath("templates/home.html"),
             ListProductTpl: buildPath("templates/list.product.html"),

@@ -194,6 +194,9 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
             var item = this.sort.panel.find('[data-id="' + sortRule + '"][data-type="' + sortType + '"]');
             item = item && item[0] || $(this.sort.getItemByIndex(sortIndex))[0];
             this.sort.select(item, true);
+            options.sortPanel.on('touchmove', function (e) {
+                e.preventDefault();
+            });
         },
         /**
         * 初始化团购分类
