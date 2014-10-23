@@ -11,22 +11,51 @@
         </li>
     </ul>
     <% }%>
+    <!--@since 2014/10/21 修改门票预定页面 li.xx  -->
+    <% var isTicket = typeof category != 'undefined' ? (category.ctgoryid === 7 && category.subctgory === 2) : false;
+    if (isTicket) {%>
+    <ul class="box_list box_list_ticketA">
+        <li class="title titleT2"><%=name %></li>
+        <li class="arr_r">
+            <span class="label">使用日期</span>
+            <span class="iptbox"><input type="text" readonly="" placeholder="请选择游玩日期" class="J_selectDate"></span>
+        </li>
+        <li>
+            <span class="label">购买数量</span>
+            <div class="btn_fine_tuning J_numberStep">
+            </div>
+        </li>
+    </ul>
+    <ul class="box_list box_list_ticketB">
+        <li class="">
+            <span class="label">取票人</span>
+            <span class="iptbox"><input type="text" placeholder="需与证件上的名字一致" id="J_ticketUser"><i class="icon icon_del"></i></span>
+        </li>
+        <li class="">
+            <span class="label">手机号码</span>
+            <span class="iptbox"><input type="text" placeholder="用于接收取票凭证短信" id="J_tel"><i class="icon icon_del"></i></span>
+            <i class="icon icon_user" id="J_selectContact"></i>
+        </li>
+    </ul>
+    <%} else { %>
     <div class="order_htl_info">
         <div class="order_htl_info_t"><%=name %></div>
         <div class="fillin_price">单价：<span>&yen;<%=price.dPrice %></span></div>
     </div>
-    <ul class="fillin_list">
-        <li>购买数量
-            <div class="room_num J_numberStep"></div>
+    <ul class="fillin_list box_list box_list_ticketA">
+        <li>
+            <span class="label">购买数量</span>
+            <div class="btn_fine_tuning J_numberStep">
+            </div>
         </li>
 
-        <!--TODO: 优惠 -->
+        <!--TODO: 优惠  -->
         <%if(activities && activities.length > 0 && (((activities[0].type == 2 || activities[0].type == 3) && user) || activities[0].type == 1)) { %>
         <li <%if(activities[0].type == 1){%>style="display:none"<%}%> class="orderwrite_hint" id="privilege">
-            <%if((activities[0].type == 2 || activities[0].type == 3) && user) {%>
-            入住后返
-            <%} %>
-            <span class="price1"><i>¥</i><span id="J_pPrice"><%=activities[0].arg * curNum%></span><%if(activities[0].type == 2 && user) {%>现金<%} %><%if(activities[0].type == 3 && user){%>携程礼品卡<%} %></span>
+        <%if((activities[0].type == 2 || activities[0].type == 3) && user) {%>
+        入住后返
+        <%} %>
+        <span class="price1"><i>¥</i><span id="J_pPrice"><%=activities[0].arg * curNum%></span><%if(activities[0].type == 2 && user) {%>现金<%} %><%if(activities[0].type == 3 && user){%>携程礼品卡<%} %></span>
         </li>
         <%} %>
 
@@ -45,13 +74,13 @@
         <%if(isLogin && (groupFlag & 16) == 16) { %>
         <li class="arr_r" id="J_invoice">发票
             <%if(invoice) {%>
-                <%if(invoice.deliveryMethod == 0){%>
-                <span class="txt"><%=invoice.title || ''%></span>
-                <%}else{%>
-                <span class="promo_code"><%=invoice.title || ''%></span><span class="txt2">&yen; 10</span>
-                <%}%>
+            <%if(invoice.deliveryMethod == 0){%>
+            <span class="txt"><%=invoice.title || ''%></span>
             <%}else{%>
-                <span class="txt">不需要</span>
+            <span class="promo_code"><%=invoice.title || ''%></span><span class="txt2">&yen; 10</span>
+            <%}%>
+            <%}else{%>
+            <span class="txt">不需要</span>
             <%}%>
         </li>
         <%}%>
@@ -66,6 +95,10 @@
         </li>
         <%}%>
     </ul>
+
+    <%}%><!--END 门票判断-->
+
+
     <%if((groupFlag & 16) != 16 && !_.isEmpty(invoiceText)) { %>
         <p class="tips_attention"><%=invoiceText%></p>
     <%}%>
@@ -73,5 +106,5 @@
 <div class="order_btnbox">
     <%tmpPrice = retainTwoDecimal(curNum * (price.dPrice - (coupon ? coupon.amount : 0)) + (invoice && invoice.deliveryMethod == 1 ? 10 : 0))%>
     订单总额: <span class="price2"><i>&yen;</i><span id="J_totalPrice"><%=tmpPrice > 0 ? tmpPrice : 0%></span></span>
-    <button class="order_btn <%if(tel == ''){%>disabled<%}%>" id="J_submitOrder" value="" <%if(tel == ''){%>disabled="disabled"<%}%>">下一步</button>
+    <button class="order_btn" id="J_submitOrder" value="">提交</button>
 </div>

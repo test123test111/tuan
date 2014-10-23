@@ -1,5 +1,6 @@
-<article  class="cont_wrap"> 
-    <% var hasInvoice = (typeof invoice!='undefined' && invoice) %>
+<article  class="cont_wrap">
+    <%  var isTicket = typeof product === 'object' && product.category && (category.ctgoryid === 7 && category.subctgory === 2);
+        var hasInvoice = (typeof invoice!='undefined' && invoice) %>
     <section class="order_bg">
     <!--
         mooncakeStatus 0 非月饼产品
@@ -28,7 +29,8 @@
         <%var hasAddrOrPhone = ContactInfo.hotelAddr||ContactInfo.splitphone%>
         <div class="order_htl_info arr_r<%if(!hasAddrOrPhone){%> order_mid_autumn<%}%>" id="J_tuanDetail">
             <div class="order_htl_info_t"><%=pname %></div>
-            <%if(typeof couponValidDate!='undefined') {%><div class="order_htl_info_txt"><%=couponValidDate%>过期</div><%}%>
+            <!-- 门票对接去除使用有效期  -->
+            <%if(typeof couponValidDate!='undefined' && !isTicket) {%><div class="order_htl_info_txt"><%=couponValidDate%>过期</div><%}%>
         </div>
         <!--地址电话-->
         <%if(hasAddrOrPhone){%>
@@ -47,8 +49,18 @@
             <%}%>
         </ul>
         <%}%>
+        <!-- 门票对接去除优惠券，需要在JS去除  -->
         <div id="J_couponsWrap"></div>
     <%}%>
+        <!-- 门票对接增加使用时间和兑换方式-->
+        <%  var hasBinfo = (typeof binfo === 'Object');
+            if (hasBinfo) {%>
+            <dl class="order_dl">
+                <dt>使用时间</dt><dd><%=ckintime %></dd>
+                <dt>兑换方式</dt><dd><%=des %></dd>
+            </dl>
+        <%}%>
+
         <div class="tuan_title">订单信息</div>
 
         <dl class="order_dl">
@@ -66,14 +78,16 @@
             <dt>发票配送费</dt><dd>¥<%=invoiceAmt%></dd>
             <dt>总额</dt><dd><span class="total_order_price"><%=retainTwoDecimal((amt - couponAmt > 0 ? amt - couponAmt : 0) + invoiceAmt)%></span></dd>
         </dl>
-        <%if(typeof gtt != 'undefined' && gtt.adt == '送礼品卡' && gtt.aam > 0){%>
-        <dl class="order_dl">
-            <dt>送礼品卡</dt>
-            <dd><dfn>¥</dfn><%=gtt.aam%></dd>
-        </dl>
+        <!-- 门票对接去除礼品卡  -->
+        <%if((typeof gtt != 'undefined' && gtt.adt == '送礼品卡' && gtt.aam > 0) && !isTicket){%>
+            <dl class="order_dl">
+                <dt>送礼品卡</dt>
+                <dd><dfn>¥</dfn><%=gtt.aam%></dd>
+            </dl>
         <%}%>
+
         <%if(appNonsupport){%>
-        <ul class="dflex scheme_01 mgb10">
+            <ul class="dflex scheme_01 mgb10">
             <%if(canRefund){%>
             <li id="J_refund">申请退款</li>
             <%}%>
@@ -85,8 +99,20 @@
             <%}%>
         </ul>
         <%}%>
+        <% if (isTicket && hasBinfo) {%>
+            <div class="tuan_title">取票人信息</div>
+            <dl class="order_dl">
+                <dt>取票人</dt><dd><%=binfo.name %></dd>
+                <dt>手机号码</dt><dd><%= contact && contact.mphone %></dd>
+            </dl>
+            <ul class="box_list box_listCoupon">
+                <li><a href="tel:400-008-6666">携程客服电话：400-008-6666</a></li>
+            </ul>
+        <%}%>
     </section>
-    <%if(hasInvoice) {%>
+
+    <!-- 门票对接去除发票信息  -->
+    <%if(hasInvoice && !isTicket) {%>
     <section class="order_bg sec-last">
         <div class="tuan_title">发票信息</div>
         <dl class="order_dl">
