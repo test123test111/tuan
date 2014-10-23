@@ -56,10 +56,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
         View = PageView.extend({
             pageid: '260002',
             hpageid: '261002',
-            // inited: false,
             render: function () {
-                // this.$el.html(html);
-                // this.markerTpl = this.$el.find('#J_markerTpl').html();
                 //poi分类容器
                 this.categoryWrap = this.$el.find('#J_category');
                 //ios7, 显示头部电信网络信息
@@ -133,17 +130,16 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     });
                 }
                 this.getDistance();
-                infoWrap.text(infoTpl({
+                this.infoText = infoTpl({
                     distance: this.distance,
                     count: data.count || 0,//TODO: 等待接口提供count
                     ctext: GROUP_TEXT[this.category],
                     length: data.products.length
-                }));
-                // this.inited = true; //地图初始化完成
+                });
+                infoWrap.text(this.infoText);
             },
             poiMarkers: [],
             renderMarkerDOM: function (data) {
-                // return _.template(this.markerTpl)(data);
                 data.MARKERS_CLS = MARKERS_CLS;
                 return markerTpl(data);
             },
@@ -354,8 +350,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                             btnSearch.hide();
                         } else {
                             infoWrap.removeClass('map_tips02');
-                            // TODO
-                            //infoWrap.text('xx');
+                            self.infoText && infoWrap.text(self.infoText);
                             btnSearch.show();
                         }
                     },
@@ -459,13 +454,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     this.poi && this.poi.abort();
                 }, '查询中...');
                 this.tapScreen = false;
-                // if (this.inited) {
-                    // if (this.isDetailBack() && MemCache.getItem('POIDATA')) {
-                        // this.onPoiSuccess(MemCache.getItem('POIDATA'));
-                    // } else {
-                        // this.selectCategory();
-                    // }
-                // }
                 // this.inited && this.selectCategory();
             },
             onHide: function () {

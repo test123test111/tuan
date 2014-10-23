@@ -4,6 +4,7 @@
  */
 define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', 'MemCache', 'cUtility', 'cGeoService', 'cWidgetFactory', 'cUIToast', 'TuanStore', 'TuanModel', 'TuanFilters', 'StoreManage', 'LazyLoad', 'ScrollObserver', 'text!ListProductTpl', 'text!ListBusinessTpl', 'cWidgetGeolocation'],
 function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, Util, cGeoService, WidgetFactory, Toast, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, listProduct, listBusiness) {
+    'use strict';
     var REFRESH_GPS_LOADING_CLS = 'ani_rotation',
         PAGE_POSITION = 'PAGE_LIST_POSITION',
         CUI = c.ui,
@@ -42,8 +43,8 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
             }
         },
         SEARCH_DISTANCE = 4, //附近团购查询的距离
-        SEARCH_DISTANCE_TEXT = SEARCH_DISTANCE + '公里内';
-    MAP_SOURCE_ID = 3, //经纬度等POI数据的来源ID，默认3为高德数据
+        SEARCH_DISTANCE_TEXT = SEARCH_DISTANCE + '公里内',
+        MAP_SOURCE_ID = 3, //经纬度等POI数据的来源ID，默认3为高德数据
         Guider = WidgetFactory.create('Guider'),
         defaultCity = {
             id: 2,
