@@ -11,7 +11,8 @@
   <add key="LoggingServer.V2.Port" value="{$LoggingServer.V2.Port}" />
   <add key="vs:EnableBrowserLink" value="false" />
   <add key="FxConfigServiceUrl" value="{$FxConfigServiceUrl}"/>
-
+  <!--注册表服务地址-->
+  <add key="SOA.ServiceRegistry.Url" value="{$SOA.ServiceRegistry.Url}"/>
 </appSettings>
 
 

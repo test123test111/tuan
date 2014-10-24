@@ -15,7 +15,7 @@
     <AssemblyName>Tuan</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -50,10 +50,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Arch.CFX">
-      <HintPath>..\..\..\..\..\..\Common\Lib\Framework\Release\Arch.CFX.dll</HintPath>
+      <HintPath>Lib\Arch.CFX.dll</HintPath>
+    </Reference>
+    <Reference Include="CServiceStack.Mega">
+      <HintPath>Lib\CServiceStack.Mega.dll</HintPath>
     </Reference>
     <Reference Include="Framework.Logging.V2.API">
-      <HintPath>..\..\..\..\..\..\Common\Lib\Framework\Release\Framework.Logging.V2.API.dll</HintPath>
+      <HintPath>Lib\Framework.Logging.V2.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Group.SOARestful.DataContract">
+      <HintPath>Lib\Group.SOARestful.DataContract.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.WebPages" />
@@ -241,6 +247,7 @@
     <None Include="gruntCfg.json" />
     <Content Include="Views\Tuan\lottery.cshtml" />
     <Content Include="Views\Tuan\localfeature.cshtml" />
+    <None Include="Properties\PublishProfiles\Tuan.pubxml" />
     <None Include="Views\Tuan\detail.cshtml" />
     <Content Include="Views\Tuan\hotelimages.cshtml" />
     <Content Include="Views\Tuan\hotelimageslide.cshtml" />
@@ -252,7 +259,6 @@
     <Content Include="Views\Tuan\nearlist.cshtml" />
     <Content Include="Views\Tuan\coupon.cshtml" />
     <Content Include="Views\Tuan\hotelmap.cshtml" />
-    <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -382,11 +388,11 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>7814</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:7814/</IISUrl>
+          <IISUrl>http://localhost/Tuan</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
