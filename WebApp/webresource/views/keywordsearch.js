@@ -2,8 +2,8 @@
  * 订单详情页
  * @url: m.ctrip.com/webapp/tuan/keywordsearch
  */
-define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFactory', 'cUtility', 'TuanModel', 'cDataSource', 'TuanStore', 'StoreManage', 'FilterXss', 'text!KeywordSearchTpl', 'HttpErrorHelper', 'TabSlide'],
- function (TuanApp, libs, c, TuanBaseView, cWidgetFactory, CommonPageFactory, Util, TuanModel, cDataSource, TuanStore, StoreManage, FilterXss, html, HttpErrorHelper) {
+define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFactory', 'cUtility', 'TuanModel', 'cDataSource', 'TuanStore', 'StoreManage', 'StringsData', 'FilterXss', 'text!KeywordSearchTpl', 'HttpErrorHelper', 'TabSlide'],
+ function (TuanApp, libs, c, TuanBaseView, cWidgetFactory, CommonPageFactory, Util, TuanModel, cDataSource, TuanStore, StoreManage, StringsData, FilterXss, html, HttpErrorHelper) {
      var cui = c.ui,
         tuanSearchStore = TuanStore.GroupSearchStore.getInstance(),
         historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance(),
@@ -270,53 +270,21 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                          'pos': { type: 3, lat: lat, lon: lon, name: name }
                      });
                  }
-                 //价格
-                 // 价格对应值与文本
-                 var priceText = {
-                     "0|99": "&yen; 100 以下",
-                     "100|250": "&yen; 100-250",
-                     "250|400": "&yen; 250-400",
-                     "400|600": "&yen; 400-600",
-                     "601|": "&yen; 600 以上",
-                     "0|1999": "&yen; 2000 以下",
-                     "2000|3000": "&yen; 2000-3000",
-                     "3001|": "&yen; 3000 以上"
-                 },
-                    traitText = {
-                        "103|101": "一元酒店",
-                        "103|10303": "别墅轰趴",
-                        "103|10304": "住店游玩",
-                        "103|10305": "情侣酒店"
-                    },
-                    starText = {
-                        '2': '二星/经济',
-                        '3': '三星/舒适',
-                        '4': '四星/高档',
-                        '5': '五星/豪华'
-                    },
-                    GROUP_TYPE = {
-                        '0': { 'index': 0, 'name': '全部团购', 'category': 'all' },
-                        '1': { 'index': 1, 'name': '酒店', 'category': 'hotel' },
-                        '8': { 'index': 2, 'name': '美食', 'category': 'catering' },
-                        '7': { 'index': 3, 'name': '旅游度假', 'category': 'vacation' },
-                        '6': { 'index': 4, 'name': '门票', 'category': 'ticket' },
-                        '9': { 'index': 5, 'name': '娱乐', 'category': 'entertainment' }
-                    };
 
                  if (data.price) {
-                     if (priceText[data.price])
-                         customFiltersStore.setAttr('price', { val: data.price, txt: priceText[data.price] });
+                     if (StringsData.priceText[data.price])
+                         customFiltersStore.setAttr('price', { val: data.price, txt: StringsData.priceText[data.price] });
                  }
                  if (data.trait) {
-                     if (traitText[data.trait])
-                         customFiltersStore.setAttr('trait', { val: data.trait, txt: traitText[data.trait] });
+                     if (StringsData.traitText[data.trait])
+                         customFiltersStore.setAttr('trait', { val: data.trait, txt: StringsData.traitText[data.trait] });
                  }
                  if (data.star) {
                      var stars = data.star.split(','), tmpstar = {};
                      for (var s in stars) {
                          s = stars[s];
-                         if (starText[s]) {
-                             tmpstar[s] = starText[s];
+                         if (StringsData.starText[s]) {
+                             tmpstar[s] = StringsData.starText[s];
                          }
                      }
                      if (tmpstar) {
@@ -361,12 +329,12 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                      var tuanType, currType, subVal, subName;
                      if (data.classty.parent) {
                          tuanType = data.classty.parent.val;
-                         currType = GROUP_TYPE[tuanType];
+                         currType = StringsData.groupType[tuanType];
                          subVal = data.classty.val;
                          subName = data.classty.key;
                      } else {
                          tuanType = data.classty.val;
-                         currType = GROUP_TYPE[tuanType];
+                         currType = StringsData.groupType[tuanType];
                      }
                      categoryfilterStore.setAttr('tuanType', tuanType);
                      if (currType) {

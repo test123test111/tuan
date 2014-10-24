@@ -27,6 +27,7 @@
             LazyLoad: buildPath("com/lazyload"),
             FilterXss: buildPath("util/filterxss"),
             CityListData: buildPath("data/citylist"),
+            StringsData: buildPath("data/strings"),
             Tab: buildPath("com/tab"),
             PageHistory: buildPath("com/history"),
             PageTreeConfig: buildPath("com/pagetreeconfig"),

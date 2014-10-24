@@ -2,15 +2,13 @@
  * @author: xuweichen
  * @date: 2014-2-13
  */
-define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'TuanModel', 'TuanStore', 'StoreManage'], function (Base, Util, WidgetFactory, Mask, Scroll, DropDown, Tab, TModel, TStore, StoreManage) {
+define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'StringsData', 'TuanModel', 'TuanStore', 'StoreManage'], function (Base, Util, WidgetFactory, Mask, Scroll, DropDown, Tab, StringsData, TModel, TStore, StoreManage) {
     'use strict';
     var Filters,
         mix = $.extend,
         MSG = {
             weizhiquyu: '位置区域'
         },
-        SEARCH_DISTANCE = 4, //附近团购查询的距离
-        SEARCH_DISTANCE_TEXT = SEARCH_DISTANCE + '公里内',
         isYouth = Util.getAppSys() === 'youth', //是否青春版
         categoryfilterStore = TStore.GroupCategoryFilterStore.getInstance(), //团购类型
         sortStore = TStore.GroupSortStore.getInstance(), //团购排序
@@ -21,16 +19,6 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         historyCityListStore = TStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
         positionfilterStore = TStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
         RADIO_ITEM = ['price', 'day', 'trait', 'distance', 'brand'], //单选查询条件
-        GROUP_TYPE = {
-            '0': { 'index': 0, 'name': '全部团购', 'category': 'all' },
-            '1': { 'index': 1, 'name': '酒店', 'category': 'hotel' },
-            '8': { 'index': 2, 'name': '美食', 'category': 'catering' },
-            '7': { 'index': 3, 'name': '旅游度假', 'category': 'vacation' },
-            '6': { 'index': 4, 'name': '门票', 'category': 'ticket' },
-            '9': { 'index': 5, 'name': '娱乐', 'category': 'entertainment' },
-            '106': { 'index': 6, 'name': '一元团购', 'category': 'onepaygroup' },
-            '108': { 'index': 7, 'name': '当地特色', 'category': 'feature' }
-        },
         checkboxTpl = _.template([
             '<%if(["all", "hotel", "catering"].indexOf(category)!=-1){%>',
                 '<div class="pop_filter_chkitem" data-type="weekendsAvailable" data-text="周未可用">周未可用',
@@ -263,7 +251,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     var tuanType = item.data('type');
                     var subVal = item.data('value') || '';
                     var subName = item.data('name');
-                    var currType = GROUP_TYPE[tuanType];
+                    var currType = StringsData.groupType[tuanType];
                     panel.find('.choosed').removeClass('choosed');
                     item.addClass('choosed');
 
@@ -292,7 +280,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
 
                     searchStore.setAttr('qparams', StoreManage.getGroupQueryParam());
                     searchStore.setAttr('ctype', tuanType);
-                    self.options.categoryTrigger.html(subName || GROUP_TYPE[tuanType]['name']);
+                    self.options.categoryTrigger.html(subName || StringsData.groupType[tuanType]['name']);
                     self.resetPosition(tuanType);
                     self.getListData();
 
@@ -310,7 +298,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var categoryTrigger = this.options.categoryTrigger;
             ret.tuanTypeVal = categoryData.tuanType || searchStore.getAttr('ctype') || 0;
             categoryData.subVal && (ret.subVal = categoryData.subVal);
-            categoryTrigger.html(categoryData.subName || GROUP_TYPE[ret.tuanTypeVal]['name']);
+            categoryTrigger.html(categoryData.subName || StringsData.groupType[ret.tuanTypeVal]['name']);
 
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var groupCondition = conditionData.categroy[0].groupCondition;
@@ -441,8 +429,8 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                     'pos': item.data('pos')
                                 });
                                 customFiltersStore.setAttr('distance', {
-                                    val: SEARCH_DISTANCE,
-                                    txt: SEARCH_DISTANCE_TEXT
+                                    val: StringsData.SEARCH_DISTANCE,
+                                    txt: StringsData.SEARCH_DISTANCE_TEXT
                                 })
                                 break;
                         }
