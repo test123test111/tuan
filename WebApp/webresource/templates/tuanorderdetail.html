@@ -53,14 +53,13 @@
         <div id="J_couponsWrap"></div>
     <%}%>
         <!-- 门票对接增加使用时间和兑换方式-->
-        <%  var hasBinfo = (typeof binfo === 'Object');
+        <%  var hasBinfo = (typeof binfo === 'object');
             if (hasBinfo) {%>
             <dl class="order_dl">
-                <dt>使用时间</dt><dd><%=ckintime %></dd>
-                <dt>兑换方式</dt><dd><%=des %></dd>
+                <dt>使用时间</dt><dd><%=binfo.ckintime %></dd>
+                <dt>兑换方式</dt><dd><%=binfo.des %></dd>
             </dl>
         <%}%>
-
         <div class="tuan_title">订单信息</div>
 
         <dl class="order_dl">

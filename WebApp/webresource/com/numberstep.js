@@ -71,11 +71,11 @@ define(['libs'], function() {
                 self.els.curNumDom.html(num);
                 self.options.onChange(event);
             });
-      },
-      unbindEvents: function() {
-          this.els.$numberStep.off('click');
-      },
-      _changeStatus: function(type, action) {
+        },
+        unbindEvents: function() {
+            this.els.$numberStep.off('click');
+        },
+        _changeStatus: function(type, action) {
           var method = action === 'disable' ? 'addClass' : 'removeClass';
           if ('+' === type) {
               this.els.plusDom[method](this.options.disableClass);
@@ -84,21 +84,27 @@ define(['libs'], function() {
           } else {
               this.els.flagDom[method](this.options.disableClass);
           }
-      },
-      disable: function(type) {
+        },
+        disable: function(type) {
           //default: all,
           this._changeStatus(type, 'disable');
-      },
-      enable: function(type) {
+        },
+        enable: function(type) {
           //default: all,
           this._changeStatus(type, 'enable');
-      },
-      renderHtml: function() {
+        },
+        renderHtml: function() {
           this.wrap.html(_.template(this.options.html, this.options));
-      },
-      getCurrentNum: function() {
+        },
+        getCurrentNum: function() {
           return this.els.curNumDom.text().trim();
-      }
+        },
+        setCurrentNum: function(num) {
+            this.els.curNumDom.text(num);
+        },
+        setOptions: function(name, val) {
+            val && (this.options[name] = val);
+        }
       
     };
     

@@ -385,6 +385,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     self.hideLoading();
                     var priceDate = data.plist[0].PDList;
                     _.each(priceDate, function(t) {
+                        t.dateStr = t.date;
                         t.date = new Date(self._convertTimeString(t.date));
                         t.price = parseInt(t.price, 10);
                     });
@@ -407,6 +408,8 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                                 .attr('data-date', dateStyle.value);
                             tuanDetailStore.setAttr('ckintime', dateStyle.value);
                             tuanDetailStore.setAttr('ckintimetxt', textVal);
+                            //更新数量选择器的最大值和最小值
+//                            self.updateNumberStep(priceDate, dateStyle.value);
                             self._addOrRemoveHighLight(self.els.selectDate);
                             this.hide();
                         }
@@ -738,6 +741,25 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     }
                 });
                 this.numberStep.options.onChange(); //初始化调用onChange计算订单金额
+            },
+            updateNumberStep: function(data, date) {
+                var self = this,
+                    min, max;
+                _.each(data, function(t) {
+                    if (t.dateStr == date) {
+                        min = t.minnum;
+                        max = t.maxnum;
+                        return false;
+                    }
+                });
+
+                self.numberStep.setOptions('min', min);
+                self.numberStep.setOptions('max', max);
+                if (self.numberStep.getCurrentNum() < min) {
+                    self.numberStep.setCurrentNum(min);
+                } else if (self.numberStep.getCurrentNum() > max) {
+                    self.numberStep.setCurrentNum(max);
+                }
             },
             _sendOrderRequest: function (param) {
                 var self = this;
