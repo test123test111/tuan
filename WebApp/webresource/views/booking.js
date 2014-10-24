@@ -20,7 +20,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             selectedCouponStore = TStore.TuanSelectedCouponStore.getInstance(), //选择的优惠券
             notUserLoginModel = UserModel.NotUserLoginModel.getInstance(), //非会员登录
             searchStore = TStore.GroupSearchStore.getInstance(),
-            ticketBookingModel = TModel.TicketBookingModel.getInstance(),
+            ticketBookingModel = TModel.TicketBookingModel.getInstance(), //门票对接选择日期
             isInApp = Util.isInApp(),
             headStore = CStore.HeadStore.getInstance(),
             Payment = WidgetFactory.create('Payment'),
@@ -133,7 +133,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     order = orderInfo.get();
 
                 this.store = store;
-
                 if (store && store.id) {
                     store.min = store.min > ORDER_NUM.min ? store.min : ORDER_NUM.min;
                     store.max = store.max < ORDER_NUM.max ? ORDER_NUM.max : store.max;
@@ -298,7 +297,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 tuanDetailModel.setParam({ id: detailId, environment: TuanApp.environment });
                 this.showLoading();
                 tuanDetailModel.excute(function (data) {
-                    callback()
+                    callback();
                     this.hideLoading();
                 }, function (err) {
                     var msg = err.msg ? err.msg : '啊哦,数据加载出错了!';
@@ -376,30 +375,38 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
              */
             selectDate: function() {
                 var self = this,
-                    date = this.els.selectDate.attr('data-date'),
+                    date = this.els.selectDate.attr('data-date') || tuanDetailStore.getAttr('ckintime'),
                     selectCls = 'cui_cld_daycrt';
 
                 //daterange: {sdate: '', edate: ''}
-                ticketBookingModel.setParam({pid: self.pid});
+                this.showLoading();
+                ticketBookingModel.setParam({pid: 139136 || self.pid, daterange: {sdate: '', edate:''}});
                 ticketBookingModel.excute(function(data) {
-//                    var priceDate = data.plist.pDList;
-                    var priceDate = [{"date": new Date('2014/10/23'),"price": 77500}];
+                    self.hideLoading();
+                    var priceDate = data.plist[0].PDList;
+                    _.each(priceDate, function(t) {
+                        t.date = new Date(self._convertTimeString(t.date));
+                        t.price = parseInt(t.price, 10);
+                    });
                     self.calendar = new HolidayPriceCalendar({
                         monthsNum: 6,
                         voidInvalid: true, //没有价格的日期是否有效可点,false可点
                         priceDate: priceDate,
-                        startPriceTime: priceDate[0] && priceDate[0].date,
+                        header: {title: MSG.selectDateTitle},
+//                        startPriceTime: priceDate[0] && priceDate[0].date,
                         onShow: function() {
-                            this.header.set({title: '选择日期'});
                             this.$el.find('[data-date="' + date + '"]').addClass(selectCls);
                         },
                         onHide: function() {
                             this.remove();
                         },
                         callback: function(date, dateStyle, target) {
+                            var textVal = self._formatCalendarDate(date) + (dateStyle.holiday || dateStyle.days);
                             target.addClass(selectCls);
-                            self.els.selectDate.val(self._formatCalendarDate(date) + (dateStyle.holiday || dateStyle.days))
+                            self.els.selectDate.val(textVal)
                                 .attr('data-date', dateStyle.value);
+                            tuanDetailStore.setAttr('ckintime', dateStyle.value);
+                            tuanDetailStore.setAttr('ckintimetxt', textVal);
                             self._addOrRemoveHighLight(self.els.selectDate);
                             this.hide();
                         }
@@ -407,36 +414,16 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
                     self.calendar.show();
                 }, function(err) {
-                    var priceDate = [{"date": new Date('2014/10/23'),"price": 77500}];
-                    self.calendar = new HolidayPriceCalendar({
-                        monthsNum: 6,
-                        voidInvalid: true, //没有价格的日期是否有效可点,false可点
-                        priceDate: priceDate,
-                        header: {title: MSG.selectDateTitle},
-                        startPriceTime: priceDate[0] && priceDate[0].date,
-                        onShow: function() {
-                            this.$el.find('[data-date="' + date + '"]').addClass(selectCls);
-                        },
-                        onHide: function() {
-                            this.remove();
-                        },
-                        callback: function(date, dateStyle, target) {
-                            target.addClass(selectCls);
-                            self.els.selectDate.val(self._formatCalendarDate(date) + (dateStyle.holiday || dateStyle.days))
-                                .attr('data-date', dateStyle.value);
-                            self._addOrRemoveHighLight(self.els.selectDate);
-                            this.hide();
-                        }
-
-
-                    });
-
-                    self.calendar.show();
+                    self.hideLoading();
                 });
 
             },
             _formatCalendarDate: function(date) {
-                return (date.getMonth()+ 1) +'月' + date.getDay() + '日 ';
+                (typeof date === 'string') && (date = new Date(this._convertTimeString(date)));
+                return (date.getMonth()+ 1) +'月' + date.getDate() + '日 ';
+            },
+            _convertTimeString: function(dateStr) {
+                return dateStr && dateStr.replace(/-/g, '/');
             },
             /**
             * 格式化成scrolllistn能展示的格式
@@ -594,6 +581,10 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             goNextStep: function () {
                 var uStore = userStore.getUser(); //用户Store
                 if (this.validator.validate()) {
+                    this.showLoadingLayer(function() {
+                        notUserLoginModel.abort();
+                        createOrderModel.abort();
+                    });
                     //无登录，跳登录页
                     if (!uStore || !uStore.Auth || uStore.IsNonUser) {
                         this.noMemberLogin($.proxy(this.submitOrder, this));
@@ -679,6 +670,12 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 if (this.store.coupon) {
                     param.OInfo.CouponInfo = { CouponCode: this.store.coupon.code };
                 }
+
+                //门票对接新增binfo
+                param.OInfo.binfo = {
+                    name: self.els.ticketUserDom.val(),
+                    ckintime: tuanDetailStore.getAttr('ckintime')
+                };
                 this._sendOrderRequest(param);
 
             },
@@ -821,10 +818,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             },
             h5NoMemberLogin: function (callback) {
                 var self = this;
-                this.showLoadingLayer(function() {
-                    notUserLoginModel.abort();
-                    createOrderModel.abort();
-                });
                 notUserLoginModel.excute(function (data) {
                     callback && callback.call(self);
                 }, function () {
