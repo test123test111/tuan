@@ -673,7 +673,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     } else if (this.totalPages || this.totalPages <= 0) {
                         var customdata = customFiltersStore.get() || {};
                         var distance = customdata && customdata.distance && customdata.distance.val;
-                        lst = {};
+                        var lst = {};
                         lst.msg = (distance ? distance + '公里内' : '') + '没找到符合条件的结果，请修改条件重新查询';
                         lst[key] = null;
                         lst.count = 0;
