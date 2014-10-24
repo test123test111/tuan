@@ -13,6 +13,7 @@ models/tuanstore.js
 models/tuanmodel.js
 com/dropdown.js
 com/tab.js
+data/strings.js
 data/citylist.js
 util/storemanage.js
 widget/tuanfilters.js
