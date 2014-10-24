@@ -6,4 +6,5 @@ vim.exe.stackdump
 obj
 __ConfigTemp
 bin
+build
 Tuan.v12.suo
