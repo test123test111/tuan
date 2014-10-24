@@ -2,7 +2,7 @@
  * @author: xuweichen
  * @date: 2014-2-13
  */
-define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'TuanModel', 'TuanStore', 'StoreManage'], function (Base, WidgetFactory, Mask, Scroll, DropDown, Tab, TModel, TStore, StoreManage) {
+define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'TuanModel', 'TuanStore', 'StoreManage'], function (Base, Util, WidgetFactory, Mask, Scroll, DropDown, Tab, TModel, TStore, StoreManage) {
     'use strict';
     var Filters,
         mix = $.extend,
@@ -11,6 +11,7 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
         },
         SEARCH_DISTANCE = 4, //附近团购查询的距离
         SEARCH_DISTANCE_TEXT = SEARCH_DISTANCE + '公里内',
+        isYouth = Util.getAppSys() === 'youth', //是否青春版
         categoryfilterStore = TStore.GroupCategoryFilterStore.getInstance(), //团购类型
         sortStore = TStore.GroupSortStore.getInstance(), //团购排序
         searchStore = TStore.GroupSearchStore.getInstance(),
@@ -187,6 +188,10 @@ define(['cBase', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown', 'Tab', 'T
 
                     sortStore.setAttr('sortTypeIndex', index);
                     searchStore.setAttr('sortRule', sortRule);
+                    //最受欢迎排序且App是青春版
+                    if (sortRule == 2 && isYouth) {
+                        sortType = 8;
+                    }
                     searchStore.setAttr('sortType', sortType);
                     self.getListData();
                 }

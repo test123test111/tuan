@@ -9,7 +9,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
         PAGE_POSITION = 'PAGE_LIST_POSITION',
         CUI = c.ui,
         isInApp = Util.isInApp(),
-        isYouth = Util.getAppSys() === 'youth', //是否青春版
         listModel = TuanModels.TuanListModel.getInstance(), //团购列表(产品聚合)
         hotelListModel = TuanModels.TuanHotelListModel.getInstance(), //团购列表(商户聚合)
         sortStore = TuanStore.GroupSortStore.getInstance(), //团购排序
@@ -644,7 +643,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                 }
             }
 
-            isYouth && searchStore.setAttr('sortType', '8');
             notClearAll && self.showBottomLoading();
             searchStore.setAttr('environment', TuanApp.environment);
             model.param = searchStore.get();

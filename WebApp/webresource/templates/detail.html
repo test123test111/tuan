@@ -43,6 +43,9 @@ if (data.contents && data.contents.length) {
         }
     }
 }
+var category = data.category;
+//是否在线订门票
+var isOnlineBookingTicket = category.ctgoryid == 6 && category.subctgory == 2;
 %>
 <nav class="tuan_pic" id="J_pic">
     <img src="<%=imgSrc%>"/>
@@ -50,53 +53,51 @@ if (data.contents && data.contents.length) {
 </nav>
 <nav class="tuan_name">
     <div class="title"><%=data.name %></div>
-    <%if(lightspot && lightspot.length){ %>
-    <p class="tuan_hotel_intro"><%=lightspot%></p>
-    <% }%>
-    <p class="tuan_hotel_info">
-        <span>已售<%=data.cSold %></span>
-        <span class="tuan_hotel_time"><%if(data.groupFlag && (parseInt(data.groupFlag) < 48)){%>
-    剩余48小时
-    <%}else{%>
-    剩余2天以上
-    <%} %></span>
-        <span class="tuan_hotel_star"><%=data.star %></span>
-    </p>
-    <%if(data.additions && data.additions.length>0){%>
-    <ul class="tuan_policy dflex" id="J_service">
-        <%
-        for(var i=0; i<data.additions.length; i++){
-        switch(data.additions[i].type){
-        case 2:%>
-        <li class="ico_return"><%=data.additions[i].txt%></li>
-        <%break; case 1:%>
-        <li class="ico_refund"><%=data.additions[i].txt%></li>
-        <%break; case 3:%>
-        <li class="ico_free"><%=data.additions[i].txt%></li>
-        <%break;}%>
-        <%
-        }
-        %>
-    </ul>
-    <%}else{%>
-    <ul class="tuan_policy dflex no_tuan_policy">
-        <li class="ico_refund">不支持未消费退款</li><li class="ico_return">不支持过期退款</li>
-    </ul>
+    <% if (!isOnlineBookingTicket) {%>
+        <%if (lightspot && lightspot.length) {%>
+        <p class="tuan_hotel_intro"><%=lightspot%></p>
+        <%}%>
+        <p class="tuan_hotel_info">
+            <span>已售<%=data.cSold %></span>
+            <span class="tuan_hotel_time"><%if (data.groupFlag && (parseInt(data.groupFlag) < 48)) {%>剩余48小时<%}else{%>剩余2天以上<%}%></span>
+            <span class="tuan_hotel_star"><%=data.star %></span>
+        </p>
+        <%if(data.additions && data.additions.length>0){%>
+        <ul class="tuan_policy dflex" id="J_service">
+            <%
+            for(var i=0; i<data.additions.length; i++){
+            switch(data.additions[i].type){
+            case 2:%>
+            <li class="ico_return"><%=data.additions[i].txt%></li>
+            <%break; case 1:%>
+            <li class="ico_refund"><%=data.additions[i].txt%></li>
+            <%break; case 3:%>
+            <li class="ico_free"><%=data.additions[i].txt%></li>
+            <%break;}%>
+            <%
+            }
+            %>
+        </ul>
+        <%}else{%>
+        <ul class="tuan_policy dflex no_tuan_policy">
+            <li class="ico_refund">不支持未消费退款</li><li class="ico_return">不支持过期退款</li>
+        </ul>
+        <%}%>
+        <!-- 有效期展示-->
+        <%if((data.unavailableDate||data.couponBdate)&&data.type!=2) {%><!--type==2为零元团，不展示有效期-->
+        <ul class="subblist">
+            <li class="info_valid">
+                <%if(data.couponBdate) {%>
+                <span class="subb_valid i_bef">有效期：<%=data.couponBdate %>至<%=data.couponEdate%></span>
+                <%} %>
+                <%if(data.unavailableDate) {%>
+                <div class="info_suit_not" style="display:none">不适用日期：<%=data.unavailableDate %></div>
+                <div class="align_r"><span class="view_unfold" id="J_expandInvalid">查看不适用日期</span></div>
+                <%} %>
+            </li>
+        </ul>
+        <%} %>
     <%}%>
-    <!-- 有效期展示-->
-    <%if((data.unavailableDate||data.couponBdate)&&data.type!=2) {%><!--type==2为零元团，不展示有效期-->
-    <ul class="subblist">
-        <li class="info_valid">
-            <%if(data.couponBdate) {%>
-            <span class="subb_valid i_bef">有效期：<%=data.couponBdate %>至<%=data.couponEdate%></span>
-            <%} %>
-            <%if(data.unavailableDate) {%>
-            <div class="info_suit_not" style="display:none">不适用日期：<%=data.unavailableDate %></div>
-            <div class="align_r"><span class="view_unfold" id="J_expandInvalid">查看不适用日期</span></div>
-            <%} %>
-        </li>
-    </ul>
-    <%} %>
 </nav>
 
 <%if (data.hotels && data.hotels.length) {%>
@@ -217,7 +218,7 @@ if (data.contents && data.contents.length) {
     </nav>
     <%}else{%>
     <ul class="subblist">
-        <li id="J_groupContain" class="arr_r"><span><%=lashouTitle || '团购包含'%></span><i class="icon_txt"><a href="###">本单详情</a></i></li>
+        <li id="J_groupContain" class="arr_r"><span><%=lashouTitle || '团购包含'%></span><i class="icon_txt"><a href="###">查看详情</a></i></li>
     </ul>
     <%}%>
     <div class="neg_mb10">
