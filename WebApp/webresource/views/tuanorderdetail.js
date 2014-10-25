@@ -119,8 +119,9 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                             maxCoupons++;
                         };
                     });
-                    //有券，且用户一定登录则显示退款
-                    if (maxCoupons && userStore.isLogin()) {
+                    //有券，用户已经登录，且订单不是"支付中", 则显示退款
+                    //订单状态(status) 1:待支付 2:支付中 3:支付失败 4:支付成功 5:已取消
+                    if (maxCoupons && userStore.isLogin() && data.status != 2) {
                         canRefund = true;
                     };
                 };
