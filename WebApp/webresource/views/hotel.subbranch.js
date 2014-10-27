@@ -150,10 +150,12 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
             Geolocation.UnSubscribe('tuan/subbranch');
         },
         backAction: function () {
-            this.back({
-                did: tuanDetailsStore.get().id,
-                cityid:this.cityId
-            });
+            var o = {};
+            var id = tuanDetailsStore.getAttr('id');
+            var cityid = this.cityId;
+            id && (o.id = id);
+            cityid && (o.cityid = cityid);
+            this.back(o);
         },
         backHome: function () {
             TuanApp.tHome();

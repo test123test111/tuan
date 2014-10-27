@@ -65,6 +65,10 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
                 */
                 onZoom: NOOP,
                 /**
+                * @event 地图平移开始时触发事件
+                */
+                onMovestart: NOOP,
+                /**
                 * @event 当前位置控件定位开始
                 */
                 onGeoBegin: NOOP,
@@ -177,7 +181,9 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
             var evt = this.host.event;
 
             this.__zoomendHandler = $.proxy(this._zoomendHandler, this);
+            this.__movestartHandler = $.proxy(this._movestartHandler, this);
             evt.addListener(this.map, 'zoomchange', this.__zoomendHandler);
+            evt.addListener(this.map, 'movestart', this.__movestartHandler);
 
             this.__clickHandler = $.proxy(this._clickHandler, this);
             evt.addListener(this.map, 'click', this.__clickHandler);
@@ -193,6 +199,11 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
             var options = this.options;
 
             options.onZoom.call(this, e, this.map.getZoom());
+        },
+        _movestartHandler: function (e) {
+            var options = this.options;
+
+            options.onMovestart.call(this, e);
         },
         _formatGPSInfo: function (gpsInfo) {
             return {

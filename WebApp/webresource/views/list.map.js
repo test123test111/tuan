@@ -114,6 +114,10 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 var self = this;
                 var center = this.getCenterMarkerData();
                 var infoWrap = this.$el.find('#J_infoWrap');
+                var btnSearch = self.$el.find('#J_btnSearch');
+                if (!data.count || !data.products.length) {
+                    btnSearch.hide();
+                }
                 this.clearPOIMarkers();
                 this.loadingLayer.hide();
                 this.addPOIMarkers(data.products);
@@ -136,7 +140,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     ctext: GROUP_TEXT[this.category],
                     length: data.products.length
                 });
-                infoWrap.text(this.infoText);
+                infoWrap.show().text(this.infoText);
             },
             poiMarkers: [],
             renderMarkerDOM: function (data) {
@@ -345,14 +349,19 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                             self.changeMarkerView(false);
                         };
                         if (zoom < 10) {
+                            infoWrap.show();
                             infoWrap.addClass('map_tips02');
                             infoWrap.text('当前范围过大，请放大地图查询');
                             btnSearch.hide();
                         } else {
-                            infoWrap.removeClass('map_tips02');
-                            self.infoText && infoWrap.text(self.infoText);
+                            infoWrap.hide();
+                            //infoWrap.removeClass('map_tips02');
+                            //self.infoText && infoWrap.text(self.infoText);
                             btnSearch.show();
                         }
+                    },
+                    onMovestart: function () {
+                        infoWrap.hide();
                     },
                     onClick: function () {
                         var centerMarker = self.centerMarker;
@@ -418,7 +427,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 marker = mapWidget.addMarker({
                     position: new mapWidget.host.LngLat(lng, lat), //基点位置
                     offset: { x: -7, y: -36 }, //相对于基点的位置
-                    // content: _.template(self.$el.find('#J_centerMarkerTpl').html())({ name: data.name || data.address })
                     content: centerMarkerTpl({ name: data.name || data.address })
                 });
                 mapWidget.addEvent(marker, 'click', this.centerMarkerHandler, this);
@@ -426,6 +434,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
             },
             centerMarkerHandler: function (e) {
                 var tip = $(e.originalEvent.currentTarget).find('.J_centerMarkerTip');
+                var currMarker = this.currentMarker;
+                var currMarkerDom = this.currentMarkerDom;
+
+                //隐藏当前显示的Marker
+                currMarker && currMarker.setzIndex(1);
+                currMarkerDom && this.changeMarkerView(false, currMarkerDom);
 
                 tip.show();
                 e.target.tipDOM = tip;
@@ -463,6 +477,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 //隐藏页面移除当前位置定位点
                 this.removeCurrentLocationTool();
             },
+            /**
+             * 是否从详情页返回
+             */
             isDetailBack: function () {
                 var refer = this.refer;
                 return refer && refer.match(/detail/i);
@@ -471,9 +488,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
              * 逆地理编码
              */
             reverseGeocode: function (center, callback) {
-               var map = this.mapWidget.map;
-               var lnglat =  new this.mapWidget.host.LngLat(center.lon, center.lat);
-               map.plugin(['AMap.Geocoder'], function() {
+                var map = this.mapWidget.map;
+                var lnglat =  new this.mapWidget.host.LngLat(center.lon, center.lat);
+                map.plugin(['AMap.Geocoder'], function() {
                     var MGeocoder = new AMap.Geocoder({
                         radius: 1000,
                         extensions: 'all'
