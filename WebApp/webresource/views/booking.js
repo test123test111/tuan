@@ -406,10 +406,11 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             target.addClass(selectCls);
                             self.els.selectDate.val(textVal)
                                 .attr('data-date', dateStyle.value);
-                            tuanDetailStore.setAttr('ckintime', dateStyle.value);
-                            tuanDetailStore.setAttr('ckintimetxt', textVal);
-                            //更新数量选择器的最大值和最小值
-//                            self.updateNumberStep(priceDate, dateStyle.value);
+                            tuanDetailStore.setAttr('ckintimetxt', textVal);//刷新页面后用来做显示
+                            self._storeDailyPrice(priceDate, dateStyle.value);
+
+                            //价格可能会改变，需要更新总价格和单价
+                            self.numberStep.options.onChange();
                             self._addOrRemoveHighLight(self.els.selectDate);
                             this.hide();
                         }
@@ -420,6 +421,17 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     self.hideLoading();
                 });
 
+            },
+            _storeDailyPrice: function(data, date) {
+                var price;
+                _.each(data, function(t) {
+                    if (t.dateStr == date) {
+                        price = t.price;
+                        return false;
+                    }
+                });
+                tuanDetailStore.setAttr('ckintime', date);
+                tuanDetailStore.setAttr('ticketPrice', price || 0);
             },
             _formatCalendarDate: function(date) {
                 (typeof date === 'string') && (date = new Date(this._convertTimeString(date)));
@@ -650,7 +662,12 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 param.OInfo.Contact.Mobile = tel;
                 param.OInfo.Product.Quantity = num;
                 param.OInfo.Product.ProductID = tStore.id;
-                tmpPrice = tStore.price.dPrice - (this.store.coupon ? this.store.coupon.amount : 0);
+                //门票价格
+                if (tStore.ticketPrice) {
+                    tmpPrice = tStore.ticketPrice;
+                } else {
+                    tmpPrice = tStore.price.dPrice - (this.store.coupon ? this.store.coupon.amount : 0);
+                }
                 param.OInfo.Product.Price.Price = parseFloat(tmpPrice > 0 ? tmpPrice : 0);
                 if (headStore.getAttr('auth') /*uStore.IsNonUser == false*/) {
                     param.head.auth = headStore.getAttr('auth');
@@ -675,10 +692,12 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 }
 
                 //门票对接新增binfo
-                param.OInfo.binfo = {
-                    name: self.els.ticketUserDom.val(),
-                    ckintime: tuanDetailStore.getAttr('ckintime')
-                };
+                var ckintime = tuanDetailStore.getAttr('ckintime'),
+                    name = self.els.ticketUserDom.val();
+                (ckintime && name) && (param.OInfo.binfo = {
+                    name: name,
+                    ckintime: ckintime
+                });
                 this._sendOrderRequest(param);
 
             },
@@ -720,9 +739,10 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             tmpPrice,
                             invoice = invoiceStore.get(),
                             amount = store.coupon ? store.coupon.amount : 0,
-                            num = parseInt(self.$el.find('#J_curNum').text().trim());
+                            num = parseInt(self.$el.find('#J_curNum').text().trim()),
+                            dPrice = self.price;
 
-                        window.tuanDetailStore = tuanDetailStore;
+//                        window.tuanDetailStore = tuanDetailStore;
                         tuanDetailStore.setAttr('curNum', num);
 
                         if (store.activities && store.activities.length > 0 &&
@@ -732,7 +752,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             self.els.pPriceDom.html(pPrice);
                         }
 
-                        tmpPrice = retainTwoDecimal((parseFloat(self.price) - amount) * num);
+                        tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) - amount) * num);
                         tmpPrice = (tmpPrice > 0 ? tmpPrice : 0) + (invoice && invoice.deliveryMethod == 1 ? 10 : 0);
                         self.els.totalPriceDom.html(tmpPrice > 0 ? tmpPrice : 0);
                         if (self.els.couponAmount.length) {
@@ -741,25 +761,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     }
                 });
                 this.numberStep.options.onChange(); //初始化调用onChange计算订单金额
-            },
-            updateNumberStep: function(data, date) {
-                var self = this,
-                    min, max;
-                _.each(data, function(t) {
-                    if (t.dateStr == date) {
-                        min = t.minnum;
-                        max = t.maxnum;
-                        return false;
-                    }
-                });
-
-                self.numberStep.setOptions('min', min);
-                self.numberStep.setOptions('max', max);
-                if (self.numberStep.getCurrentNum() < min) {
-                    self.numberStep.setCurrentNum(min);
-                } else if (self.numberStep.getCurrentNum() > max) {
-                    self.numberStep.setCurrentNum(max);
-                }
             },
             _sendOrderRequest: function (param) {
                 var self = this;
