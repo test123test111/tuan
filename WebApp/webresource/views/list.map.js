@@ -56,6 +56,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
         View = PageView.extend({
             pageid: '260002',
             hpageid: '261002',
+            isTapScreen: false, //是否点过"查询屏幕范围内的团购"
             render: function () {
                 //poi分类容器
                 this.categoryWrap = this.$el.find('#J_category');
@@ -78,7 +79,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
             },
             searchHandler: function () {
                 this.getDistance();
-                this.tapScreen = true;
+                this.isTapScreen = true;
                 this.loadingLayer.show();
                 this.selectCategory();
             },
@@ -124,7 +125,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 MemCache.setItem('POIDATA', data);
 
                 this.centerMarker && this.centerMarker.setMap(null);
-                if (!this.tapScreen) {
+                if (!this.isTapScreen) {
                     this.mapWidget.setFitView();
                     this.addCenterMarker(center);
                 } else {
@@ -267,7 +268,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     posType = positionfilterStore.getAttr('type'),
                     info;
 
-                if (this.tapScreen) {
+                if (this.isTapScreen) {
                     var center = this.mapWidget.map.getCenter();
                     info = {
                         lon: center.getLng(),
@@ -323,9 +324,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
             createMap: function () {
                 var self = this,
                     compass, layer,
+                    curpos = listStore.getAttr('curpos'),
                     btnSearch = self.$el.find('#J_btnSearch'),
                     infoWrap = self.$el.find('#J_infoWrap'),
-                    curpos = listStore.getAttr('curpos'),
                     mapWrap = self.$el.find('#J_map');
 
                 self.container = mapWrap;
@@ -354,14 +355,23 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                             infoWrap.text('当前范围过大，请放大地图查询');
                             btnSearch.hide();
                         } else {
-                            infoWrap.hide();
-                            //infoWrap.removeClass('map_tips02');
+                            if (self.isTapScreen) {
+                                infoWrap.hide();
+                            }
+                            infoWrap.removeClass('map_tips02');
                             //self.infoText && infoWrap.text(self.infoText);
                             btnSearch.show();
                         }
                     },
                     onMovestart: function () {
                         infoWrap.hide();
+                        /*
+                         * 查询无结果，出提示，且“查询屏幕范围内的团购“隐藏
+                         * 再次移动地图后，重新显示”查询屏幕范围内的团购“控件
+                         */
+                        if (!self.poiMarkers.length) {
+                            btnSearch.show();
+                        }
                     },
                     onClick: function () {
                         var centerMarker = self.centerMarker;
@@ -467,7 +477,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     //取消正在发送的请求
                     this.poi && this.poi.abort();
                 }, '查询中...');
-                this.tapScreen = false;
+                this.isTapScreen = false;
                 // this.inited && this.selectCategory();
             },
             onHide: function () {

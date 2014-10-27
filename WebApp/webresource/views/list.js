@@ -332,6 +332,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             return isInApp && Lizard.P('from_native_page') == 1;
         },
         /**
+        * 是否1元团购
+        */
+        isOneYuan: function () {
+            return customFiltersStore.getAttr('price.val') == '1|1';
+        },
+        /**
         * 更新header
         * @param title
         */
@@ -382,9 +388,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             var searchData = searchStore.get(),
                 ctype = searchData.ctype,
                 cityId = searchData.ctyId || StringsData.defaultCity.id,
-                isNearby = this.isNearBy();
+                isNearby = this.isNearBy(),
+                isOneYuan = this.isOneYuan();
             var title = StringsData.groupType[ctype]['name'] || StringsData.groupType[0]['name'];
-            if (customFiltersStore.getAttr('price.val') == '1|1') {
+            if (isOneYuan) {
                 title = '一元团购';
             }
             this.updateTitle(title);
@@ -400,7 +407,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     searchStore.setAttr('qparams', qparams);
                 }
                 this.getGroupListData();
-                this.getConditionData(cityId);
+                if (isOneYuan) {
+                    this.filterWrap.hide();
+                } else {
+                    this.filterWrap.show();
+                    this.getConditionData(cityId);
+                }
             }
         },
         hideForbiddens: function (isHidden, targetCS) {
@@ -506,7 +518,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             } else {
                 var ctype = searchStore.getAttr('ctype');
                 var title = StringsData.groupType[ctype]['name'] || StringsData.groupType[0]['name'];
-                if (customFiltersStore.getAttr('price.val') == '1|1') {
+                if (this.isOneYuan()) {
                     title = '一元团购';
                 }
                 this.updateTitle(title);
