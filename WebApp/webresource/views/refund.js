@@ -193,6 +193,12 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     }
                 }
 
+                //如果是门票对接产品
+                if (data.product && data.product.category
+                    && data.product.category.ctgoryid === 6 && data.product.category.subctgory === 2) {
+                    this.$el.find('.J_needHideInTicket').remove();
+                }
+
                 if (this.maxCoupons <= 0) {
                     this.alertErrorMsg("", "此订单不支持退款！");
                 } else {
@@ -218,6 +224,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                         this.els.refundInvoiceAmount.text(this.invoiceAmt);
                     }
                 }
+
             },
             alertErrorMsg: function (title, message) {
                 var self = this;
