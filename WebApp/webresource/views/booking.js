@@ -138,7 +138,8 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     store.max = store.max < ORDER_NUM.max ? ORDER_NUM.max : store.max;
 
                     store.curNum = (order && order.curNum) || store.min;
-                    store.tel = (order && order.tel) || (userInfo && userInfo.Mobile) || '';
+                    //优先取用户选择的手机号或最后填写的手机号，次取用户绑定的手机号，再取用户未绑定的手机号
+                    store.tel = (order && order.tel) || (userInfo && (userInfo.BMobile || userInfo.Mobile)) || '';
                     store.retainTwoDecimal = retainTwoDecimal;
                     store.user = userInfo;
                     store.isLogin = userStore.isLogin();
@@ -288,7 +289,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 $el.closest('li')[flag ? 'addClass' : 'removeClass']('errorli');
             },
             onCreate: function () {
-                orderInfo ? orderInfo.remove() : '';
+                //orderInfo ? orderInfo.remove() : '';
                 this.validator = new Validator();
             },
             getTuanDetail: function (detailId, callback) {
@@ -627,6 +628,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.showMessage(MSG.telTips);
                     return;
                 }
+                orderInfo.setAttr('tel', tel);
 
                 if (!tStore || !tStore.id) {
                     this.forwardJump('detial', '/webapp/tuan/detail/' + self.pid + '.html');
