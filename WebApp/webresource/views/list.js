@@ -2,13 +2,13 @@
  * 列表页面
  * @url: m.ctrip.com/webapp/tuan/list
  */
-define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', 'MemCache', 'cUtility', 'cGeoService', 'cWidgetFactory', 'cUIToast', 'TuanStore', 'TuanModel', 'TuanFilters', 'StoreManage', 'LazyLoad', 'ScrollObserver', 'text!ListProductTpl', 'text!ListBusinessTpl', 'cWidgetGeolocation'],
-function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, Util, cGeoService, WidgetFactory, Toast, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, listProduct, listBusiness) {
+define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', 'MemCache', 'StringsData', 'cUtility', 'cGeoService', 'cWidgetFactory', 'cUIToast', 'TuanStore', 'TuanModel', 'TuanFilters', 'StoreManage', 'LazyLoad', 'ScrollObserver', 'text!ListProductTpl', 'text!ListBusinessTpl', 'cWidgetGeolocation'],
+function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, StringsData, Util, cGeoService, WidgetFactory, Toast, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, listProduct, listBusiness) {
+    'use strict';
     var REFRESH_GPS_LOADING_CLS = 'ani_rotation',
         PAGE_POSITION = 'PAGE_LIST_POSITION',
         CUI = c.ui,
         isInApp = Util.isInApp(),
-        isYouth = Util.getAppSys() === 'youth', //是否青春版
         listModel = TuanModels.TuanListModel.getInstance(), //团购列表(产品聚合)
         hotelListModel = TuanModels.TuanHotelListModel.getInstance(), //团购列表(商户聚合)
         sortStore = TuanStore.GroupSortStore.getInstance(), //团购排序
@@ -29,26 +29,9 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
         MSG = {
             tuangou: '团购',
             youAreHere: '您的位置 ',
-            cityCenter: '市中心',
-            titleArray: {
-                '0': '全部团购',
-                '1': '酒店',
-                '8': '美食',
-                '7': '旅游度假',
-                '6': '门票',
-                '9': '娱乐',
-                '106': '一元团购',
-                '108': '本周新单'
-            }
+            cityCenter: '市中心'
         },
-        SEARCH_DISTANCE = 4, //附近团购查询的距离
-        SEARCH_DISTANCE_TEXT = SEARCH_DISTANCE + '公里内';
-    MAP_SOURCE_ID = 3, //经纬度等POI数据的来源ID，默认3为高德数据
         Guider = WidgetFactory.create('Guider'),
-        defaultCity = {
-            id: 2,
-            name: '上海'
-        },
         GeoLocation = cGeoService.GeoLocation;
 
     var PageView = CommonPageFactory.create("TuanBaseView");
@@ -329,7 +312,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                 city = StoreManage.findCityInfoById(cityId);
             };
             if (!(+city.id)) {
-                city = defaultCity;
+                city = StringsData.defaultCity;
             };
             return city;
         },
@@ -347,6 +330,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
         */
         isFromHybridFavorPage: function () {
             return isInApp && Lizard.P('from_native_page') == 1;
+        },
+        /**
+        * 是否1元团购
+        */
+        isOneYuan: function () {
+            return customFiltersStore.getAttr('price.val') == '1|1';
         },
         /**
         * 更新header
@@ -398,10 +387,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
         createPage: function () {
             var searchData = searchStore.get(),
                 ctype = searchData.ctype,
-                cityId = searchData.ctyId || defaultCity.id,
-                isNearby = this.isNearBy();
-            var title = MSG.titleArray[ctype] || MSG.titleArray[0];
-            if (customFiltersStore.getAttr('price.val') == '1|1') {
+                cityId = searchData.ctyId || StringsData.defaultCity.id,
+                isNearby = this.isNearBy(),
+                isOneYuan = this.isOneYuan();
+            var title = StringsData.groupType[ctype]['name'] || StringsData.groupType[0]['name'];
+            if (isOneYuan) {
                 title = '一元团购';
             }
             this.updateTitle(title);
@@ -417,7 +407,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                     searchStore.setAttr('qparams', qparams);
                 }
                 this.getGroupListData();
-                this.getConditionData(cityId);
+                if (isOneYuan) {
+                    this.filterWrap.hide();
+                } else {
+                    this.filterWrap.show();
+                    this.getConditionData(cityId);
+                }
             }
         },
         hideForbiddens: function (isHidden, targetCS) {
@@ -522,8 +517,8 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                 });
             } else {
                 var ctype = searchStore.getAttr('ctype');
-                var title = MSG.titleArray[ctype] || MSG.titleArray[0];
-                if (customFiltersStore.getAttr('price.val') == '1|1') {
+                var title = StringsData.groupType[ctype]['name'] || StringsData.groupType[0]['name'];
+                if (this.isOneYuan()) {
                     title = '一元团购';
                 }
                 this.updateTitle(title);
@@ -624,7 +619,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                         cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
                         gps = cityInfo && cityInfo.pos || {};
                         searchStore.setAttr('pos', {
-                            posty: MAP_SOURCE_ID,
+                            posty: StringsData.MAP_SOURCE_ID,
                             lon: gps.lon || 0,
                             lat: gps.lat || 0,
                             name: cityInfo.name + MSG.cityCenter
@@ -643,7 +638,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                 }
             }
 
-            isYouth && searchStore.setAttr('sortType', '8');
             notClearAll && self.showBottomLoading();
             searchStore.setAttr('environment', TuanApp.environment);
             model.param = searchStore.get();
@@ -691,7 +685,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                     } else if (this.totalPages || this.totalPages <= 0) {
                         var customdata = customFiltersStore.get() || {};
                         var distance = customdata && customdata.distance && customdata.distance.val;
-                        lst = {};
+                        var lst = {};
                         lst.msg = (distance ? distance + '公里内' : '') + '没找到符合条件的结果，请修改条件重新查询';
                         lst[key] = null;
                         lst.count = 0;
@@ -818,13 +812,13 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, U
                     break;
                 case 'feature':
                     searchStore.removeAttr('from_feature');
-                    this.updateTitle(MSG.titleArray[0]);
+                    this.updateTitle(StringsData.groupType[0]['name']);
                     break;
                 case 'price':
                     searchStore.setAttr('qparams', []);
                     label.find('li[data-tab="price"] i').hide();
                     customFiltersStore.removeAttr('price');
-                    this.updateTitle(MSG.titleArray[0]);
+                    this.updateTitle(StringsData.groupType[0]['name']);
                     break;
                 default:
                     customFiltersStore.removeAttr(type);

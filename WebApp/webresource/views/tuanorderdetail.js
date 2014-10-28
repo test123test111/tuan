@@ -108,22 +108,31 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                     channelInfo = product && product.channelInfo,
                     //APP不支持售卖产品，隐藏: 发送券号密码到手机，申请退款，继续支付，取消订单，删除订单
                     appNonsupport = channelInfo && channelInfo.isCorrectChannel;
-
                 self.hideLoading();
                 contactPhone = data.contact && data.contact.mphone;
                 self.store = data;
-                if (hasCoupons) {
-                    var maxCoupons = 0;
-                    _.each(store.coupons, function (item) {
-                        if (item.isc == true) {
-                            maxCoupons++;
-                        };
-                    });
-                    //有券，且用户一定登录则显示退款
-                    if (maxCoupons && userStore.isLogin()) {
-                        canRefund = true;
-                    };
-                };
+
+                //有券，用户已经登录，且订单不是"支付中", 则显示退款
+                //订单状态(status) 1:待支付 2:支付中 3:支付失败 4:支付成功 5:已取消
+                if (userStore.isLogin() && data.status != 2) {
+                    if (hasCoupons) {
+                        var maxCoupons = 0;
+                        _.each(store.coupons, function (item) {
+                            if (item.isc == true) {
+                                maxCoupons++;
+                            }
+                        });
+                        if (maxCoupons) {
+                            canRefund = true;
+                        }
+                        //如果是门票订单，不显示券
+                        if (product && product.category && product.category.ctgoryid === 6
+                            && product.category.subctgory === 2) {
+                            store.coupons = [];
+                        }
+                    }
+                }
+
                 data.canRefund = canRefund;
                 data.canDelete = data.isdel;
                 data.appNonsupport = appNonsupport;

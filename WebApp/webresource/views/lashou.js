@@ -19,12 +19,12 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
                 if(!content){
                     //弹出提示框
                     self.showMessage("无图文详情!");
+                    this.setHeader();
                 }
                 else{
                     self.render(tuanDetailsStore.get());
                 }
-            }
-            else { //请求服务器
+            } else { //请求服务器
                 self.showLoading();
                 tuanDetailModel.setParam({
                     id: Lizard.P('pid')
@@ -52,6 +52,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
             var price = data.price;
             var actives = data.activities;
             var content = _.find(data.contents, function (ctx) { return ctx.type == 5; });
+            this.setHeader(content.title);
             this.$el.html($.trim(_.template(html, {"content":content,"price":price,"activities":actives})));
             var  btnSubmit = this.$el.find('#J_submit');
             //已售完
@@ -66,7 +67,6 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
         onCreate: function () {
         },
         onLoad: function () {
-            this.setHeader();
             //获取图文详情内容
              this.parseDetailUrl();
             this.getGroupContent();
@@ -78,10 +78,10 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
             this.productId = productId;
             this.externalReferURL = externalReferURL;
         },
-        setHeader: function () {
+        setHeader: function (title) {
             var self = this;
             this.header.set({
-                title: '团购包含',
+                title: title || '团购包含',
                 back: true,
                 view: this,
                 events: {

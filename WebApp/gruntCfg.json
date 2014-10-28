@@ -20,6 +20,7 @@
         "LazyLoad":       "com/lazyload",
         "FilterXss":      "util/filterxss",
         "CityListData":   "data/citylist",
+        "StringsData":    "data/strings",
         "Tab":            "com/tab",
         "PageHistory":    "com/history",
         "PageTreeConfig": "com/pagetreeconfig",

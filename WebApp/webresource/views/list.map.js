@@ -56,10 +56,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
         View = PageView.extend({
             pageid: '260002',
             hpageid: '261002',
-            // inited: false,
+            isTapScreen: false, //是否点过"查询屏幕范围内的团购"
             render: function () {
-                // this.$el.html(html);
-                // this.markerTpl = this.$el.find('#J_markerTpl').html();
                 //poi分类容器
                 this.categoryWrap = this.$el.find('#J_category');
                 //ios7, 显示头部电信网络信息
@@ -81,7 +79,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
             },
             searchHandler: function () {
                 this.getDistance();
-                this.tapScreen = true;
+                this.isTapScreen = true;
                 this.loadingLayer.show();
                 this.selectCategory();
             },
@@ -117,13 +115,17 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 var self = this;
                 var center = this.getCenterMarkerData();
                 var infoWrap = this.$el.find('#J_infoWrap');
+                var btnSearch = self.$el.find('#J_btnSearch');
+                if (!data.count || !data.products.length) {
+                    btnSearch.hide();
+                }
                 this.clearPOIMarkers();
                 this.loadingLayer.hide();
                 this.addPOIMarkers(data.products);
                 MemCache.setItem('POIDATA', data);
 
                 this.centerMarker && this.centerMarker.setMap(null);
-                if (!this.tapScreen) {
+                if (!this.isTapScreen) {
                     this.mapWidget.setFitView();
                     this.addCenterMarker(center);
                 } else {
@@ -133,17 +135,16 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     });
                 }
                 this.getDistance();
-                infoWrap.text(infoTpl({
+                this.infoText = infoTpl({
                     distance: this.distance,
                     count: data.count || 0,//TODO: 等待接口提供count
                     ctext: GROUP_TEXT[this.category],
                     length: data.products.length
-                }));
-                // this.inited = true; //地图初始化完成
+                });
+                infoWrap.show().text(this.infoText);
             },
             poiMarkers: [],
             renderMarkerDOM: function (data) {
-                // return _.template(this.markerTpl)(data);
                 data.MARKERS_CLS = MARKERS_CLS;
                 return markerTpl(data);
             },
@@ -267,7 +268,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     posType = positionfilterStore.getAttr('type'),
                     info;
 
-                if (this.tapScreen) {
+                if (this.isTapScreen) {
                     var center = this.mapWidget.map.getCenter();
                     info = {
                         lon: center.getLng(),
@@ -323,9 +324,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
             createMap: function () {
                 var self = this,
                     compass, layer,
+                    curpos = listStore.getAttr('curpos'),
                     btnSearch = self.$el.find('#J_btnSearch'),
                     infoWrap = self.$el.find('#J_infoWrap'),
-                    curpos = listStore.getAttr('curpos'),
                     mapWrap = self.$el.find('#J_map');
 
                 self.container = mapWrap;
@@ -349,13 +350,26 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                             self.changeMarkerView(false);
                         };
                         if (zoom < 10) {
+                            infoWrap.show();
                             infoWrap.addClass('map_tips02');
                             infoWrap.text('当前范围过大，请放大地图查询');
                             btnSearch.hide();
                         } else {
+                            if (self.isTapScreen) {
+                                infoWrap.hide();
+                            }
                             infoWrap.removeClass('map_tips02');
-                            // TODO
-                            //infoWrap.text('xx');
+                            //self.infoText && infoWrap.text(self.infoText);
+                            btnSearch.show();
+                        }
+                    },
+                    onMovestart: function () {
+                        infoWrap.hide();
+                        /*
+                         * 查询无结果，出提示，且“查询屏幕范围内的团购“隐藏
+                         * 再次移动地图后，重新显示”查询屏幕范围内的团购“控件
+                         */
+                        if (!self.poiMarkers.length) {
                             btnSearch.show();
                         }
                     },
@@ -423,7 +437,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 marker = mapWidget.addMarker({
                     position: new mapWidget.host.LngLat(lng, lat), //基点位置
                     offset: { x: -7, y: -36 }, //相对于基点的位置
-                    // content: _.template(self.$el.find('#J_centerMarkerTpl').html())({ name: data.name || data.address })
                     content: centerMarkerTpl({ name: data.name || data.address })
                 });
                 mapWidget.addEvent(marker, 'click', this.centerMarkerHandler, this);
@@ -431,6 +444,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
             },
             centerMarkerHandler: function (e) {
                 var tip = $(e.originalEvent.currentTarget).find('.J_centerMarkerTip');
+                var currMarker = this.currentMarker;
+                var currMarkerDom = this.currentMarkerDom;
+
+                //隐藏当前显示的Marker
+                currMarker && currMarker.setzIndex(1);
+                currMarkerDom && this.changeMarkerView(false, currMarkerDom);
 
                 tip.show();
                 e.target.tipDOM = tip;
@@ -458,14 +477,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     //取消正在发送的请求
                     this.poi && this.poi.abort();
                 }, '查询中...');
-                this.tapScreen = false;
-                // if (this.inited) {
-                    // if (this.isDetailBack() && MemCache.getItem('POIDATA')) {
-                        // this.onPoiSuccess(MemCache.getItem('POIDATA'));
-                    // } else {
-                        // this.selectCategory();
-                    // }
-                // }
+                this.isTapScreen = false;
                 // this.inited && this.selectCategory();
             },
             onHide: function () {
@@ -475,6 +487,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 //隐藏页面移除当前位置定位点
                 this.removeCurrentLocationTool();
             },
+            /**
+             * 是否从详情页返回
+             */
             isDetailBack: function () {
                 var refer = this.refer;
                 return refer && refer.match(/detail/i);
@@ -483,9 +498,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
              * 逆地理编码
              */
             reverseGeocode: function (center, callback) {
-               var map = this.mapWidget.map;
-               var lnglat =  new this.mapWidget.host.LngLat(center.lon, center.lat);
-               map.plugin(['AMap.Geocoder'], function() {
+                var map = this.mapWidget.map;
+                var lnglat =  new this.mapWidget.host.LngLat(center.lon, center.lat);
+                map.plugin(['AMap.Geocoder'], function() {
                     var MGeocoder = new AMap.Geocoder({
                         radius: 1000,
                         extensions: 'all'
