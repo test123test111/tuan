@@ -85,7 +85,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, Fa
                 events: {
                     returnHandler: function () {
                         //isInApp ? Guider.home() : self.jump("/html5/");
-                        isInApp ? Guider.home() : TuanApp.tHome();
+                        isInApp ? TuanApp.backToLastPage() : TuanApp.tHome();
                     },
                     homeHandler: $.proxy(self.homeHandler, self),
                     citybtnHandler: function () { //click citybtn按钮的回调
