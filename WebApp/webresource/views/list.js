@@ -407,6 +407,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     searchStore.setAttr('qparams', qparams);
                 }
                 this.getGroupListData();
+                //1元团购频道显示纯列表，隐藏底部筛选项
                 if (isOneYuan) {
                     this.filterWrap.hide();
                 } else {

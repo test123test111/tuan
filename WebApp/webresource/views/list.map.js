@@ -124,10 +124,10 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 this.addPOIMarkers(data.products);
                 MemCache.setItem('POIDATA', data);
 
-                this.centerMarker && this.centerMarker.setMap(null);
+                // this.centerMarker && this.centerMarker.setMap(null);
                 if (!this.isTapScreen) {
-                    this.mapWidget.setFitView();
                     this.addCenterMarker(center);
+                    this.mapWidget.setFitView();
                 } else {
                     this.reverseGeocode(center, function(name) {
                         center.name = name;
@@ -204,7 +204,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     lastMarker && lastMarker.setzIndex(1);
                     lastMarkerDom && this.changeMarkerView(false, lastMarkerDom);
                     marker.setzIndex(9999);
-                    target.addClass(MARKER_SHOW_ANI).find('.J_detailMarker').show();
+                    target.find('.J_detailMarker').show();
+                    target.addClass(MARKER_SHOW_ANI);
                     target.data('isDetailView', true);
                     this.currentMarker = marker;
                     this.currentMarkerDom = target;
@@ -252,6 +253,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 };
                 //取消正在发送的请求
                 this.poi && this.poi.abort();
+                this.centerMarker && this.centerMarker.setMap(null);
                 this.selectedCategoryItem && this.selectedCategoryItem.removeClass(CURRENT_CATEGORY_CLS);
                 selectedCategoryItem.addClass(CURRENT_CATEGORY_CLS);
                 this.poi.query(type, this.getParams());
