@@ -381,7 +381,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
                 //daterange: {sdate: '', edate: ''}
                 this.showLoading();
-                ticketBookingModel.setParam({pid: 139136 || self.pid, daterange: {sdate: '', edate:''}});
+                ticketBookingModel.setParam({pid:self.pid, daterange: {sdate: '', edate:''}});
                 ticketBookingModel.excute(function(data) {
                     self.hideLoading();
                     var priceDate = data.plist[0].PDList;
@@ -391,7 +391,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         t.price = parseInt(t.price, 10);
                     });
                     self.calendar = new HolidayPriceCalendar({
-                        monthsNum: 6,
+                        monthsNum: 2,
                         voidInvalid: true, //没有价格的日期是否有效可点,false可点
                         priceDate: priceDate,
                         header: {title: MSG.selectDateTitle},
@@ -404,6 +404,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         },
                         callback: function(date, dateStyle, target) {
                             var textVal = self._formatCalendarDate(date) + (dateStyle.holiday || dateStyle.days);
+                            this.$el.find('.' + selectCls).removeClass(selectCls);
                             target.addClass(selectCls);
                             self.els.selectDate.val(textVal)
                                 .attr('data-date', dateStyle.value);
