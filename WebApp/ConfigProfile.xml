@@ -16,10 +16,12 @@
     <WebresourceBaseUrl>http://webresource.c-ctrip.com</WebresourceBaseUrl>
     <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
     <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+      <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
     <FxConfigServiceUrl>http://ws.config.framework.fws.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+    <SOA.ServiceRegistry.Url>http://ws.soa.fws.qa.nt.ctripcorp.com/registry/api</SOA.ServiceRegistry.Url>
   </dev>
   <fws>
     <Debug>false</Debug>
@@ -29,10 +31,12 @@
     <WebresourceBaseUrl>http://webresource.c-ctrip.com</WebresourceBaseUrl>
     <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
     <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+      <WebresourceVersion></WebresourceVersion>
       <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
     <FxConfigServiceUrl>http://ws.config.framework.fws.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+    <SOA.ServiceRegistry.Url>http://ws.soa.fws.qa.nt.ctripcorp.com/registry/api</SOA.ServiceRegistry.Url>
   </fws>
   <fat>
     <Debug>false</Debug>
@@ -42,10 +46,12 @@
     <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
     <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
     <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+      <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
     <FxConfigServiceUrl>http://ws.config.framework.fws.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+    <SOA.ServiceRegistry.Url>http://ws.soa.fws.qa.nt.ctripcorp.com/registry/api</SOA.ServiceRegistry.Url>
   </fat>
   <uat_nt>
     <Debug>false</Debug>
@@ -55,10 +61,12 @@
     <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
     <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
     <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+      <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
     <FxConfigServiceUrl>http://ws.config.framework.uat.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+    <SOA.ServiceRegistry.Url>http://ws.soa.uat.qa.nt.ctripcorp.com/registry/api</SOA.ServiceRegistry.Url>
   </uat_nt>
   <lpt>
     <Debug>false</Debug>
@@ -68,10 +76,12 @@
     <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
     <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
     <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+      <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
     <FxConfigServiceUrl>http://ws.config.framework.lpt.qa.nt.ctripcorp.com/configws/</FxConfigServiceUrl>
+    <SOA.ServiceRegistry.Url>http://ws.soa.uat.qa.nt.ctripcorp.com/registry/api</SOA.ServiceRegistry.Url>
   </lpt>
   <prd>
     <Debug>false</Debug>
@@ -81,9 +91,11 @@
     <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
     <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
     <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
+      <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>collector.logging.sh.ctriptravel.com</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
     <FxConfigServiceUrl>http://ws.config.framework.ctripcorp.com/configws</FxConfigServiceUrl>
+    <SOA.ServiceRegistry.Url>http://ws.soa.ctripcorp.com/registry/api</SOA.ServiceRegistry.Url>
   </prd>
 </profile>

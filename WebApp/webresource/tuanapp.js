@@ -15,6 +15,7 @@ define(['PageHistory'], function (PageHistory) {
             //检查来源，并做保存来源数据
             this.saveUnion();
         },
+        isSEO: Lizard.renderAt === 'server',
         networkMonitor: function () {
             var self = this;
             window.addEventListener('online', function () {
@@ -244,6 +245,17 @@ define(['PageHistory'], function (PageHistory) {
                 var Guider = WidgetFactory.create('Guider');
                 var isInApp = Util.isInApp();
                 isInApp ? Guider.home() : (location.href = location.protocol + '//' + location.host + '/html5');
+            });
+        },
+        /**
+         * @usage back to last native page
+         * @runtime hybrid
+         */
+        backToLastPage: function(){
+            require(['cWidgetFactory', 'cWidgetGuider'], function (WidgetFactory) {
+                var Guider = WidgetFactory.create('Guider');
+
+                Guider.backToLastPage({ 'param': JSON.stringify({ "biz": "tuan", "refresh": "1" }) });
             });
         }
     };
