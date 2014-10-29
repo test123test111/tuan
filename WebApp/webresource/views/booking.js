@@ -397,9 +397,12 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         header: {title: MSG.selectDateTitle},
 //                        startPriceTime: priceDate[0] && priceDate[0].date,
                         onShow: function() {
+                            //隐藏上一个view， 否则会有bug：日历可以左右滑动且滑到最下面的时候会露出上一个view的内容
+                            self.hide();
                             this.$el.find('[data-date="' + date + '"]').addClass(selectCls);
                         },
                         onHide: function() {
+                            self.show();
                             this.remove();
                         },
                         callback: function(date, dateStyle, target) {
