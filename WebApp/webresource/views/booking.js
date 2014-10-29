@@ -229,6 +229,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
              */
             initValidator: function() {
                 var self = this;
+                this.validator.removeAllFields();
 
                 this.els.selectDate.length && (this.validator.addField(new Field({
                     dom: self.els.selectDate,
