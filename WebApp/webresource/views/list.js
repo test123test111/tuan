@@ -502,6 +502,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                         text += (MSG.youAreHere + gps.address);
                         infoWrap.html(text);
                     };
+
                     //我的附近默认按距离最近排序
                     if (sortStore.getAttr('sortTypeIndex') == null && self.isNearBy()) {
                         searchStore.setAttr('sortRule', 8);

@@ -9,6 +9,7 @@ define(function () {
         SEARCH_DISTANCE: distance,
         SEARCH_DISTANCE_TEXT: distance + '公里内',
         MAP_SOURCE_ID: 3,
+        MAX_KEYWORDS_HISTORY: 5,
         defaultCity: {
             id: 2,
             name: '上海'
@@ -44,6 +45,15 @@ define(function () {
             '9':    { 'index': 5, 'name': '娱乐', 'category': 'entertainment' },
             '106':  { 'index': 6, 'name': '一元团购', 'category': 'onepaygroup' },
             '108':  { 'index': 7, 'name': '当地特色', 'category': 'feature' }
+        },
+        //key为url里面的ctype，val为真实的ctype
+        index2ctype: {
+            '0': '0', //全部团购
+            '1': '1', //酒店客房
+            '2': '8', //美食
+            '3': '7', //旅游度假
+            '4': '6', //门票
+            '5': '9'  //娱乐
         }
     };
 });

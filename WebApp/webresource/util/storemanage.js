@@ -2,11 +2,9 @@
  * @author: xuweichen
  * @date: 2014-2-18
  */
-define(['TuanApp', 'TuanStore', 'CityListData'], function (TuanApp, TuanStore, CityListData, StoreManage) {
+define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanApp, TuanStore, CityListData, StringsData) {
     'use strict';
-    var MAX_KEYWORDS_HISTORY = 5,
-        SEARCH_DISTANCE = 4, //附近团购查询的距离
-        searchStore = TuanStore.GroupSearchStore.getInstance(),
+    var searchStore = TuanStore.GroupSearchStore.getInstance(),
         positionfilterStore = TuanStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
         categoryfilterStore = TuanStore.GroupCategoryFilterStore.getInstance(),
         historyCityListStore = TuanStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
@@ -14,16 +12,7 @@ define(['TuanApp', 'TuanStore', 'CityListData'], function (TuanApp, TuanStore, C
         CityListStore = TuanStore.TuanCityListStore.getInstance(), //城市清单
         geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
         historyKeySearchStore = TuanStore.TuanHistoryKeySearchStore.getInstance(),
-        customFiltersStore = TuanStore.GroupCustomFilters.getInstance(), //团购自定义筛选项
-        //key为url里面的ctype，val为真实的ctype
-        GROUP_TYPE = {
-            '0': '0', //全部团购
-            '1': '1', //酒店客房
-            '2': '8', //美食  餐饮娱乐
-            '3': '7', //旅游度假
-            '4': '6',  //门票
-            '5': '9'  //娱乐
-        };
+        customFiltersStore = TuanStore.GroupCustomFilters.getInstance(); //团购自定义筛选项
 
     /**
     * 生成价格筛选项标题
@@ -113,7 +102,7 @@ define(['TuanApp', 'TuanStore', 'CityListData'], function (TuanApp, TuanStore, C
                 list.unshift(Id);
             } else {
                 list.unshift(Id);
-                if (list.length > MAX_KEYWORDS_HISTORY) list.pop();
+                if (list.length > StringsData.MAX_KEYWORDS_HISTORY) list.pop();
             }
             historyCityListStore.setAttr("list", list);
         },
@@ -273,7 +262,7 @@ define(['TuanApp', 'TuanStore', 'CityListData'], function (TuanApp, TuanStore, C
                 list.unshift({ id: id, word: name, type: keyType });
             } else {
                 list.unshift({ id: id, word: name, type: keyType });
-                if (list.length > MAX_KEYWORDS_HISTORY) list.pop();
+                if (list.length > StringsData.MAX_KEYWORDS_HISTORY) list.pop();
             }
             historyKeySearchStore.remove();
             historyKeySearchStore.setAttr('list', list);
@@ -460,11 +449,8 @@ define(['TuanApp', 'TuanStore', 'CityListData'], function (TuanApp, TuanStore, C
             };
             if (cityId) {
                 searchStore.setAttr('ctyId', cityId);
-                if (cityName) {
-                    searchStore.setAttr('ctyName', cityName);
-                } else if (CityListData[cityId]) {
-                    searchStore.setAttr('ctyName', CityListData[cityId]);
-                }
+                cityName = cityName || CityListData[cityId] || '';
+                searchStore.setAttr('ctyName', cityName);
             };
 
             //我的附近
@@ -476,10 +462,11 @@ define(['TuanApp', 'TuanStore', 'CityListData'], function (TuanApp, TuanStore, C
                     "lng": +lon,
                     "lat": +lat
                 });
-                this.setCurrentCity({ CityID: cityId });
                 historyCityListStore.setAttr('nearby', true);
-
-                this.addHistoryCity(cityId, cityName);
+                if (cityId) {
+                    this.setCurrentCity({CityID: cityId});
+                    this.addHistoryCity(cityId, cityName);
+                }
                 var qparams = searchStore.getAttr('qparams') || [];
                 //清除qparams里面已有的距离参数
                 for (var i = 0, l = qparams.length; i < l; i++) {
@@ -488,14 +475,14 @@ define(['TuanApp', 'TuanStore', 'CityListData'], function (TuanApp, TuanStore, C
                         break;
                     }
                 }
-                qparams.push({type: 9, value: lat + '|' + lon + '|' + SEARCH_DISTANCE });
+                qparams.push({type: 9, value: lat + '|' + lon + '|' + StringsData.SEARCH_DISTANCE });
                 searchStore.setAttr('qparams', qparams);
             };
 
             //团购类型接收
             if (groupType) {
                 categoryfilterStore.remove();
-                searchStore.setAttr('ctype', GROUP_TYPE[groupType]);
+                searchStore.setAttr('ctype', StringsData.index2ctype[groupType]);
             };
 
             //星级筛选(酒店客房时，传star才有效)
