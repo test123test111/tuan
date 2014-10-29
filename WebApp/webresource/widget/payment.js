@@ -8,7 +8,7 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
 
     var WIDGET_NAME = 'Payment',
         PAYMENT_LINKS = {
-            DEV: 'https://secure.fat18.qa.nt.ctripcorp.com/webapp/payment2/index.html',
+            DEV: 'https://secure.fws.qa.nt.ctripcorp.com/webapp/payment2/index.html',
             TEST: 'https://secure.fws.qa.nt.ctripcorp.com/webapp/payment2/index.html',
             UAT: 'https://secure.uat.qa.nt.ctripcorp.com/webapp/payment2/index.html',
             PRO: 'https://secure.ctrip.com/webapp/payment2/index.html'

@@ -118,13 +118,14 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 var btnSearch = self.$el.find('#J_btnSearch');
                 if (!data.count || !data.products.length) {
                     btnSearch.hide();
+                } else {
+                    btnSearch.show();
                 }
                 this.clearPOIMarkers();
                 this.loadingLayer.hide();
                 this.addPOIMarkers(data.products);
                 MemCache.setItem('POIDATA', data);
 
-                // this.centerMarker && this.centerMarker.setMap(null);
                 if (!this.isTapScreen) {
                     this.addCenterMarker(center);
                     this.mapWidget.setFitView();
@@ -137,7 +138,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 this.getDistance();
                 this.infoText = infoTpl({
                     distance: this.distance,
-                    count: data.count || 0,//TODO: 等待接口提供count
+                    count: data.count,
                     ctext: GROUP_TEXT[this.category],
                     length: data.products.length
                 });
@@ -402,7 +403,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 });
             },
             /**
-            *
             * @param showDetail
             * @param target
             */

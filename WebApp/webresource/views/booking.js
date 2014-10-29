@@ -530,6 +530,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
             onHide: function () {
                 this.hideLoading();
+                this.hideLoadingLayer();
             },
 
             redirectToIndex: function () {
@@ -810,6 +811,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     } else {
                         self.showToast('订单提交失败请重试!');
                     };
+                    self.hideLoadingLayer();
                     self.hideLoading();
 
                     if (self.store.coupon) {
@@ -818,6 +820,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     };
                 }, function (err) {
                     self.hideLoading();
+                    self.hideLoadingLayer();
                     var errorMsg = (err.statusText === 'timeout') ? MSG.timeoutTips : MSG.failTips;
                     if (err.ResponseStatus && err.ResponseStatus.Ack.toLowerCase() == 'failure' && err.ResponseStatus.Errors && err.ResponseStatus.Errors.length > 0) {//0元团已购买过一次
                         errorMsg = self.getMsgByCode(err.ResponseStatus.Errors[0].ErrorCode); //'您已购买过此0元团产品，一个用户只能购买一次';
