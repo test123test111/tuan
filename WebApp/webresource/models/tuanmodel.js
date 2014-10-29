@@ -81,7 +81,7 @@
         }
     };
 
-    var T = {}, VERSION = 5.9;
+    var T = {}, VERSION = 6.0;
     //团购详情Model (zhang_f)
     T.TuanDetailModel = new cBase.Class(AbstractModel, {
         __propertys__: function () {
