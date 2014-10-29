@@ -1,5 +1,5 @@
 ﻿define(['cStore', 'cBase', 'cUtility'], function (AbstractStore, cBase, cUtility) {
-    var T = {};
+    var T = {}, VERSION = 6.0;
     //当前团购详情（zhang_f）
     T.TuanDetailsStore = new cBase.Class(AbstractStore, {
         __propertys__: function () {
@@ -122,7 +122,7 @@
                 qparams: [], //查询参数列表
                 sortRule: '2', //排序规则 2标识默认排序
                 sortType: '0', //排序方式 1标识降序
-                ver: 5.9,
+                ver: VERSION,
                 ctype: 0 //团购类型，默认全部
             };
         },
