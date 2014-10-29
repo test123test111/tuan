@@ -31,7 +31,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         pageid: '214019',
         hpageid: '215019',
         hasAd: true,
-        locating: false, //是否正在定位中                
+        locating: false, //是否正在定位中
         geoCallback: { status: 0, type: 0, cancelNearby: 0 }, //定位相关操作记录
         events: {
             'click .pro_list>li[data-id]': 'detailHandler', //详情页
@@ -124,7 +124,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             } catch (e) { }
 
             //首页之后的页面回到首页，不需要提示切换城市，保持原有选择城市
-            //或者已经点击过取消切换城市            
+            //或者已经点击过取消切换城市
             var noneedswitchcity = refer == "citylist" || refer == "detail" || refer == "list" || refer == "keywordsearch" || sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) == 1;
             if (!noneedswitchcity) {
                 this.geoCallback.type = 0;
@@ -767,13 +767,13 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 currentCity = self.getSelectedCity(),
                 alertMsg;
 
-            //如果用户点击取消，则不再提醒用户切换城市            
+            //如果用户点击取消，则不再提醒用户切换城市
             if (sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) == 1) {
                 return;
             }
             //有效的城市信息
             if (cityData && cityData.cityId && cityData.cityName) {
-                //如果用户点击取消，则不再提醒用户切换城市            
+                //如果用户点击取消，则不再提醒用户切换城市
                 if (sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) != 1 && (currentCity.id > 0 && currentCity.id != cityData.cityId)) {
                     if (cityData.hasGroupProduct) {
                         alertMsg = new cUIAlert({

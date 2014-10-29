@@ -139,7 +139,6 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
     };
     var TuanBaseView = BasePageView.extend(options);
 
-
     CommonPageFactory.register({
         name: PAGE_NAME,
         fn: TuanBaseView
@@ -152,7 +151,4 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
         name: PAGE_NAMELIST,
         fn: TuanBaseListView
     });
-
-
-
 });
