@@ -28,6 +28,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             Member = WidgetFactory.create('Member'),
             MSG, //提示信息
             PHONE_NUM_KEY = "电话",
+            EN_PHONE_NUM_KEY = "Mobile",
             ORDER_NUM = {
                 max: 9,
                 min: 1
@@ -362,7 +363,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         if (phoneListCount > 0) {
                             //如果只有一个电话
                             if (phoneListCount == 1) {
-                                self.selectPhoneItem({ val: phoneList[0][PHONE_NUM_KEY] });
+                                self.selectPhoneItem({ val: phoneList[0][PHONE_NUM_KEY] || phoneList[0][EN_PHONE_NUM_KEY] });
                             } else {
                                 self.showPhoneListPanel(phoneList);
                             };
@@ -453,7 +454,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             */
             _formatPhoneList: function (data) {
                 return data.map(function (item) {
-                    var val = item[PHONE_NUM_KEY];
+                    var val = item[PHONE_NUM_KEY] || item[EN_PHONE_NUM_KEY];
                     return {
                         key: val,
                         val: val
@@ -480,8 +481,11 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             * @param {Object} data 电话本条目 {name: "xx", phone: "13917754444"}
             */
             selectPhoneItem: function (data) {
-                this.els.telDom.val(data.val);
-                this.changeBtnState();
+                var val = data.val;
+                if (val) {
+                    this.els.telDom.val(val.replace(/-/g, ''));
+                    this.changeBtnState();
+                }
             },
             isIOS7: function () {
                 var ua = $.os;
