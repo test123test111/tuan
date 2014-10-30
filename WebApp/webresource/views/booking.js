@@ -147,6 +147,8 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     // 此字段服务有可能不下发 by liwl
                     store.invoiceText = store.invoiceText || null;
 
+                    store.isInApp = isInApp;
+
                     if (coupon && coupon.pid === store.id) {
                         store.coupon = coupon;
                     } else {
