@@ -58,10 +58,10 @@
         <span class="price1"><i>¥</i><span id="J_pPrice"><%=activities[0].arg * curNum%></span><%if(activities[0].type == 2 && user) {%>现金<%} %><%if(activities[0].type == 3 && user){%>携程礼品卡<%} %></span>
         </li>
         <%} %>
-
+        
         <li>手机
             <span class="inputbox"><input type="tel" placeholder="用于接收团购券号和密码" maxlength="11" required id="J_tel" value="<%=tel%>" /></span>
-            <!--<i class="icon icon_user" style="display:none" id="J_selectContact"></i>-->
+            <i class="icon icon_user" id="J_selectContact"></i>
         </li>
 
         <!--
