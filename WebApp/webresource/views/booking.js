@@ -223,7 +223,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.forwardJump('coupon', '/webapp/tuan/coupon');
                 },
                 'click .J_loginBtn': 'loginAction',
-                'click #J_selectContact': 'selectContact',
+                'click #J_selectContact': 'selectContactNew',
                 'click .J_selectDate': 'selectDate'   //门票选择日期
             },
 
@@ -344,37 +344,32 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.loadTuan();
                 };
             },
-            selectContact: function () {
+            selectContactNew: function() {
                 var self = this;
-
                 Guider.chooseContactFromAddressbook({
-                    /**
-                    * contact 数据格式
-                    *## {
-                    *##      name: '姓名',
-                    *##      phoneList: [ { '标签名':'1390000000000' }, ... ],
-                    *##      emailList: [ { '标签名':'foo@example.com' }, ... ]
-                    *## }
-                    */
-                    callback: function (contact) {
-                        var phoneList = contact && contact.phoneList,
-                            phoneListCount = phoneList && phoneList.length;
-
-                        if (phoneListCount > 0) {
-                            //如果只有一个电话
-                            if (phoneListCount == 1) {
-                                self.selectPhoneItem({ val: phoneList[0][PHONE_NUM_KEY] || phoneList[0][EN_PHONE_NUM_KEY] });
+                    callback: function (info) {
+                        var phones;
+                        if (!!info && !_.isEmpty(info)) {
+                            if (info.name === undefined && info.phoneList && !info.phoneList.length) {
+                                self.showToast("无法访问通讯录，导入失败");
                             } else {
-                                self.showPhoneListPanel(phoneList);
-                            };
-                        } else {
-                            //没有电话
+                                if (info.phoneList && info.phoneList.length) {
+                                    phones = self._formatPhoneList(info.phoneList);
+                                    if (phones.length === 1) {
+                                        self.selectPhoneItem(phones[0]);
+                                    } else {
+                                        new ScrollRadioList({
+                                            data: phones,
+                                            title: MSG.phoneListTitle,
+                                            itemClick: $.proxy(self.selectPhoneItem, self)
+                                        }).show();
+                                    }
+                                }
+                            }
                         }
                     }
                 });
-
             },
-
             /**
              * 门票选择日期 日历功能
              */
@@ -453,37 +448,21 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             * 格式化成scrolllistn能展示的格式
             */
             _formatPhoneList: function (data) {
-                return data.map(function (item) {
-                    var val = item[PHONE_NUM_KEY] || item[EN_PHONE_NUM_KEY];
-                    return {
-                        key: val,
-                        val: val
-                    };
+                return data.map(function (t, i) {
+                    t = _.values(t)[0];
+                    t = t.replace(/-/g, '');
+                    (t.length > 11) && (t = t.substr(-11, 11));
+                    return {key: i, val: t};
                 });
             },
             /**
-            * 如果一个人有多条电话条目，显示选择框
-            * @param {Array} phonelist 电话条目列表
-            */
-            showPhoneListPanel: function (phonelist) {
-                var self = this,
-                    panel;
-
-                panel = new ScrollRadioList({
-                    data: self._formatPhoneList(phonelist),
-                    title: MSG.phoneListTitle,
-                    itemClick: $.proxy(self.selectPhoneItem, self)
-                });
-                panel.show();
-            },
-            /**
-            * 选择电话本条目
-            * @param {Object} data 电话本条目 {name: "xx", phone: "13917754444"}
-            */
+             * @param data
+             * {key: '', val: ''}
+             */
             selectPhoneItem: function (data) {
                 var val = data.val;
                 if (val) {
-                    this.els.telDom.val(val.replace(/-/g, ''));
+                    this.els.telDom.val(val);
                     this.changeBtnState();
                 }
             },
