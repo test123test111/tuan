@@ -67,6 +67,9 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             var self = this;
             var cityTitle = cityName + '团购';
 
+            //修改首页的title
+            this.setTitle('携程旅行网触屏版-酒店团购');
+
             this.header.set({
                 customtitle: '<h1 id="J_headerTitle"><div id="J_cityBtn" class="list_hd_button"><em class="header_mutrow">' + cityTitle + '</em><i class="i_tri"></i></div></h1>',
                 citybtn: cityTitle,
@@ -458,7 +461,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                     var url = urls[searchData.ctyId];
 
                     if (url) {
-                        TuanApp.jumpToPage(url,self);
+                        TuanApp.jumpToPage(url, self);
                     } else {
                         self.forwardJump('localfeature', '/webapp/tuan/localfeature');
                     }
