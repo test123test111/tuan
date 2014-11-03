@@ -86,7 +86,7 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
                 tel: 4000086666,
                 events: {
                     returnHandler: function () {
-                        this.back();
+                        self.back();
                     },
                     homeHandler: function () {
                         self.redirectToIndex();
