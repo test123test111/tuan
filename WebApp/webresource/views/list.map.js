@@ -332,6 +332,10 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     infoWrap = self.$el.find('#J_infoWrap'),
                     mapWrap = self.$el.find('#J_map');
 
+                if (Util.isInApp() && $.os && $.os.ios) {
+                    infoWrap.css('top', '30px');
+                }
+
                 self.container = mapWrap;
                 self.mapWidget = new AMapWidget({
                     container: mapWrap,
