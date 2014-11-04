@@ -300,7 +300,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                     domain: '//' + document.domain + (port && port == 80 ? '' : (':'+port)),
                     param: '?t=1&from=' + encodeURIComponent('/webapp/tuan/detail/' + self.productId + '.html' + (this.cityId ? '?cityid=' + this.cityId : '')),
                     callback: function () {
-                        self.onLoad(self.referer);
+                        self._onLoad(self.referer);
                     }
                 });
                 return false;
