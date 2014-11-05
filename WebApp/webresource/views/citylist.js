@@ -1,5 +1,8 @@
-﻿define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetFactory', 'cGeoService', 'TuanModel', 'cDataSource', 'TuanStore', 'StoreManage', 'text!CityListTpl', 'cWidgetGeolocation', 'HttpErrorHelper'],
-function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoService, TuanModel, cDataSource, TuanStore, StoreManage, html, cGeolocation, HttpErrorHelper) {
+﻿/**
+ * @description 团购城市列表页
+ */
+define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetFactory', 'cGeoService', 'TuanModel', 'cDataSource', 'TuanStore', 'StoreManage', 'text!CityListTpl', 'cWidgetGeolocation', 'HttpErrorHelper', 'cUtility'],
+function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoService, TuanModel, cDataSource, TuanStore, StoreManage, html, cGeolocation, HttpErrorHelper, Util) {
     var cui = c.ui, GeoLocation = cGeoService.GeoLocation;
     var tuanSearchStore = TuanStore.GroupSearchStore.getInstance(),
         geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
@@ -9,6 +12,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
         getLocalCityInfoModel = TuanModel.TuanLocalCityInfo.getInstance(),
         historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance();
     var PageView = CommonPageFactory.create("TuanBaseView");
+    var isInApp = Util.isInApp();
     var View = PageView.extend({
         pageid: '214002',
         hpageid: '215002',
@@ -18,16 +22,17 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
         render: function () {
             this.els = {
                 eltuancitylistbox: this.$el.find('#citylist_box'),
-                eltuancitykeyword: this.$el.find('.place_search_box>.place_search')
+                eltuancitykeyword: this.$el.find('#J_searchCityInput'),
+                searchBox: this.$el.find('.J_searchWrap')
             };
             this.cityListTplfun = _.template(html);
         },
         events: {
             'click .history_close': 'cancelInput',
-            'click .city_type': 'cityGroupTitleClick',
-            'click .place_search': 'clickInput',
-            'input .place_search': 'searchKeyWordInput',
-            'click .city-item': 'cityItemOnClick',
+            'click .J_cityType': 'cityGroupTitleClick',
+            'focus #J_searchCityInput': 'clickInput',
+            'input #J_searchCityInput': 'searchKeyWordInput',
+            'click .J_cityItem': 'cityItemOnClick',
 
             //@since 20140609
             'click .J_cityTagTitle': 'cityTagTitleClick'
@@ -91,15 +96,15 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
         },
         cityTagTitleClick: function (e) {
             var $this = $(e.currentTarget),
-                $parent = $this.parent();
+                $parent = $this.parent(),
+                x;
             $parent.find('.city_list>li').toggle();
-            $this.find('.J_cityTagIcon').toggleClass('view_fold view_unfold');
+            $this.toggleClass('arr_down arr_up');
+            $parent.siblings().find('.city_list>li').hide();
             $this.next().find('.city_list').show();
-            $parent[0].scrollIntoView();
-            //scrollIntoView 执行需要时间，延时再进行移动
-            setTimeout(function () {
-                window.scrollBy(0, -45);
-            }, 50);
+
+            x = isInApp ? $parent.offset().top : $parent.offset().top - 45;
+            window.scrollTo(0, x);
         },
 
         buildEvent: function () {
@@ -336,6 +341,14 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
         //加载数据时
         onLoad: function (referUrl) {
             this.turning();
+            this.setHeader();
+            this.updatePage(function () {
+                this.hideLoading();
+                this.$el.bind('focus', this.onBodyChange);
+                this.$el.bind('touchstart', this.onBodyChange);
+            });
+        },
+        setHeader: function() {
             var self = this;
             this.header.set({
                 title: '选择城市',
@@ -349,11 +362,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
                 }
             });
             this.header.show();
-            this.updatePage(function () {
-                this.hideLoading();
-                this.$el.bind('focus', this.onBodyChange);
-                this.$el.bind('touchstart', this.onBodyChange);
-            });
+            !isInApp && this.header.rootBox.show();
         },
         cancelInput: function (e) {
             this.hasSearchShow = false;
@@ -362,20 +371,52 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
             //点击取消时显示索引标签ABCD等
             this.els.eltuancitylistbox.find('.J_cityTagTitle').show();
             this.showHotCitys();
+            this.updateZIndex(false);
+            this.mask && this.mask.hide();
+            this.setHeader();
+            if (isInApp && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
+                this.els.searchBox.css('border-top', '0');
+            }
         },
         clickInput: function () {
             this.hasSearchShow = true;
             this.$el.find(".history_close").show();
+            //隐藏头部
+            if (this.header) {
+                this.header.hide();
+                this.header.rootBox && this.header.rootBox.hide();
+                if (isInApp && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
+                    this.els.searchBox.css('border-top', '20px solid #b3b3b3');
+                }
+            }
+            this.updateZIndex(true);
+            !this.mask && (this.mask = new c.ui.Mask());
+            this.mask.show();
+        },
+        /**
+         * @param flag
+         * flag = true =====> show
+         */
+        updateZIndex: function(flag) {
+            var items = this.$el.find('#J_allCitiesBox');
+            if (flag) {
+                this.els.searchBox.css({zIndex: 4000});
+                items.css({position: 'relative', zIndex: 4000});
+                this.els.eltuancitykeyword.focus();
+            } else {
+                this.els.searchBox.css({zIndex: 'auto'});
+                items.css({position: 'static', zIndex: 'auto'});
+            }
         },
         showHotCitys: function () {
             this.els.eltuancitylistbox.find(".city_list:not(.allcity)").show();
-            this.els.eltuancitylistbox.find(".city_type").show();
+            this.els.eltuancitylistbox.find(".J_cityType").show();
             this.$el.find('.s_city_num>span').text(this.citycount);
             this.els.eltuancitylistbox.find('.city_list.allcity>li[data-filter]').hide();
         },
         hideHotCitys: function () {
             this.els.eltuancitylistbox.find(".city_list.allcity").show();
-            this.els.eltuancitylistbox.find(".city_type").hide();
+            this.els.eltuancitylistbox.find(".J_cityType").hide();
             this.els.eltuancitylistbox.find(".city_list:not(.allcity)").hide();
         },
         searchKeyWordInput: function (e) {
@@ -458,3 +499,8 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
     });
     return View;
 });
+
+/**
+ * @changelog:
+ *  v2.6: 1. dom更新，替换js中用到的样式class为JS专用。 2. 交互优化
+ */
