@@ -910,7 +910,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 this.hideLoading();
                 var urls = {};
                 _.each(_.filter(data.Banner || [], function (o) { return o.type === 14; }), function (o) {
-                    return urls[o.cityid] = o.url;
+                    return urls[o.cityid] = $.trim(o.url);
                 });
                 complete && complete(urls);
             }, function () {
