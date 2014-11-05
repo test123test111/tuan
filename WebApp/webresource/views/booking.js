@@ -204,18 +204,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             },
             events: {
                 'click #J_submitOrder': 'goNextStep',
-                /*'focus #J_tel': function () {
-                    var self = this;
-                    this.submitBtnTimer = setInterval(function () {
-                        self.changeBtnState();
-                    }, 500);
-                },
-                'blur #J_tel': function () {
-                    this.changeBtnState();
-                    if (this.submitBtnTimer) {
-                        clearInterval(this.submitBtnTimer);
-                    }
-                },*/
                 'click #J_invoice': function () {
                     this.forwardJump('invoice', '/webapp/tuan/invoice');
                 },
@@ -361,7 +349,8 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                                         new ScrollRadioList({
                                             data: phones,
                                             title: MSG.phoneListTitle,
-                                            itemClick: $.proxy(self.selectPhoneItem, self)
+                                            itemClick: $.proxy(self.selectPhoneItem, self),
+                                            key: phones[0].key
                                         }).show();
                                     }
                                 }
@@ -452,7 +441,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     t = _.values(t)[0];
                     t = t.replace(/-/g, '');
                     (t.length > 11) && (t = t.substr(-11, 11));
-                    return {key: i, val: t};
+                    return {key: i + '', val: t};
                 });
             },
             /**
