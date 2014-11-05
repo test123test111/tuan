@@ -439,7 +439,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             _formatPhoneList: function (data) {
                 return data.map(function (t, i) {
                     t = _.values(t)[0];
-                    t = t.replace(/-/g, '');
+                    t = t.replace(/-| /g, '');
                     (t.length > 11) && (t = t.substr(-11, 11));
                     return {key: i + '', val: t};
                 });
