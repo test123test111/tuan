@@ -445,6 +445,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 if (!lng || !lat) {
                     return;
                 }
+                //防止出现多个中心点
+                this.centerMarker && this.centerMarker.setMap(null);
                 marker = mapWidget.addMarker({
                     position: new mapWidget.host.LngLat(lng, lat), //基点位置
                     offset: { x: -7, y: -36 }, //相对于基点的位置
