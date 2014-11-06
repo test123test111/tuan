@@ -201,6 +201,12 @@ define(['PageHistory'], function (PageHistory) {
 
                 Guider.backToLastPage({ 'param': JSON.stringify({ "biz": "tuan", "refresh": "1" }) });
             });
+        },
+        /**
+         * 判断是够是IOS，而且系统是IOS7及以上
+         */
+        isOverOS7: function() {
+            return $.os && $.os.ios && parseInt($.os.version, 10) >= 7;
         }
     };
 

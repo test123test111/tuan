@@ -1,3 +1,4 @@
+<% var newType = isShow;  %>
 <article  class="cont_wrap">
     <div class="tuan_title">团购信息</div>
     <ul class="apply_refund">
@@ -22,22 +23,29 @@
     </ul>
     <div class="tuan_title">退款方式</div>
     <ul class="apply_refund choose_list">
-        <li class="choosed">原路退回
+        <%if (newType) {%>
+            <li class="J_refundType" data-type="1">退至现金余额
+                <p class="color_gray">1-2个工作日内退回携程钱包现金余额，礼品卡<br>支付部分退回礼品卡账户，无手续费</p>
+            </li>
+        <%}%>
+        <li class="J_refundType <%if (!newType) {%>choosed<%}%>"  data-type="0">原路退回
             <p class="color_gray">款项将在3-10个工作日内退回您的支付帐户</p>
         </li>
     </ul>
     <div class="tuan_title">退款原因</div>
     <ul class="apply_refund choose_list apply_refund_reason">
-        <li>预订未成功，无法使用</li>
-        <li>行程有变，无法使用</li>
         <li>买多了/买错了</li>
-        <li>酒店条件或服务差</li>
+        <li>计划有变，没时间消费</li>
+        <li>预约不上</li>
+        <li>商家无法验券</li>
+        <li>产品的描述与实际不符</li>
+        <li>商家说没有该团购产品</li>
         <li>其他</li>
     </ul>
     <div class="mg10 reason_other_text" style="display:none">
         <textarea class="in_reason_other" placeholder="请输入其他退款原因。"></textarea>
     </div>
     <div class="mg10">
-        <input type="button" class="btn_blue" value="确认退款">
+        <input type="button" class="btn_blue J_btnSubmit" value="确认退款">
     </div>
 </article>

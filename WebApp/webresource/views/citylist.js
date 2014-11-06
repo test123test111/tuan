@@ -374,7 +374,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
             this.updateZIndex(false);
             this.mask && this.mask.hide();
             this.setHeader();
-            if (isInApp && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
+            if (isInApp && TuanApp.isOverOS7()) {
                 this.els.searchBox.css('border-top', '0');
             }
         },
@@ -385,7 +385,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
             if (this.header) {
                 this.header.hide();
                 this.header.rootBox && this.header.rootBox.hide();
-                if (isInApp && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
+                if (isInApp && TuanApp.isOverOS7()) {
                     this.els.searchBox.css('border-top', '20px solid #b3b3b3');
                 }
             }

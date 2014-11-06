@@ -24,12 +24,14 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             return Math.round(ret * 100) / 100;
         },
         Guider = WidgetFactory.create('Guider'),
+        chooseCls = 'choosed',
+        errorCls = 'errorli',
 
         View = PageView.extend({
             pageid: '260004',
             hpageid: '261004',
             render: function () {
-                this.$el.html($.trim(html));
+                this.$el.html(_.template(html, {isShow: true}));
                 this.els = {
                     productName: this.$el.find('#J_productName'),
                     iscCount: this.$el.find('#J_iscCount'),
@@ -40,17 +42,19 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     refundInvoiceWrap: this.$el.find('#J_refundInvoiceWrap'),
                     refundInvoiceAmount: this.$el.find('#J_refundInvoiceAmount'),
                     btnMinus: this.$el.find('#J_minus'),
-                    btnPlus: this.$el.find('#J_plus')
+                    btnPlus: this.$el.find('#J_plus'),
+                    $types: this.$el.find('.J_refundType')
                 };
             },
             onCreate: function () {
                 this.render();
             },
             events: {
-                'click .btn_blue': 'onSubmitRefund',
+                'click .J_btnSubmit': 'onSubmitRefund',
                 'click .minus': 'onCouponMinus',
                 'click .plus': 'onCouponPlus',
-                'click .apply_refund_reason>li': 'onRefundReasonChange'
+                'click .apply_refund_reason>li': 'onRefundReasonChange',
+                'click .J_refundType': 'selectRefundType'
             },
             onCouponMinus: function (e) {
                 var cur = $(e.currentTarget),
@@ -265,9 +269,24 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 this.from = decodeURIComponent(Lizard.P('from') || '');
                 this.checkLogin() && this.loadDetail();
             },
+            selectRefundType: function(e) {
+                var $this = $(e.target);
+                this.els.$types.removeClass(errorCls)
+                    .removeClass(chooseCls);
+                $this.closest('.J_refundType').addClass(chooseCls);
+            },
             onSubmitRefund: function () {
                 var self = this,
-                    confirmAlert = new c.ui.Alert({
+                    confirmAlert;
+
+                if (!this.els.$types.filter('.' + chooseCls).length) {
+                    this.showToast('请选择退款方式',3, function() {
+                        self.els.$types.addClass(errorCls);
+                    });
+                    return false;
+                }
+
+                confirmAlert = new c.ui.Alert({
                         title: MSG.alertTitle,
                         message: MSG.confirmContent,
                         buttons: [{
@@ -291,6 +310,8 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 var reasonText = "";
                 var ticketlist = [];
                 var num = +this.els.refundCount.text(); //退回数量
+                var refundType = this.els.$types.filter('.'+chooseCls).attr('data-type'),
+                    ticket;
 
                 if (+num <= 0) {
                     this.showToast("请输入需要回退的数量！");
@@ -309,11 +330,15 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     }
                 };
                 for (var i = 0; i < +num; i++) {
-                    ticketlist.push({
+                    ticket = {
                         TicketNO: this.tuanCouponList[i],
                         OrderType: 1,
                         Trmk: reasonText || ''
-                    });
+                    };
+                    if (refundType) {
+                        ticket.PayBackType = parseInt(refundType, 10);
+                    }
+                    ticketlist.push(ticket);
                 };
                 refundTicketModel.setParam({
                     head: CStore.HeadStore.getInstance().get(),

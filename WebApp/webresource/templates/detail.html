@@ -45,7 +45,7 @@ if (data.contents && data.contents.length) {
 }
 var category = data.category;
 //是否在线订门票
-var isOnlineBookingTicket = category.ctgoryid == 6 && category.subctgory == 2;
+var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.subctgory == 2) : false;
 %>
 <nav class="tuan_pic" id="J_pic">
     <img src="<%=imgSrc%>"/>
@@ -120,17 +120,29 @@ var isOnlineBookingTicket = category.ctgoryid == 6 && category.subctgory == 2;
     var hotelId = hotel && hotel.id;
     var coords = hotel.coords[0];
     var isShowMap=addr&&coords&&coords.lat&&coords.lon&&(coords.lat>-1&&coords.lat<1000)&&(coords.lon>-1&&coords.lon<1000);
-    var hotelTel=hotel.phone && hotel.phone.split(',')[0];
+    var hotelTel = hotel.phoneList;
     %>
-    <% if(addr || hotelTel || (data.features && data.features.length)){ %>
+    <% if(addr || (hotelTel && hotelTel.length) || (data.features && data.features.length)){ %>
         <% if(addr){ %>
         <li class="<%if(addr&&isShowMap) {%>arr_r J_showDetailMap<%} %>" data-hotel-name="<%=hotel.shortName || hotel.name%>" data-coords="<%=coords.lon%>,<%=coords.lat%>">
               <span class="subb_address i_bef"><%=(addr?addr:"暂无地址信息") %></span>
               <%if(isShowMap){ %><span class="icon_txt">地图</span><%} %>
         </li>
         <%}%>
-    <%if(hotelTel){ %>
-    <li class="J_phone" data-phone="<%=data.hotels[0].splitphone %>"> <span class="subb_phone i_bef "><%=hotelTel %></span> <i class="icon_txt">预约/咨询</i></li>
+    <%if(hotelTel && hotelTel.length){
+        var phones = _.map(hotelTel, function(p) {return p.phone;});
+
+    %>
+        <li class="arr_r wrap_phone J_phone" data-phone='<%=phones.join(",") %>'>
+            <a <%if (phones.length === 1) {%>href="tel:<%=phones[0] %>"<%} else {%>href="javascript:void(0);"<%}%>>
+                <span class="subb_phone i_bef">
+                <%_.each(phones, function(t) {%>
+                    <span><%=t %></span>
+                <%}); %>
+                </span>
+                <i class="icon_txt">预约/咨询</i>
+            </a>
+        </li>
     <%} %>
     <!-- 特色服务 -->
     <%if(data.features && data.features.length){
@@ -186,8 +198,9 @@ var isOnlineBookingTicket = category.ctgoryid == 6 && category.subctgory == 2;
             </li>
             <%if(hotelData.phone){%>
             <li class="J_phone" data-phone="<%=hotelData.phone%>">
-                <span class="subb_phone i_bef"><%=hotelData.phone%></span>
+                <a href="tel:<%=hotelData.phone%>"><span class="subb_phone i_bef"><%=hotelData.phone%></span>
                 <i class="icon_txt">预约/咨询</i>
+                </a>
             </li>
             <%}%>
         </ul>
@@ -282,6 +295,7 @@ var isOnlineBookingTicket = category.ctgoryid == 6 && category.subctgory == 2;
                                 <dfn>¥</dfn><%=data.price.cPrice %>
                             </del>
                         </div>
+                        <div class="ui-distance"><span class="subb_address i_bef"></span>距离该商户<%=data.distance > 1 ? (data.distance.toFixed(1) + '公里') : (Math.round(data.distance * 1000) + '米')%></div>
                     </div>
                 </li>
             <%})%>

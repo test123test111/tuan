@@ -720,11 +720,18 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             pPrice,
                             tmpPrice,
                             invoice = invoiceStore.get(),
-                            amount = store.coupon ? store.coupon.amount : 0,
+                            amount,
+                            couponType,
                             num = parseInt(self.$el.find('#J_curNum').text().trim()),
                             dPrice = self.price;
 
-//                        window.tuanDetailStore = tuanDetailStore;
+                        if (store.coupon) {
+                            amount = store.coupon.amount;
+                            couponType = store.coupon.couponType
+                        } else {
+                            amount = 0;
+                        }
+
                         tuanDetailStore.setAttr('curNum', num);
 
                         if (store.activities && store.activities.length > 0 &&
@@ -733,12 +740,20 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             pPrice = activity.arg * num;
                             self.els.pPriceDom.html(pPrice);
                         }
-
-                        tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) - amount) * num);
+                        /*
+                         * couponType
+                         * 为 2 的优惠券  实付的金额=总金额-优惠券金额
+                           为 3 的优惠券  实付金额=总金额-（优惠券金额*数量）
+                         */
+                        if (couponType === 2) {
+                            tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) * num) - amount);
+                        } else{
+                            tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) - amount) * num);
+                        }
                         tmpPrice = (tmpPrice > 0 ? tmpPrice : 0) + (invoice && invoice.deliveryMethod == 1 ? 10 : 0);
                         self.els.totalPriceDom.html(tmpPrice > 0 ? tmpPrice : 0);
                         if (self.els.couponAmount.length) {
-                            self.els.couponAmount.html(retainTwoDecimal(amount * num))
+                            (couponType === 3) && self.els.couponAmount.html(retainTwoDecimal(amount * num));
                         }
                     }
                 });
