@@ -381,7 +381,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                          * 查询无结果，出提示，且“查询屏幕范围内的团购“隐藏
                          * 再次移动地图后，重新显示”查询屏幕范围内的团购“控件
                          */
-                        if (!self.poiMarkers.length) {
+                        if (!self.poiMarkers.length && !self.isTooLarge) {
                             btnSearch.show();
                         }
                     },
@@ -445,6 +445,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 if (!lng || !lat) {
                     return;
                 }
+                //防止出现多个中心点
+                this.centerMarker && this.centerMarker.setMap(null);
                 marker = mapWidget.addMarker({
                     position: new mapWidget.host.LngLat(lng, lat), //基点位置
                     offset: { x: -7, y: -36 }, //相对于基点的位置

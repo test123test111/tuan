@@ -318,7 +318,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         },
         /**
         * 是否是选择了附近的团购
-        * @return {Boolean} 
+        * @return {Boolean}
         */
         isNearBy: function () {
             //return true;
@@ -421,14 +421,20 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         },
         getConditionData: function (cityId) {
             conditionModel.setParam('ctyId', cityId);
-            var type = 1; //品牌
-            type |= 2; //行政区
-            type |= 4; //商业区
-            type |= 8; //大学周边
-            //type |= 16; //团购类型(一级分类)
-            //type |= 32; //团购类型(二级分类)
-            type |= 64; //团购类型(一级分类)
-            type |= 128; //团购类型(二级分类)
+            var type = 1; //品牌 Brand
+            type |= 2;    //行政区 Location
+            type |= 4;    //商业区 Zone
+            type |= 8;    //大学周边 School
+            //type |= 16; //团购类型(一级分类) Category
+            //type |= 32; //团购类型(二级分类) SubCategory
+            type |= 64;   //团购类型(一级分类) NewCategory
+            type |= 128;  //团购类型(二级分类) NewSubCategory
+            type |= 256;  //火车站 RailwayStation
+            type |= 512;  //飞机场 Airport
+            type |= 1024; //地铁线路 SubwayLine
+            type |= 2048; //地铁站点 SubwayStation
+            type |= 4096; //景点 Attraction
+            type |= 8192; //酒店特色 HotelFeature
             conditionModel.setParam('type', type);
             conditionModel.setParam('categroy', searchStore.getAttr('ctype'));
             conditionModel.excute(function (data) {
@@ -626,14 +632,14 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                             lat: gps.lat || 0,
                             name: cityInfo.name + MSG.cityCenter
                         });
-                    } else if (posType == '-1' || posType == '5') { //大学周边或商业区
+                    } else if (posType < 0 || posType == '5') { //地铁站、机场车站、景点、大学周边或商业区
                         searchStore.setAttr('pos', pos);
                     }
                 }
             } else {
                 model = listModel;
                 key = 'products';
-                if (pos && posType == '-1') {//大学周边
+                if (pos && posType < 0) {//大学周边
                     searchStore.setAttr('pos', pos);
                 } else {
                     searchStore.removeAttr('pos');
