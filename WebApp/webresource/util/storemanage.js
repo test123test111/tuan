@@ -269,7 +269,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             this.setCurrentKeyWord({ id: id, word: name, type: keyType });
 
             //移除位置区域里面重复的条件
-            if ((positionType == '-1' || positionType == '5') && (keyType == 'zone' || keyType == 'markland')) {
+            if ((positionType < 0 || positionType == '5') && (keyType == 'zone' || keyType == 'markland')) {
                 positionfilterStore.remove();
             }
             if (positionType == '4' && keyType == 'location') {
