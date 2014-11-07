@@ -29,7 +29,7 @@
             for(var j in Item.cities){
             var c=Item.cities[j];
     %>
-    <li class="J_cityItem <% if(cityid && cityid == c.id){ %> choosed<%} %>" data-name="<%=c.name%>" data-id="<%=c.id%>" data-filter="<%=((c.jp?c.jp.toLowerCase():'')  + ' ' + ( c.initial?'':c.initial.toLowerCase())  + ' ' + c.name + ' ' + (c.py?c.py.toLowerCase():'') ) %>"><%=c.name %></li>
+    <li class="J_cityItem <% if(cityid && cityid == c.id){ %> choosed<%} %>" data-name="<%=c.name%>" data-id="<%=c.id%>" data-filter="<%=((c.jp?c.jp.toLowerCase():'')+' '+(c.initial?'':c.initial.toLowerCase())+' '+c.name+' '+(c.py?c.py.toLowerCase():''))%>"><%=c.name %></li>
     <%
             }
         }
@@ -43,13 +43,13 @@
             if (itm.tag !== '热门' && itm.cities[0]) {
         %>
             <dl>
-                <dt class="ui-title J_cityTagTitle arr_up"><%=itm.tag %></dt>
+                <dt class="ui-title J_cityTagTitle arr_down"><%=itm.tag %></dt>
                 <dd>
                     <ul class="city_list allcity">
                         <%
                             _.each(itm.cities, function(ctm) {
                         %>
-                            <li style="display: none;" class="J_cityItem <% if(ctm.isHot){ %> highlight<%} %>" data-name="<%=ctm.name %>" data-id="<%=ctm.id %>" data-filter="<%=((ctm.jp?ctm.jp.toLowerCase():'')  + ' ' + ( ctm.initial?'':ctm.initial.toLowerCase())  + ' ' + ctm.name + ' ' + (ctm.py?ctm.py.toLowerCase():'') ) %>"><%=ctm.name %> <span><%=ctm.cGroups %></span></li>
+                            <li style="display: none;" class="J_cityItem <% if(ctm.isHot){ %> highlight<%} %>" data-name="<%=ctm.name %>" data-id="<%=ctm.id %>" data-filter="<%=((ctm.jp?ctm.jp.toLowerCase():'')+' '+(ctm.initial?'':ctm.initial.toLowerCase())+' '+ctm.name+' '+(ctm.py?ctm.py.toLowerCase():''))%>"><%=ctm.name %> <span><%=ctm.cGroups %></span></li>
                         <%
                             }); //end each citites
                         %>

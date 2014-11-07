@@ -41,11 +41,15 @@
                 <i class="icon_txt">地图</i>
             </li>
             <%}%>
-            <%if(ContactInfo.splitphone){%>
-            <li id="J_hotelTel" data-phone="<%=ContactInfo.splitphone%>">
-                <span class="subb_phone i_bef"><%=ContactInfo.hotline%></span>
-                <i class="icon_txt">预约/咨询</i>
-            </li>
+            <%if (ContactInfo.phoneList && ContactInfo.phoneList.length) {
+                var phones = _.map(ContactInfo.phoneList, function(p) {return p.phone;});
+            %>
+                <li id="J_hotelTel" data-phone="<%=phones.join(',')%>">
+                    <a <%if (phones.length === 1) {%>href="tel:<%=phones[0]%>"<%} else {%>href="javascript:void(0);" <%}%>>
+                        <span class="subb_phone i_bef"><%=ContactInfo.hotline%></span>
+                        <i class="icon_txt">预约/咨询</i>
+                    </a>
+                </li>
             <%}%>
         </ul>
         <%}%>
