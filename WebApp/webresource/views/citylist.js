@@ -13,6 +13,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
         historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance();
     var PageView = CommonPageFactory.create("TuanBaseView");
     var isInApp = Util.isInApp();
+    var ICON = {up: 'arr_up', down: 'arr_down'};
     var View = PageView.extend({
         pageid: '214002',
         hpageid: '215002',
@@ -97,11 +98,14 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
         cityTagTitleClick: function (e) {
             var $this = $(e.currentTarget),
                 $parent = $this.parent(),
+                isUp = $this.hasClass(ICON.up),
                 x;
-            $parent.find('.city_list>li').toggle();
-            $this.toggleClass('arr_down arr_up');
+            this.els.$allCityBox.find('.J_cityTagTitle').removeClass(ICON.up).addClass(ICON.down);
+            if (!isUp) {
+                $this.toggleClass(ICON.down + ' ' +ICON.up);
+            }
             $parent.siblings().find('.city_list>li').hide();
-            $this.next().find('.city_list').show();
+            $parent.find('.city_list>li').show();
 
             x = isInApp ? $parent.offset().top : $parent.offset().top - 45;
             window.scrollTo(0, x);
@@ -309,6 +313,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
             });
 
             this.els.eltuancitylistbox.html($.trim(html));
+            this.els.$allCityBox = this.$el.find('#J_allCitiesBox');
 
             if (data.cities.length <= 0) {
                 this.els.eltuancitylistbox.find('.city_noresult').show();
@@ -369,7 +374,9 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
             this.els.eltuancitykeyword.val('');
             this.$el.find(".history_close").hide();
             //点击取消时显示索引标签ABCD等
-            this.els.eltuancitylistbox.find('.J_cityTagTitle').show();
+            this.els.eltuancitylistbox.find('.J_cityTagTitle')
+                .addClass(ICON.down).removeClass(ICON.up)
+                .show();
             this.showHotCitys();
             this.updateZIndex(false);
             this.mask && this.mask.hide();
@@ -381,6 +388,8 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
         clickInput: function () {
             this.hasSearchShow = true;
             this.$el.find(".history_close").show();
+            this.els.eltuancitylistbox.find('.J_cityTagTitle')
+                .addClass(ICON.up).removeClass(ICON.down);
             //隐藏头部
             if (this.header) {
                 this.header.hide();
@@ -398,14 +407,13 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
          * flag = true =====> show
          */
         updateZIndex: function(flag) {
-            var items = this.$el.find('#J_allCitiesBox');
             if (flag) {
                 this.els.searchBox.css({zIndex: 4000});
-                items.css({position: 'relative', zIndex: 4000});
+                this.els.$allCityBox.css({position: 'relative', zIndex: 4000});
                 this.els.eltuancitykeyword.focus();
             } else {
                 this.els.searchBox.css({zIndex: 'auto'});
-                items.css({position: 'static', zIndex: 'auto'});
+                this.els.$allCityBox.css({position: 'static', zIndex: 'auto'});
             }
         },
         showHotCitys: function () {
@@ -502,5 +510,5 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
 
 /**
  * @changelog:
- *  v2.6: 1. dom更新，替换js中用到的样式class为JS专用。 2. 交互优化
+ *  v2.6: 1. dom更新，替换js中用到的样式class为JS专用。 2. 交互优化. 注意： CSSer帮忙隐藏了arr_down下面的城市列表
  */

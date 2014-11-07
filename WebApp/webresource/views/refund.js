@@ -31,7 +31,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             pageid: '260004',
             hpageid: '261004',
             render: function () {
-                this.$el.html(_.template(html, {isShow: true}));
+                this.$el.html(html);
                 this.els = {
                     productName: this.$el.find('#J_productName'),
                     iscCount: this.$el.find('#J_iscCount'),
@@ -232,6 +232,9 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                         this.els.refundInvoiceAmount.text(this.invoiceAmt);
                     }
                 }
+
+                //是否支持急速退
+                this.els.$types.filter('[data-type="1"]')[!!data.isFastRefund ? 'show' : 'hide']();
 
             },
             alertErrorMsg: function (title, message) {

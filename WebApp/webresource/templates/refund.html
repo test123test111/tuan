@@ -1,4 +1,3 @@
-<% var newType = isShow;  %>
 <article  class="cont_wrap">
     <div class="tuan_title">团购信息</div>
     <ul class="apply_refund">
@@ -23,11 +22,9 @@
     </ul>
     <div class="tuan_title">退款方式</div>
     <ul class="apply_refund choose_list">
-        <%if (newType) {%>
-            <li class="J_refundType" data-type="1">退至现金余额
-                <p class="color_gray">1-2个工作日内退回携程钱包现金余额，礼品卡<br>支付部分退回礼品卡账户，无手续费</p>
-            </li>
-        <%}%>
+        <li class="J_refundType" data-type="1" style="display: none;">退至现金余额
+            <p class="color_gray">1-2个工作日内退回携程钱包现金余额，礼品卡<br>支付部分退回礼品卡账户，无手续费</p>
+        </li>
         <li class="J_refundType <%if (!newType) {%>choosed<%}%>"  data-type="0">原路退回
             <p class="color_gray">款项将在3-10个工作日内退回您的支付帐户</p>
         </li>

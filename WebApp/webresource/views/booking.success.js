@@ -6,8 +6,7 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
     function (TuanApp, libs, Util, TStore, c, WidgetGuider, WidgetFactory, TModel, TuanBaseView, CommonPageFactory, CStore, Payment, html, recommendTpl) {
         'use strict';
         //返回目标页面, 订单号, 团购订单列表, 订单详情Model, 用户相关, 提示信息
-        var resultStore, orderId, listStore, detailModel, userStore, MSG,
-            Payment = WidgetFactory.create('Payment'),
+        var orderId,
             Guider = WidgetFactory.create('Guider'),
             Member = WidgetFactory.create('Member'),
             cui = c.ui,
@@ -26,6 +25,7 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
                 warningTip: '没有检索到数据!',
                 needLoginTip: '需要先登录才能查看订单信息'
             };
+            Payment = WidgetFactory.create('Payment');
 
         //保留两位有效数字
         function retainTwoDecimal(str) {

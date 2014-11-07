@@ -9,8 +9,8 @@ define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider'], function(libs, c, Widge
     function CallPhone(options) {
         var Noop = function() {},
             defaultOpt = {
-                tpl: '<ul class="pop_filter_baselist2"><%_.each(data, function(t) {%> <li class="J_phoneItem" data-phone="<%=t %>"><a href="tel:<%=t %>" style="display: inline-block;width: 100%;"><%=t %></a></li> <%});%></ul>',
-                wrap:'<div class="pop_filter J_phoneListPanel" style="bottom: 36px; width: 100%; position: fixed; list-style: none; z-index: 9999; -webkit-transform: translate(0px, -8px) translateZ(0px); opacity: 1; display: none; "></div>',
+                tpl: '<%_.each(data, function(t) {%> <div class="base_btn02"><a href="tel:<%=t %>" style="display: inline-block;width: 100%;"><%=t %></a></div> <%});%><div class="base_btn02 J_cancelPhone">取消</div>',
+                wrap:'<div class="wrapBottom J_phoneListPanel" style="z-index: 9999"></div>',
                 ele: '.J_phone',
                 onSelect: Noop,
                 onHide: Noop,
@@ -31,7 +31,7 @@ define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider'], function(libs, c, Widge
             !this.mask && (this.mask = new c.ui.Mask({
                 onCreate: function() {
                     this.root.on('click', function() {
-                        self.phonePanel.hide();
+                        self.hidePanel();
                         self.hideMask();
                     });
                 }
@@ -64,10 +64,9 @@ define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider'], function(libs, c, Widge
         },
         _phoneItemHandler: function(e) {
             this.hideMask();
+            this.hidePanel();
             var phone = $(e.currentTarget).attr('data-phone');
             phone && this.makePhoneCall(phone);
-            this.phonePanel && this.phonePanel.hide();
-
             this.opt.onSelect && this.opt.onSelect.apply(this);
         },
         _initPanel: function() {
@@ -76,7 +75,11 @@ define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider'], function(libs, c, Widge
                 this.view.$el.append(this.opt.wrap);
                 this.phonePanel = this.view.$el.find('.J_phoneListPanel');
                 this.phonePanel.on('click', '.J_phoneItem', this._phoneItemHandler.bind(this));
+                this.phonePanel.on('click', '.J_cancelPhone', function() {this.hideMask();this.hidePanel();}.bind(this));
             }
+        },
+        hidePanel: function() {
+            this.phonePanel && this.phonePanel.hide();
         },
         _updatePhoneList: function(phones) {
             this.phonePanel.html(_.template(this.opt.tpl, {data: phones}));

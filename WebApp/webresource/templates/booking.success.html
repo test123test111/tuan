@@ -29,7 +29,12 @@
             <% }) %>
         </div>
     <% } %>
-    
+    <%if (typeof sendcoupons !== 'undefined' && sendcoupons) {%>
+        <div class="coupon_info">
+            <div class="title"><span class="yuan"><i>¥</i>5</span>团购红包免费送</div>
+            <div class="context">消费成功后，将自动发至“我的携程-优惠券”中</div>
+        </div>
+    <%}%>
     <div id="J_recommendWrap" style="display:none"></div>
     <ul class="subblist">
         <li id="J_destLink" class="arr_r" data-dest-id="<%=dest.id%>" data-dest-url="<%=dest.url%>" data-dest-name="<%=dest.name%>"><%=dest.name%>旅游攻略</li>
