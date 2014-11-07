@@ -1,5 +1,4 @@
 "use strict"; //test commit
-"use strict";
 define(['PageHistory'], function (PageHistory) {
     var RE_NATIVE_PAGE_URL = /^ctrip:\/\//i, //native页面url正则
         RE_H5_PAGE_URL = /(.*)\/webapp\/(\w+)\/(.*)/, //h5页面
