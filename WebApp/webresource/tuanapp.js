@@ -1,3 +1,4 @@
+"use strict"; //test commit
 "use strict";
 define(['PageHistory'], function (PageHistory) {
     var RE_NATIVE_PAGE_URL = /^ctrip:\/\//i, //native页面url正则
