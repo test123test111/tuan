@@ -134,14 +134,12 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
 
     %>
         <li class="arr_r wrap_phone J_phone" data-phone='<%=phones.join(",") %>'>
-            <a <%if (phones.length === 1) {%>href="tel:<%=phones[0] %>"<%} else {%>href="javascript:void(0);"<%}%>>
-                <span class="subb_phone i_bef">
-                <%_.each(phones, function(t) {%>
-                    <span><%=t %></span>
-                <%}); %>
-                </span>
-                <i class="icon_txt">预约/咨询</i>
-            </a>
+            <span class="subb_phone i_bef">
+            <%_.each(phones, function(t) {%>
+                <span><%=t %></span>
+            <%}); %>
+            </span>
+            <i class="icon_txt"><a <%if (phones.length === 1) {%>href="tel:<%=phones[0] %>"<%} else {%>href="javascript:void(0);"<%}%>>预约/咨询</a></i>
         </li>
     <%} %>
     <!-- 特色服务 -->
@@ -198,9 +196,8 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
             </li>
             <%if(hotelData.phone){%>
             <li class="J_phone" data-phone="<%=hotelData.phone%>">
-                <a href="tel:<%=hotelData.phone%>"><span class="subb_phone i_bef"><%=hotelData.phone%></span>
-                <i class="icon_txt">预约/咨询</i>
-                </a>
+                <span class="subb_phone i_bef"><%=hotelData.phone%></span>
+                <i class="icon_txt"><a href="tel:<%=hotelData.phone%>">预约/咨询</a></i>
             </li>
             <%}%>
         </ul>

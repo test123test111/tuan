@@ -3,13 +3,14 @@
  * @contact li.xx@ctrip.com
  * @description 封装一下打电话的模块
  */
-define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider'], function(libs, c, WidgetFactory, WidgetGuider) {
+define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider', 'cUtility'], function(libs, c, WidgetFactory, WidgetGuider, Util) {
     'use strict';
     var Guider = WidgetFactory.create('Guider');
+    var isInApp = Util.isInApp();
     function CallPhone(options) {
         var Noop = function() {},
             defaultOpt = {
-                tpl: '<%_.each(data, function(t) {%> <div class="base_btn02"><a href="tel:<%=t %>" style="display: inline-block;width: 100%;"><%=t %></a></div> <%});%><div class="base_btn02 J_cancelPhone">取消</div>',
+                tpl: '<%_.each(data, function(t) {%> <div class="base_btn02 J_phoneItem" data-phone="<%=t %>"><a href="tel:<%=t %>" style="display: inline-block;width: 100%;"><%=t %></a></div> <%});%><div class="base_btn02 J_cancelPhone">取消</div>',
                 wrap:'<div class="wrapBottom J_phoneListPanel" style="z-index: 9999"></div>',
                 ele: '.J_phone',
                 onSelect: Noop,
@@ -50,6 +51,7 @@ define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider'], function(libs, c, Widge
             this.ele.on('click', this._clickHandler.bind(this));
         },
         _clickHandler: function(e) {
+            isInApp && e.preventDefault();
             var phoneList = $(e.currentTarget).attr(this.dataName);
             phoneList && (phoneList = phoneList.split(','));
             if (phoneList && phoneList.length) {
@@ -63,6 +65,7 @@ define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider'], function(libs, c, Widge
             }
         },
         _phoneItemHandler: function(e) {
+            isInApp && e.preventDefault();
             this.hideMask();
             this.hidePanel();
             var phone = $(e.currentTarget).attr('data-phone');
