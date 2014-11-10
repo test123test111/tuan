@@ -4,10 +4,7 @@
  */
 define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemCache', 'AMapWidget', 'POIWidget', 'cUtility', 'cWidgetFactory', 'TuanModel', 'CommonStore', 'StoreManage'],
     function (TuanApp, c, TuanBaseView, CommonPageFactory, TuanStore, MemCache, AMapWidget, POIWidget, Util, WidgetFactory, TuanModel, CommonStore, StoreManage) {
-        var MSG = {
-                cityCenter: '市中心'
-            },
-            MARKERS_CLS = {1: 'landmarks_hotel', 8: 'landmarks_dining', 7: 'landmarks_vacation', 6: 'landmarks_ticket', 9: 'landmarks_recreation'},
+        var MARKERS_CLS = {1: 'landmarks_hotel', 8: 'landmarks_dining', 7: 'landmarks_vacation', 6: 'landmarks_ticket', 9: 'landmarks_recreation'},
             GROUP_TEXT = {'0': '团购商户', '1': '酒店团购', '8': '美食团购', '7': '旅游度假团购', '6': '门票团购', '9': '娱乐团购'},
             CURRENT_CATEGORY_CLS = 'current',
             GRAY_CLS = 'gray',
@@ -145,15 +142,10 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 this.addCenterMarker(this.center);
                 if (!this.isScreenQuery) {
                     this.mapWidget.setFitView();
-                } else {
-                    // this.reverseGeocode(center, function(name) {
-                        // center.name = name;
-                        // self.addCenterMarker(center);
-                    // });
                 }
                 this.getDistance();
                 var infoText = infoTpl({
-                    distance: this.distance,
+                    distance: this.isScreenQuery ? this.distance : 50,
                     count: data.count,
                     ctext: GROUP_TEXT[this.category],
                     length: data.products.length
@@ -275,7 +267,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                 this.centerMarker && this.centerMarker.setMap(null);
                 this.selectedCategoryItem && this.selectedCategoryItem.removeClass(CURRENT_CATEGORY_CLS);
                 selectedCategoryItem.addClass(CURRENT_CATEGORY_CLS);
-                this.poi.query(type, this.getParams());
+                this.poi.query(type, searchStore.get());
                 this.selectedCategoryItem = selectedCategoryItem;
             },
             getCenterMarkerData: function () {
@@ -290,7 +282,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     info;
 
                 if (this.isScreenQuery) {
-                    var center = this.mapWidget.map.getCenter();
+                    center = this.mapWidget.map.getCenter();
                     info = {
                         lon: center.getLng(),
                         lat: center.getLat(),
@@ -308,8 +300,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                         cityId = searchStore.getAttr('ctyId');
                         cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
                         info = cityInfo && cityInfo.pos;
-                        info.name = cityInfo.name + MSG.cityCenter;
-                    } else if (posType < 0 || posType == '5') { ///地铁站、机场车站、景点、大学周边或商业区
+                        info.name = cityInfo.name + StringsData.CITY_CENTER;
+                    } else if (posType < 0 || posType == '5') { //地图屏幕内查询、地铁站、机场车站、景点、大学周边或商业区
                         info = pos;
                     }
                 }
@@ -321,23 +313,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
             },
             needShowMarkerDetail: function (zoom) {
                 return zoom >= SHOW_DETAIL_ZOOM_LEVEL;
-            },
-            /**
-            * 获取列表查询参数
-            */
-            getParams: function () {
-                var params = searchStore.get();
-                // var self = this;
-                // var isNearBy = StoreManage.isNearBy();
-
-                // if (!isNearBy) {
-                    // params.pos = self.getCenterMarkerData();
-                    // params.pos.posty = 3; //高德数据sourceid
-                    // params.qparams = StoreManage.getGroupQueryParam();
-                    // delete params.ctyId;
-                    // delete params.ctyName;
-                // }
-                return params;
             },
             /**
             * 创建地图
@@ -535,11 +510,10 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                     lat: lnglat.lat,
                     district: encodeURIComponent(regeocode.addressComponent.district),
                     cityname: encodeURIComponent(regeocode.addressComponent.city),
-                    province: encodeURIComponent(regeocode.addressComponent.province)
-                    // isOverseas: regeocode.isOverseas
+                    province: encodeURIComponent(regeocode.addressComponent.province),
+                    isOverseas: !regeocode.formattedAddress //高德对海外的经纬度，返回的formattedAddress为空，故把formattedAddress为空认为是海外
                 });
                 getLocalCityInfoModel.excute(function (data) {
-                    // self.locating = false;
                     var cityData;
                     if (data && data.CityID && data.CityID > 0) { //有效的城市ID
                         StoreManage.setCurrentCity(data)
@@ -553,7 +527,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemC
                         };
                         searchStore.setAttr('pos', pos);
                         positionfilterStore.setAttr({
-                            type: -6,
+                            type: -6, //用-6标识是地图屏幕内查询
                             name: regeocode.formattedAddress,
                             pos: pos
                         });

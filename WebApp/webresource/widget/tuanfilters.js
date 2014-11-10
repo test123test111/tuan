@@ -466,7 +466,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                             searchStore.setAttr('edate', searchData.bdate);
                         }
                     }
-                    //4、5要传给接口，-1、-2、-3、-4页面自己用的
+                    //4、5、19要传给接口，-1、-2、-3、-4页面自己用的
                     if (name) {
                         switch (type) {
                             case 5: //商业区

@@ -1,25 +1,24 @@
 ﻿/**
  * @description 团购城市列表页
  */
-define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetFactory', 'cGeoService', 'TuanModel', 'cDataSource', 'TuanStore', 'StoreManage', 'text!CityListTpl', 'cWidgetGeolocation', 'HttpErrorHelper', 'cUtility'],
-function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoService, TuanModel, cDataSource, TuanStore, StoreManage, html, cGeolocation, HttpErrorHelper, Util) {
-    var cui = c.ui, GeoLocation = cGeoService.GeoLocation;
+define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cGeoService', 'TuanModel', 'TuanStore', 'StoreManage', 'text!CityListTpl', 'HttpErrorHelper', 'cUtility'],
+function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanModel, TuanStore, StoreManage, html, HttpErrorHelper, Util) {
+    var cui = c.ui, GeoLocation = GeoService.GeoLocation;
     var tuanSearchStore = TuanStore.GroupSearchStore.getInstance(),
         geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
         positionStore = TuanStore.TuanPositionStore.getInstance(), //定位信息
         historyCityListStore = TuanStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
         cityListStore = TuanStore.TuanCityListStore.getInstance(), //城市信息
         getLocalCityInfoModel = TuanModel.TuanLocalCityInfo.getInstance(),
+        tuanCityList = TuanModel.TuanCityListModel.getInstance(),
         historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance();
+
     var PageView = CommonPageFactory.create("TuanBaseView");
     var isInApp = Util.isInApp();
     var ICON = {up: 'arr_up', down: 'arr_down'};
     var View = PageView.extend({
         pageid: '214002',
         hpageid: '215002',
-        tuanCityList: TuanModel.TuanCityListModel.getInstance(),
-        dateSource: new cDataSource(),
-        selectItem: null,
         render: function () {
             this.els = {
                 eltuancitylistbox: this.$el.find('#citylist_box'),
@@ -110,7 +109,6 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
             x = isInApp ? $parent.offset().top : $parent.offset().top - 45;
             window.scrollTo(0, x);
         },
-
         buildEvent: function () {
             cui.InputClear(this.els.eltuancitykeyword);
             this.onBodyChange = $.proxy(function () {
@@ -119,7 +117,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
             }, this);
         },
         updatePage: function (callback) {
-            this.tuanCityList.excute(function (data) {
+            tuanCityList.excute(function (data) {
                 data = cityListStore.get();
                 this.createPage(data);
                 callback.call(this);
@@ -128,80 +126,10 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
                 this.showToast(msg); //this.showToast('抱歉! 加载失败,请稍后再试!');
                 callback.call(this);
             }, false, this);
-
-        },
-        createGPS: function () {
-            this.gps = WidgetFactory.create('Geolocation');
-        },
-        getLocalCityInfo: function (lng, lat, cityName) {//TODO： 抽取到独立模块，与首页公共调用
-            var cityId = StoreManage.getCityIdByName(cityName),
-                cityData,
-                self = this,
-                //定位成功回调
-                changeSuccessStatus = function (data) {
-                    var currentcity = self.$el.find(".current>.currentcity");
-
-                    self.upNearbyBtn(1);
-                    if (currentcity.length > 0) {
-                        var domhtml = currentcity.html();
-                        var gpsInfo = geolocationStore.get();
-                        domhtml = domhtml.replace("<!--cityname-->", gpsInfo.gps.CityName);
-                        domhtml = domhtml.replace("<!--groups-->", gpsInfo.gps.Groups);
-                        currentcity.html(domhtml);
-                        currentcity.attr("data-name", gpsInfo.gps.CityName);
-                        currentcity.attr("data-id", data.CityID);
-                        currentcity.show();
-                    }
-                };
-
-            if (cityId) {
-                cityData = {
-                    CityName: cityName,
-                    CityID: cityId
-                };
-                if (StoreManage.setCurrentCity(cityData)) {
-                    changeSuccessStatus(cityData);
-                    //如果cityid有效，则停止想服务器发换取cityid请求
-                    return;
-                };
-            };
-            /* 发起获取cityid请求 */
-            getLocalCityInfoModel.setParam({
-                lng: lng,
-                lat: lat,
-                cityname: encodeURIComponent(cityName)
-            });
-
-            getLocalCityInfoModel.excute(_.bind(function (data) {
-                self.checkParentCity(data);
-                //更新当前城市信息
-                if (typeof data != undefined && StoreManage.setCurrentCity(data)) {
-                    changeSuccessStatus(data);
-                } else {
-                    this.upNearbyBtn(3);
-                }
-            }, this));
-        },
-        /**
-        * 检查是否上级城市ID
-        * @param data
-        */
-        checkParentCity: function (data) {
-            //默认非上级城市
-            geolocationStore.setAttr('isParentCity', false);
-            if (data.IsParentCity) {
-                if (data.HasGroupProduct) {
-                    //10公里查询，提供setter getter工具类
-                    geolocationStore.setAttr('isParentCity', true);
-                } else {
-                    //如果没有则到跳到上海
-                    data.CityID = defaultCity.id;
-                };
-            };
         },
         getGeolocation: function () {
             var self = this;
-            
+
             //定位成功回调
             changeSuccessStatus = function (data) {
                 var currentcity = self.$el.find(".current>.currentcity");
@@ -345,7 +273,6 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, WidgetFactory,cGeoS
         },
         //加载数据时
         onLoad: function (referUrl) {
-            this.turning();
             this.setHeader();
             this.updatePage(function () {
                 this.hideLoading();

@@ -10,6 +10,7 @@ define(function () {
         SEARCH_DISTANCE_TEXT: distance + '公里内',
         MAP_SOURCE_ID: 3,
         MAX_KEYWORDS_HISTORY: 5,
+        CITY_CENTER: '市中心',
         defaultCity: {
             id: 2,
             name: '上海'

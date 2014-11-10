@@ -28,8 +28,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         View,
         MSG = {
             tuangou: '团购',
-            youAreHere: '您的位置 ',
-            cityCenter: '市中心'
+            youAreHere: '您的位置 '
         },
         Guider = WidgetFactory.create('Guider'),
         GeoLocation = GeoService.GeoLocation;
@@ -84,9 +83,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 }
             });
         },
-        // createGPS: function () {
-            // this.gps = WidgetFactory.create('Geolocation');
-        // },
         /**
         * 获取本地城市信息
         * @param {float} lng 经度
@@ -210,13 +206,13 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     if (positionData.type != 4) { //商业区、大学周边
                         text += (positionData.pos && positionData.pos.name) || positionData.name;
                     } else { //行政区
-                        text += cityName + MSG.cityCenter;
+                        text += cityName + StringsData.CITY_CENTER;
                     }
                 } else {
                     if (gpsInfo.address) {
-                        text += gpsInfo.address == cityName ? cityName + MSG.cityCenter : gpsInfo.address;
+                        text += gpsInfo.address == cityName ? cityName + StringsData.CITY_CENTER : gpsInfo.address;
                     } else {
-                        text += (cityName || '') + MSG.cityCenter;
+                        text += (cityName || '') + StringsData.CITY_CENTER;
                     }
                 }
             }
@@ -643,19 +639,28 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                             posty: StringsData.MAP_SOURCE_ID,
                             lon: gps.lon || 0,
                             lat: gps.lat || 0,
-                            name: cityInfo.name + MSG.cityCenter
+                            name: cityInfo.name + StringsData.CITY_CENTER
                         });
-                    } else if (posType < 0 || posType == '5') { //地铁站、机场车站、景点、大学周边或商业区
+                    } else if (posType < 0 || posType == '5') { //地图屏幕内查询、地铁站、机场车站、景点、大学周边或商业区
                         searchStore.setAttr('pos', pos);
                     }
                 }
             } else {
                 model = listModel;
                 key = 'products';
-                if (pos && posType < 0) {//地铁站、机场车站、景点、大学周边
+                if (pos && posType < 0) {//地图屏幕内查询、地铁站、机场车站、景点、大学周边
                     searchStore.setAttr('pos', pos);
                 } else {
-                    searchStore.removeAttr('pos');
+                    // searchStore.removeAttr('pos');
+                    cityId = searchStore.getAttr('ctyId');
+                    cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
+                    gps = cityInfo && cityInfo.pos || {};
+                    searchStore.setAttr('pos', {
+                        posty: StringsData.MAP_SOURCE_ID,
+                        lon: gps.lon || 0,
+                        lat: gps.lat || 0,
+                        name: cityInfo.name + StringsData.CITY_CENTER
+                    });
                 }
             }
 
@@ -763,7 +768,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             lst.keywordData = StoreManage.getCurrentKeyWord();
             this.renderList(lst);
             this.updateTitle(title);
-            this.gpsInfoWrap.text('距离：' + cityName + MSG.cityCenter);
+            this.gpsInfoWrap.text('距离：' + cityName + StringsData.CITY_CENTER);
         },
         initKeywordSearch: function () {
             var searchBox = this.$el.find('#J_keywordSearch'),
