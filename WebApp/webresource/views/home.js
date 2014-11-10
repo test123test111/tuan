@@ -3,8 +3,7 @@
  * @url: m.ctrip.com/webapp/tuan 或 m.ctrip.com/webapp/taun/home
  */
 define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'StringsData', 'cHybridFacade', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation'],
-function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, WidgetGuider, Util, cGeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
-
+function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
     var isInApp = Util.isInApp(),
         listModel = TuanModels.TuanHotListModel.getInstance(),
         searchStore = TuanStore.GroupSearchStore.getInstance(),
@@ -24,8 +23,9 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         DOWNLOAD_LINK = 'http://m.ctrip.com/m/c312', //android app下载地址
         SOURCE_ID_FOR_TUAN = '55559355', //下单统计sourceid
         EMPTY = '',
-        GeoLocation = cGeoService.GeoLocation,
+        GeoLocation = GeoService.GeoLocation,
         loadingLayer;
+
     var PageView = CommonPageFactory.create("TuanBaseView");
     View = PageView.extend({
         pageid: '214019',
@@ -171,50 +171,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         createGPS: function () {
             this.gps = WidgetFactory.create('Geolocation');
         },
-        getLocalCityInfo: function (lng, lat, cityName) {
-            var self = this,
-                cityId = StoreManage.getCityIdByName(cityName),
-                cityData;
-
-            if (cityId) {
-                cityData = {
-                    CityName: cityName,
-                    CityID: cityId
-                };
-                if (StoreManage.setCurrentCity(cityData)) {
-                    this.alertCityChange({
-                        name: cityName || '',
-                        id: cityId
-                    });
-                    //如果cityid有效，则停止想服务器发换取cityid请求
-                    return;
-                };
-            };
-            /* 发起获取cityid请求 */
-            getLocalCityInfoModel.setParam({
-                lng: lng,
-                lat: lat,
-                cityname: encodeURIComponent(cityName)
-            });
-
-            getLocalCityInfoModel.excute(_.bind(function (data) {
-                var currentCity;
-
-                self.checkParentCity(data);
-                //更新当前城市信息
-                if (typeof data != undefined && StoreManage.setCurrentCity(data)) {
-                    currentCity = StoreManage.getCurrentCity();
-                    this.alertCityChange({
-                        name: currentCity.CityName || currentCity.city,
-                        id: currentCity.CityId || currentCity.CityID //已经搞不清楚大小写了
-                    });
-                } else {
-                    if (this._autoGPSRequest != true) {
-                        this.alertErrorMsg("提示", "定位失败，无效的定位信息！");
-                    }
-                }
-            }, this));
-        },
         /**
         * 检查是否上级城市ID
         * @param data
@@ -231,32 +187,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                     data.CityID = StringsData.defaultCity.id;
                 };
             };
-        },
-        getGeolocation: function (autoGPSRequest) {
-            this._autoGPSRequest = autoGPSRequest;
-            if (!this.gps) {
-                this.createGPS();
-            };
-            if (this._autoGPSRequest != true) {
-                this.alertErrorMsg("", "正在定位，请稍候。");
-            }
-            if (this._gpsrequest != true) {
-                this._gpsrequest = true;
-                this.gps.requestCityInfo(_.bind(function (gpsInfo) {
-                    this._gpsrequest = false;
-                    gpsInfo.city = gpsInfo.city.replace('市市', '市');
-                    if (gpsInfo.city.length > 2) gpsInfo.city = gpsInfo.city.replace('市', '');
-                    geolocationStore.setAttr('gps', gpsInfo);
-                    this.getLocalCityInfo(gpsInfo.lng, gpsInfo.lat, gpsInfo.CityName || gpsInfo.city);
-
-                }, this), _.bind(function (err) {
-                    this._gpsrequest = false;
-                    if (this._autoGPSRequest != true) {
-                        this.alertErrorMsg("提示", "无法获取位置信息，您可在设置中开启定位服务，开启wifi；或重新查实定位");
-                    }
-                }, this));
-
-            }
         },
         alertErrorMsg: function (title, message) {
             var alertMsg = new cUIAlert({
@@ -732,7 +662,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 typeof callback === 'function' && callback.call(self);
             }, false, this);
         },
-
         getCityFailed: function () {
             var self = this;
             self.locating = false;

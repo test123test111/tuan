@@ -21,7 +21,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         RADIO_ITEM = ['price', 'day', 'trait', 'distance', 'brand'], //单选查询条件
         checkboxTpl = _.template([
             '<%if(["all", "hotel", "catering"].indexOf(category)!=-1){%>',
-                '<div class="pop_filter_chkitem" data-type="weekendsAvailable" data-text="周未可用">周未可用',
+                '<div class="pop_filter_chkitem" data-type="weekendsAvailable" data-text="周末可用">周末可用',
                     '<div class="pop_filter_label">',
                         '<input type="checkbox" id="weekends"<%if(weekendsAvailable==1){%> checked<%}%> /><label for="weekends"></label>',
                     '</div>',
@@ -290,7 +290,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var label = viewWrap.find('.J_categoryTabLabel');
             var panel = viewWrap.find('.J_categoryTabPanel');
 
-            var categoryTab = new Tab({
+            this.categoryTab = new Tab({
                 label: label,
                 panel: panel,
                 isScroll: true,
