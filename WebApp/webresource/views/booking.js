@@ -153,7 +153,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     if (coupon && coupon.pid === store.id) {
                         store.coupon = coupon;
                     } else {
-                        store.coupon = undefined;
+                        store.coupon = coupon;
                     }
 
                     this.pid = store.id;

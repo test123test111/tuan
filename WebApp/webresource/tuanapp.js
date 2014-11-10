@@ -232,6 +232,8 @@ define(['PageHistory'], function (PageHistory) {
             if (hasClear) {
                 btn = $('<i style="position:fixed;bottom:100px;color:green;z-index:9999;">CL</i>').appendTo('#main');
                 btn.on('click', function() {localStorage && localStorage.clear();!toast && (toast = new c.ui.Toast());toast.show('Clear', 1);});
+                //测试提的需求： 测试环境中清空footer里的广告
+                $('#footer').hide();
             }
         });
     })();

@@ -17,7 +17,7 @@ define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider', 'cUtility'], function(li
                 onHide: Noop,
                 onShow: Noop,
                 dataName: 'data-phone',
-                view: '' 
+                view: ''
             };
         this.opt = $.extend(defaultOpt, options);
         this.view = this.opt.view;
