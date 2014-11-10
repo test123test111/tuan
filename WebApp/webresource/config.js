@@ -25,6 +25,7 @@
             AMapWidget: buildPath("widget/amap"),
             POIWidget: buildPath("widget/poi"),
             LazyLoad: buildPath("com/lazyload"),
+            CallPhone: buildPath("com/callPhone"),
             FilterXss: buildPath("util/filterxss"),
             CityListData: buildPath("data/citylist"),
             StringsData: buildPath("data/strings"),

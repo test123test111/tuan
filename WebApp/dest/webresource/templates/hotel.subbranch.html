@@ -21,7 +21,7 @@
                         <span class="icon_txt"><%=hotelinfo.distance > 1 ? (hotelinfo.distance.toFixed(1) + '公里') : (parseInt(hotelinfo.distance * 1000) + '米')%></span>
                         <%}%>
                     <%} else {%>
-                        <%if(hotelinfo.score){%><span class="icon_txt"><%=hotelinfo.score.toFixed(1) + '分'%></span><%}%>
+                    <%if(hotelinfo.score > 0){%><span class="icon_txt"><%=hotelinfo.score.toFixed(1) + '分'%></span><%}%>
                     <%}%>
                 </li>
                 <li class="<%if(isValidLngLat){%>arr_r J_showMap<%} %>" data-coords="<%= hotelinfo.lon %>,<%= hotelinfo.lat %>" data-hotel-name="<%= hotelinfo.name %>">

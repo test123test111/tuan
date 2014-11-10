@@ -3,7 +3,7 @@
  * @url: m.ctrip.com/webapp/tuan/list
  */
 define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', 'MemCache', 'StringsData', 'cUtility', 'cGeoService', 'cWidgetFactory', 'cUIToast', 'TuanStore', 'TuanModel', 'TuanFilters', 'StoreManage', 'LazyLoad', 'ScrollObserver', 'text!ListProductTpl', 'text!ListBusinessTpl', 'cWidgetGeolocation'],
-function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, StringsData, Util, cGeoService, WidgetFactory, Toast, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, listProduct, listBusiness) {
+function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, StringsData, Util, GeoService, WidgetFactory, Toast, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, listProduct, listBusiness) {
     'use strict';
     var REFRESH_GPS_LOADING_CLS = 'ani_rotation',
         PAGE_POSITION = 'PAGE_LIST_POSITION',
@@ -28,11 +28,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         View,
         MSG = {
             tuangou: '团购',
-            youAreHere: '您的位置 ',
-            cityCenter: '市中心'
+            youAreHere: '您的位置 '
         },
         Guider = WidgetFactory.create('Guider'),
-        GeoLocation = cGeoService.GeoLocation;
+        GeoLocation = GeoService.GeoLocation;
 
     var PageView = CommonPageFactory.create("TuanBaseView");
     View = PageView.extend({
@@ -83,9 +82,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     return true;
                 }
             });
-        },
-        createGPS: function () {
-            this.gps = WidgetFactory.create('Geolocation');
         },
         /**
         * 获取本地城市信息
@@ -210,13 +206,13 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     if (positionData.type != 4) { //商业区、大学周边
                         text += (positionData.pos && positionData.pos.name) || positionData.name;
                     } else { //行政区
-                        text += cityName + MSG.cityCenter;
+                        text += cityName + StringsData.CITY_CENTER;
                     }
                 } else {
                     if (gpsInfo.address) {
-                        text += gpsInfo.address == cityName ? cityName + MSG.cityCenter : gpsInfo.address;
+                        text += gpsInfo.address == cityName ? cityName + StringsData.CITY_CENTER : gpsInfo.address;
                     } else {
-                        text += (cityName || '') + MSG.cityCenter;
+                        text += (cityName || '') + StringsData.CITY_CENTER;
                     }
                 }
             }
@@ -237,14 +233,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 this.getLocalCityInfo(geoInfo, callback);
             };
         },
-        /**
-        * 无论是否有定位，不能显示“未知位置”
-        * @param gps
-        * @returns {string}
-        */
-        fallbackAddress: function (gps) {
-            return (gps.city || searchStore.getAttr('ctyName') || '') + MSG.cityCenter;
-        },
         initTuanFilters: function () {
             var wrap = this.$el;
             //必须判断，否则会重复绑定事件
@@ -264,7 +252,22 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 });
             } else {
                 this.hideFilterDropDowns();
+                this.updateFilterCategory();
             }
+        },
+        updateFilterCategory: function () {
+            var tuanfilters = this.tuanfilters;
+            if (!tuanfilters) return;
+            var tuanTypeIndex = categoryfilterStore.getAttr('tuanTypeIndex') || 0;
+            var ctype = categoryfilterStore.getAttr('tuanType') || 0;
+            if (this.tuanfilters.categoryTab) {
+                //团购分类Tab已初始化，直接切换分类
+                this.tuanfilters.categoryTab.switch(tuanTypeIndex);
+            } else {
+                //团购分类Tab未初始化，重现渲染分类
+                this.tuanfilters.renderCategory();
+            }
+            this.tuanfilters.options.categoryTrigger.html(StringsData.groupType[ctype]['name']);
         },
         hideFilterDropDowns: function () {
             var tuanfilters = this.tuanfilters;
@@ -277,7 +280,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             searchStore.setAttr('pageIdx', 1);
             //滚动加载下一页数据
             this.onWindowScroll = $.proxy(this._onWindowScroll, this);
-            this.isNearBy() && this.createGPS();
+            // this.isNearBy() && this.createGPS();
             this.render();
 
             //检查来源，并做保存来源数据
@@ -291,7 +294,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             }
         },
         isFromDetail: function (refer) {
-            return refer && refer.match(/detail|listmap/i);
+            return refer && refer.match(/detail/i);
+        },
+        isFromListMap: function (refer) {
+            return refer && refer.match(/listmap/i);
         },
         controlGPSInfoWrap: function (visible) {
             this.gpsInfoWrap.css('display', visible ? '' : 'none');
@@ -318,7 +324,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         },
         /**
         * 是否是选择了附近的团购
-        * @return {Boolean} 
+        * @return {Boolean}
         */
         isNearBy: function () {
             //return true;
@@ -380,7 +386,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         gotoMapPage: function () {
             if (this.isDataReady) {
                 //地图的widget只会实例化一次，这里需要使用缓存
-                // this.forwardJump('listmap', '/webapp/tuan/listmap?ctype=' + searchStore.getAttr('ctype'));
                 this.forwardJump('listmap', '/webapp/tuan/listmap');
             };
         },
@@ -401,6 +406,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
 
             if (isNearby) { //'我的附近'进入
                 this.getGroupListData();
+
+                //地图页可能更改了团购分类
+                if (this.isFromListMap(this.referUrl)) {
+                    this.updateFilterCategory();
+                }
             } else {
                 if (Lizard.P('cityid')) {//有cityid，则是直接从外部通过url传参进入，要把url里面的参数存入searchStroe
                     var qparams = StoreManage.getGroupQueryParam();
@@ -421,14 +431,20 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         },
         getConditionData: function (cityId) {
             conditionModel.setParam('ctyId', cityId);
-            var type = 1; //品牌
-            type |= 2; //行政区
-            type |= 4; //商业区
-            type |= 8; //大学周边
-            //type |= 16; //团购类型(一级分类)
-            //type |= 32; //团购类型(二级分类)
-            type |= 64; //团购类型(一级分类)
-            type |= 128; //团购类型(二级分类)
+            var type = 1; //品牌 Brand
+            type |= 2;    //行政区 Location
+            type |= 4;    //商业区 Zone
+            type |= 8;    //大学周边 School
+            //type |= 16; //团购类型(一级分类) Category
+            //type |= 32; //团购类型(二级分类) SubCategory
+            type |= 64;   //团购类型(一级分类) NewCategory
+            type |= 128;  //团购类型(二级分类) NewSubCategory
+            type |= 256;  //火车站 RailwayStation
+            type |= 512;  //飞机场 Airport
+            type |= 1024; //地铁线路 SubwayLine
+            type |= 2048; //地铁站点 SubwayStation
+            type |= 4096; //景点 Attraction
+            type |= 8192; //酒店特色 HotelFeature
             conditionModel.setParam('type', type);
             conditionModel.setParam('categroy', searchStore.getAttr('ctype'));
             conditionModel.excute(function (data) {
@@ -460,8 +476,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             tuanfilters && tuanfilters.mask && tuanfilters.mask.hide();
         },
         onShow: function (refer) {
-            refer = refer || this.getLastViewName();
-            this.referUrl = refer;
+            this.referUrl = refer || this.getLastViewName();
             //定位提示容
             this.gpsInfoWrap = this.$el.find('#J_gpsInfo');
             this.gpsReloadBtn = this.$el.find('#J_reloadGPS');
@@ -480,7 +495,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             }
 
             //如果从详情页后退不请求数据
-            if (!this.isFromDetail(refer) || !MemCache.getItem('hasListData')) {
+            if (!this.isFromDetail(this.referUrl) || !MemCache.getItem('hasListData')) {
                 //显示loading
                 this.showLoading();
                 //清空列表
@@ -624,19 +639,28 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                             posty: StringsData.MAP_SOURCE_ID,
                             lon: gps.lon || 0,
                             lat: gps.lat || 0,
-                            name: cityInfo.name + MSG.cityCenter
+                            name: cityInfo.name + StringsData.CITY_CENTER
                         });
-                    } else if (posType == '-1' || posType == '5') { //大学周边或商业区
+                    } else if (posType < 0 || posType == '5') { //地图屏幕内查询、地铁站、机场车站、景点、大学周边或商业区
                         searchStore.setAttr('pos', pos);
                     }
                 }
             } else {
                 model = listModel;
                 key = 'products';
-                if (pos && posType == '-1') {//大学周边
+                if (pos && posType < 0) {//地图屏幕内查询、地铁站、机场车站、景点、大学周边
                     searchStore.setAttr('pos', pos);
                 } else {
-                    searchStore.removeAttr('pos');
+                    // searchStore.removeAttr('pos');
+                    cityId = searchStore.getAttr('ctyId');
+                    cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
+                    gps = cityInfo && cityInfo.pos || {};
+                    searchStore.setAttr('pos', {
+                        posty: StringsData.MAP_SOURCE_ID,
+                        lon: gps.lon || 0,
+                        lat: gps.lat || 0,
+                        name: cityInfo.name + StringsData.CITY_CENTER
+                    });
                 }
             }
 
@@ -744,7 +768,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             lst.keywordData = StoreManage.getCurrentKeyWord();
             this.renderList(lst);
             this.updateTitle(title);
-            this.gpsInfoWrap.text('距离：' + cityName + MSG.cityCenter);
+            this.gpsInfoWrap.text('距离：' + cityName + StringsData.CITY_CENTER);
         },
         initKeywordSearch: function () {
             var searchBox = this.$el.find('#J_keywordSearch'),

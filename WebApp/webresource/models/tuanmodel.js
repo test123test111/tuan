@@ -415,7 +415,7 @@
     T.TuanCouponListModel = new cBase.Class(AbstractModel, {
         __propertys__: function(){
             this.url = '/json/CouponList';
-            this.param = {};
+            this.param = {ver: VERSION};
             this.method = 'POST';
             this.result = TuanStore.TuanCouponListStore.getInstance();
         }

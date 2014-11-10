@@ -14,41 +14,6 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
         historyKeySearchStore = TuanStore.TuanHistoryKeySearchStore.getInstance(),
         customFiltersStore = TuanStore.GroupCustomFilters.getInstance(); //团购自定义筛选项
 
-    /**
-    * 生成价格筛选项标题
-    * @param val
-    * @returns {string}
-    */
-    function generatePriceTitle(val) {
-        var SPLITER = '-',
-            UNIT = '元',
-            prices = val.split('|'),
-            start = prices[0],
-            end = prices[1];
-
-        if (start && end) {
-            if (start > end) {
-                start = end;
-                end = prices[0];
-            };
-            return start + SPLITER + end + UNIT;
-        } else if (!start) {
-            return end + '以下';
-        } else if (!end) {
-            return start + '以上';
-        };
-        return '';
-    };
-
-    function generateStareTitle(val) {
-        var STARS_STR = {
-            '2': '二星/经济',
-            '3': '三星/舒适',
-            '4': '四星/高档',
-            '5': '五星/豪华'
-        };
-        return STARS_STR[val] || '不限';
-    };
     var StoreManage = {
         /**
         * 清除筛选项
@@ -269,7 +234,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             this.setCurrentKeyWord({ id: id, word: name, type: keyType });
 
             //移除位置区域里面重复的条件
-            if ((positionType == '-1' || positionType == '5') && (keyType == 'zone' || keyType == 'markland')) {
+            if ((positionType < 0 || positionType == '5') && (keyType == 'zone' || keyType == 'markland')) {
                 positionfilterStore.remove();
             }
             if (positionType == '4' && keyType == 'location') {

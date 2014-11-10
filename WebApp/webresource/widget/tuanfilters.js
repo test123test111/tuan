@@ -21,7 +21,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         RADIO_ITEM = ['price', 'day', 'trait', 'distance', 'brand'], //单选查询条件
         checkboxTpl = _.template([
             '<%if(["all", "hotel", "catering"].indexOf(category)!=-1){%>',
-                '<div class="pop_filter_chkitem" data-type="weekendsAvailable" data-text="周未可用">周未可用',
+                '<div class="pop_filter_chkitem" data-type="weekendsAvailable" data-text="周末可用">周末可用',
                     '<div class="pop_filter_label">',
                         '<input type="checkbox" id="weekends"<%if(weekendsAvailable==1){%> checked<%}%> /><label for="weekends"></label>',
                     '</div>',
@@ -58,6 +58,14 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             '</li>',
             '<%})%>'
         ].join('')),
+        traitTpl = _.template([
+            '<li data-filter="trait"<%if(!val){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
+            '<%_.each(arr, function(a,i){%>',
+            '<li data-filter="trait" data-value="<%=a.val%>" data-text="<%=a.txt%>"<%if(a.val==val){%> class="choosed"<%}%>>',
+                '<div class="txt01"><%=a.txt%></div>',
+            '</li>',
+            '<%})%>'
+        ].join('')),
         tuanTypeTpl = _.template([
             '<div class="pop_filter_lefttab">',
                 '<ul class="pop_filter_tabs">',
@@ -84,43 +92,86 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         positionTpl = _.template([
             '<div class="pop_filter_lefttab">',
                 '<ul class="pop_filter_tabs">',
-                    '<%if(lstZone && lstZone.length){%><li class="J_positionTabLabel<%if(curr.type==5){%> choosed<%}%>">商业区</li><%}%>',
-                    '<%if(lstLocation && lstLocation.length){%><li class="J_positionTabLabel<%if(curr.type==4){%> choosed<%}%>">行政区</li><%}%>',
-                    '<%if(tuanType==1 && lstCollege && lstCollege.length){%><li class="J_positionTabLabel<%if(curr.type==-1){%> choosed<%}%>">大学周边</li><%}%>',
+                    '<%if(Zone.length){%><li class="J_positionTabLabel<%if(curr.type==5){%> choosed<%}%>">商业区</li><%}%>',
+                    '<%if(Location.length){%><li class="J_positionTabLabel<%if(curr.type==4){%> choosed<%}%>">行政区</li><%}%>',
+                    '<%if(tuanType!=7 && AirportStation.length){%><li class="J_positionTabLabel<%if(curr.type==-4){%> choosed<%}%>">机场车站</li><%}%>',
+                    '<%if(tuanType!=7 && SubwayLine.length){%><li class="J_positionTabLabel<%if(curr.type==-3){%> choosed<%}%>">地铁线</li><%}%>',
+                    '<%if(tuanType!=7 && Attraction.length){%><li class="J_positionTabLabel<%if(curr.type==-2){%> choosed<%}%>">景点</li><%}%>',
+                    '<%if(tuanType!=7 && College.length){%><li class="J_positionTabLabel<%if(curr.type==-1){%> choosed<%}%>">大学周边</li><%}%>',
                 '</ul>',
             '</div>',
             '<div class="pop_filter_righttab">',
-            '<%if(lstZone && lstZone.length){%>',
+            '<%if(Zone.length){%>',
                 '<div class="J_positionTabPanel"<%if(curr.type!=5){%> style="height:285px;display:none"<%}%>>',
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.val||curr.type!=5){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
-                    '<%_.each(lstZone, function(val){%>',
+                    '<%_.each(Zone, function(val){%>',
                         '<li data-type="5" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==5&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
             '<%}%>',
-            '<%if(lstLocation && lstLocation.length){%>',
+            '<%if(Location.length){%>',
                 '<div class="J_positionTabPanel"<%if(curr.type!=4){%> style="height:285px;display:none"<%}%>>',
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.val||curr.type!=4){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
-                    '<%_.each(lstLocation, function(val){%>',
+                    '<%_.each(Location, function(val){%>',
                         '<li data-type="4" data-value="<%=val.val%>" data-text="<%=val.txt%>"<%if(curr.type==4&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
             '<%}%>',
-            '<%if(tuanType==1 && lstCollege && lstCollege.length){%>',
+            '<%if(tuanType!=7 && AirportStation.length){%>',
+                '<div class="J_positionTabPanel"<%if(curr.type!=-4){%> style="height:285px;display:none"<%}%>>',
+                    '<ul class="pop_filter_baselist" style="min-height:285px">',
+                        '<li<%if(!curr.val||curr.type!=-4){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
+                    '<%_.each(AirportStation, function(val){%>',
+                        '<li data-type="-4" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-4&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
+                    '<%})%>',
+                    '</ul>',
+                '</div>',
+            '<%}%>',
+            '<%if(tuanType!=7 && SubwayLine.length){%>',
+                '<div class="J_positionTabPanel"<%if(curr.type!=19){%> style="height:285px;display:none"<%}%>>',
+                    '<ul class="pop_filter_baselist" style="min-height:285px" id="J_subwayLine">',
+                        '<li<%if(!curr.val||curr.type!=19){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
+                    '<%_.each(SubwayLine, function(val){%>',
+                        '<li data-type="-5" data-value="<%=val.val%>" data-text="<%=val.txt%>"<%if(curr.type==19&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt03"></span><span class="txt02"><%=val.groupCount%></span></li>',
+                    '<%})%>',
+                    '</ul>',
+                    '<ul class="pop_filter_baselist" style="min-height:285px;display:none;" id="J_subwayStation"></ul>',
+                '</div>',
+            '<%}%>',
+            '<%if(tuanType!=7 && Attraction.length){%>',
+                '<div class="J_positionTabPanel"<%if(curr.type!=-2){%> style="height:285px;display:none"<%}%>>',
+                    '<ul class="pop_filter_baselist" style="min-height:285px">',
+                        '<li<%if(!curr.val||curr.type!=-2){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
+                    '<%_.each(Attraction, function(val){%>',
+                        '<li data-type="-2" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-2&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
+                    '<%})%>',
+                    '</ul>',
+                '</div>',
+            '<%}%>',
+            '<%if(tuanType!=7 && College.length){%>',
                 '<div class="J_positionTabPanel"<%if(curr.type!=-1){%> style="height:285px;display:none"<%}%>>',
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.pos||curr.type!=-1){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
-                    '<%_.each(lstCollege, function(val){%>',
+                    '<%_.each(College, function(val){%>',
                         '<li data-type="-1" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-1&&curr.pos.lat==val.lat&&curr.pos.lon==val.lon){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
             '<%}%>',
             '</div>'
+        ].join('')),
+        subwayStationTpl = _.template([
+            '<li data-type="-3"><div class="pop_filter_back">返回</div></li>',
+            '<li data-type="19" data-line="<%=lineId%>"<%if(!val){%> class="choosed"<%}%> data-text="<%=lineName%>"><div class="txt01">全线</div></li>',
+            '<%_.each(arr, function(a,i){%>',
+            '<li data-type="-3" data-line="<%=lineId%>" data-pos=\'<%=JSON.stringify(a.pos)%>\' data-text="<%=a.txt%>">',
+                '<div class="txt01"><%=a.txt%></div>',
+            '</li>',
+            '<%})%>'
         ].join(''));
 
     Filters = new Base.Class({
@@ -239,7 +290,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var label = viewWrap.find('.J_categoryTabLabel');
             var panel = viewWrap.find('.J_categoryTabPanel');
 
-            var categoryTab = new Tab({
+            this.categoryTab = new Tab({
                 label: label,
                 panel: panel,
                 isScroll: true,
@@ -356,7 +407,17 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var viewWrap = this.page.$el;
             var label = viewWrap.find('.J_positionTabLabel');
             var panel = viewWrap.find('.J_positionTabPanel');
-            var index = { '5': 0, '4': 1, '-1': 2 };
+            var subwayLineWrap = viewWrap.find('#J_subwayLine');
+            var subwayStationWrap = viewWrap.find('#J_subwayStation');
+            var index = {
+                '5':  0,
+                '4':  1,
+                '-4': 2,
+                '-3': 3,
+                '19': 3,
+                '-2': 4,
+                '-1': 5
+            };
 
             var positionTab = new Tab({
                 label: label,
@@ -388,7 +449,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         searchStore.removeAttr('pos');
                     }
                     if (currentKeyword) { //移除搜索关键词里重复的条件
-                        if ((type == '-1' || type == '5') && (currentKeyword.type == 'zone' || currentKeyword.type == 'markland')) {
+                        if ((type < 0 || type == '5') && (currentKeyword.type == 'zone' || currentKeyword.type == 'markland')) {
                             StoreManage.removeCurrentKeyWord();
                         }
                         if (type == '4' && currentKeyword.type == 'location') {
@@ -405,6 +466,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                             searchStore.setAttr('edate', searchData.bdate);
                         }
                     }
+                    //4、5、19要传给接口，-1、-2、-3、-4页面自己用的
                     if (name) {
                         switch (type) {
                             case 5: //商业区
@@ -422,24 +484,65 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                     'val': item.data('value')
                                 });
                                 break;
+                            case 19: //选择地铁全线
+                                var line = item.data('line');
+                                var currLine = subwayLineWrap.find('data-value="' + line + '"');
+                                positionfilterStore.set({
+                                    'type': 19,
+                                    'name': name,
+                                    'val': line
+                                });
+                                //返回到地铁线列
+                                subwayStationWrap.hide();
+                                subwayLineWrap.show();
+                                subwayLineWrap.find('.txt03').text('');
+                                currLine.addClass('choosed').siblings().removeClass('choosed');
+                                break;
+                            case -5: //地铁线，进入地铁站列表
+                                var data = self.getSubwayStation(item.data('value'), name);
+                                subwayLineWrap.hide();
+                                subwayStationWrap.show().html(subwayStationTpl(data));
+                                new Scroll({
+                                    wrapper: subwayStationWrap.parent(),
+                                    scroller: subwayStationWrap
+                                });
+                                return;//点击地铁线，展开地铁站列表即可，后面的代码无需执行
+                            case -3: //地铁站
+                            case -4: //机场车站
+                            case -2: //景点
                             case -1: //大学周边
                                 positionfilterStore.set({
-                                    'type': -1,
+                                    'type': type,
                                     'name': name,
                                     'pos': item.data('pos')
                                 });
                                 customFiltersStore.setAttr('distance', {
                                     val: StringsData.SEARCH_DISTANCE,
                                     txt: StringsData.SEARCH_DISTANCE_TEXT
-                                })
+                                });
+                                if (type == -3) {
+                                    var line = item.data('line');
+                                    var currLine = subwayLineWrap.find('data-value="' + line + '"');
+                                    //返回到地铁线列
+                                    subwayLineWrap.show();
+                                    subwayStationWrap.hide();
+                                    subwayLineWrap.find('.txt03').text('');
+                                    currLine.addClass('choosed').siblings().removeClass('choosed');
+                                    currLine.find('.txt03').text(name);//把地铁站回显到地铁线右侧
+                                }
                                 break;
                         }
+                    } else if (type == -3) {//从地铁站返回到地铁线
+                        subwayLineWrap.show();
+                        subwayStationWrap.hide();
+                        return;
                     } else {
                         positionfilterStore.remove();
                     }
+                    // if (type == 19) return;
                     self.options.positionTrigger.html(name || MSG.weizhiquyu);
-
-                    if (type == -1) { //选择"大学周边"，默认4公里，故放出"距离"筛选条件
+                    //地铁站、机场车站、景点、大学周边按经纬度查询， 默认4公里，故放出"距离"筛选条件
+                    if (type < 0) {
                         self.renderFilter(searchStore.getAttr('ctype'), true);
                         self.updateCustomFilterIcon();
                     }
@@ -457,7 +560,14 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             });
         },
         renderPosition: function (tuanType, callback) {
-            var ret = {};
+            var ret = {
+                Zone: [],
+                Location: [],
+                College: [],
+                AirportStation: [],
+                SubwayLine: [],
+                Attraction: []
+            };
             var positionPanel = this.options.positionPanel;
             var positionTrigger = this.options.positionTrigger;
             var conditionData = conditionStore.get();
@@ -471,11 +581,19 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                 if (categroy && $.isArray(categroy) && categroy.length > 0) {
                     var groupCondition = conditionData.categroy[0].groupCondition;
                     if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
-                        ret.lstZone = $.grep(groupCondition, function (v, j) { return v.type == 4; });
-                        ret.lstLocation = $.grep(groupCondition, function (v, j) { return v.type == 2; });
-                        ret.lstCollege = $.grep(groupCondition, function (v, j) { return v.type == 8; });
+                        $.each(groupCondition, function(i, v) {
+                            switch(v.type) {
+                                case 2: ret.Location.push(v); break;
+                                case 4: ret.Zone.push(v); break;
+                                case 8: ret.College.push(v); break;
+                                case 256:
+                                case 512: ret.AirportStation.push(v); break;
+                                case 1024: ret.SubwayLine.push(v); break;
+                                case 4096: ret.Attraction.push(v); break;
+                            }
+                        });
 
-                        if (ret.lstZone.length || ret.lstLocation.length || ret.lstCollege.length) {
+                        if (ret.Zone.length || ret.Location.length || ret.College.length) {
                             positionTrigger.show();
                             positionPanel.html(positionTpl(ret));
                             callback && callback();
@@ -490,14 +608,20 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         },
         resetPosition: function (tuanType) {
             var self = this;
-            var type = 1; //品牌
-            type |= 2; //行政区
-            type |= 4; //商业区
-            type |= 8; //大学周边
-            //type |= 16; //团购类型(一级分类)
-            //type |= 32; //团购类型(二级分类)
-            type |= 64; //团购类型(一级分类)
-            type |= 128; //团购类型(二级分类)
+            var type = 1; //品牌 Brand
+            type |= 2;    //行政区 Location
+            type |= 4;    //商业区 Zone
+            type |= 8;    //大学周边 School
+            //type |= 16; //团购类型(一级分类) Category
+            //type |= 32; //团购类型(二级分类) SubCategory
+            type |= 64;   //团购类型(一级分类) NewCategory
+            type |= 128;  //团购类型(二级分类) NewSubCategory
+            type |= 256;  //火车站 RailwayStation
+            type |= 512;  //飞机场 Airport
+            type |= 1024; //地铁线路 SubwayLine
+            type |= 2048; //地铁站点 SubwayStation
+            type |= 4096; //景点 Attraction
+            type |= 8192; //酒店特色 HotelFeature
 
             this.options.positionTrigger.html(MSG.weizhiquyu);
             conditionModel.setParam({
@@ -697,19 +821,21 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     var brandWrap = wrap.find('#J_brand');
                     var wrapper = brandWrap.parent();
                     wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
-                    brandWrap.html(brandTpl(this.getBrandData()));
+                    brandWrap.html(brandTpl(this.getDataFromCondition('brand', 1)));
                     new Scroll({
                         wrapper: wrapper,
                         scroller: brandWrap
                     });
                     break;
                 case 'trait':
-                    wrap.find('.choosed').removeClass('choosed');
-                    if (customdata && customdata.trait) {
-                        wrap.find('li[data-value="' + customdata.trait.val + '"]').addClass('choosed');
-                    } else {
-                        wrap.find('li[data-value=""]').addClass('choosed');
-                    }
+                    var traitWrap = wrap.find('#J_trait');
+                    var wrapper = traitWrap.parent();
+                    wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
+                    traitWrap.html(traitTpl(this.getDataFromCondition('trait', 8192)));
+                    new Scroll({
+                        wrapper: wrapper,
+                        scroller: traitWrap
+                    });
                     break;
                 case 'distance':
                     if (!wrap.data('scrolled')) {
@@ -757,19 +883,41 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             this.renderTabWrap(label.find('li:first-child').addClass('choosed').data('tab'), panel, true);
         },
         /**
-        * 取出渲染品牌数据
+        * 从ConditionList取出特定类型的数据
+        * @param {String} typeKey
+        * @param {Number} typeVal
         */
-        getBrandData: function () {
+        getDataFromCondition: function (typeKey, typeVal) {
             var ret = { val: '', arr: [] };
             var conditionData = conditionStore.get();
-            var brandData = customFiltersStore.getAttr('brand');
-            if (brandData && brandData.val) {
-                ret.val = brandData.val;
+            var data = customFiltersStore.getAttr(typeKey);
+            if (data && data.val) {
+                ret.val = data.val;
             }
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var groupCondition = conditionData.categroy[0].groupCondition;
                 if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
-                    ret.arr = $.grep(groupCondition, function (v, j) { return (v.type == 1); });
+                    ret.arr = $.grep(groupCondition, function (v, j) { return (v.type == typeVal); });
+                }
+            }
+            return ret;
+        },
+        /**
+        * 从ConditionList取出地铁站数据
+        * @param {Number} lineId 地铁线ID
+        * @param {String} lineName 地铁线
+        */
+        getSubwayStation: function (lineId, lineName) {
+            var ret = { val: '', lineId: lineId, lineName: lineName, arr: [] };
+            var conditionData = conditionStore.get();
+            // var data = customFiltersStore.getAttr(typeKey);
+            // if (data && data.val) {
+                // ret.val = data.val;
+            // }
+            if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
+                var groupCondition = conditionData.categroy[0].groupCondition;
+                if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
+                    ret.arr = $.grep(groupCondition, function (v, j) { return (v.parentType == lineId); });
                 }
             }
             return ret;
