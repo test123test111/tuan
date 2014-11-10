@@ -208,8 +208,8 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                         break;
                     case 2:
                         currentnearby.attr("data-id", "positioning");
-                        currentnearby.attr("data-name", "定位中");
-                        currentnearby.text("定位中");
+                        currentnearby.attr("data-name", "正在获取您的位置…");
+                        currentnearby.text("正在获取您的位置…");
                         break;
                     case 3:
                         currentnearby.attr("data-id", "positioning");

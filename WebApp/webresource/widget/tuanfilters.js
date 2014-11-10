@@ -136,7 +136,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px" id="J_subwayLine">',
                         '<li<%if(!curr.val||curr.type!=19){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(SubwayLine, function(val){%>',
-                        '<li data-type="19" data-value="<%=val.val%>" data-text="<%=val.txt%>"<%if(curr.type==19&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
+                        '<li data-type="-5" data-value="<%=val.val%>" data-text="<%=val.txt%>"<%if(curr.type==19&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt03"></span><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                     '<ul class="pop_filter_baselist" style="min-height:285px;display:none;" id="J_subwayStation"></ul>',
@@ -168,7 +168,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             '<li data-type="-3"><div class="pop_filter_back">返回</div></li>',
             '<li data-type="19" data-line="<%=lineId%>"<%if(!val){%> class="choosed"<%}%> data-text="<%=lineName%>"><div class="txt01">全线</div></li>',
             '<%_.each(arr, function(a,i){%>',
-            '<li data-type="-3" data-pos=\'<%=JSON.stringify(a.pos)%>\' data-text="<%=a.txt%>">',
+            '<li data-type="-3" data-line="<%=lineId%>" data-pos=\'<%=JSON.stringify(a.pos)%>\' data-text="<%=a.txt%>">',
                 '<div class="txt01"><%=a.txt%></div>',
             '</li>',
             '<%})%>'
@@ -484,25 +484,29 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                     'val': item.data('value')
                                 });
                                 break;
-                            case 19: //地铁线
+                            case 19: //选择地铁全线
                                 var line = item.data('line');
-                                if (!line) {
-                                    var data = self.getSubwayStation(item.data('value'), name);
-                                    subwayLineWrap.hide();
-                                    subwayStationWrap.show().html(subwayStationTpl(data));
-                                    new Scroll({
-                                        wrapper: subwayStationWrap.parent(),
-                                        scroller: subwayStationWrap
-                                    });
-                                    return;
-                                } else {
-                                    positionfilterStore.set({
-                                        'type': 19,
-                                        'name': name,
-                                        'val': line
-                                    });
-                                }
+                                var currLine = subwayLineWrap.find('data-value="' + line + '"');
+                                positionfilterStore.set({
+                                    'type': 19,
+                                    'name': name,
+                                    'val': line
+                                });
+                                //返回到地铁线列
+                                subwayStationWrap.hide();
+                                subwayLineWrap.show();
+                                subwayLineWrap.find('.txt03').text('');
+                                currLine.addClass('choosed').siblings().removeClass('choosed');
                                 break;
+                            case -5: //地铁线，进入地铁站列表
+                                var data = self.getSubwayStation(item.data('value'), name);
+                                subwayLineWrap.hide();
+                                subwayStationWrap.show().html(subwayStationTpl(data));
+                                new Scroll({
+                                    wrapper: subwayStationWrap.parent(),
+                                    scroller: subwayStationWrap
+                                });
+                                return;//点击地铁线，展开地铁站列表即可，后面的代码无需执行
                             case -3: //地铁站
                             case -4: //机场车站
                             case -2: //景点
@@ -515,7 +519,17 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                 customFiltersStore.setAttr('distance', {
                                     val: StringsData.SEARCH_DISTANCE,
                                     txt: StringsData.SEARCH_DISTANCE_TEXT
-                                })
+                                });
+                                if (type == -3) {
+                                    var line = item.data('line');
+                                    var currLine = subwayLineWrap.find('data-value="' + line + '"');
+                                    //返回到地铁线列
+                                    subwayLineWrap.show();
+                                    subwayStationWrap.hide();
+                                    subwayLineWrap.find('.txt03').text('');
+                                    currLine.addClass('choosed').siblings().removeClass('choosed');
+                                    currLine.find('.txt03').text(name);//把地铁站回显到地铁线右侧
+                                }
                                 break;
                         }
                     } else if (type == -3) {//从地铁站返回到地铁线
