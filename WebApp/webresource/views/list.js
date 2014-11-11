@@ -237,7 +237,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             var wrap = this.$el;
             //必须判断，否则会重复绑定事件
             if (!this.tuanfilters) {
-                console.log(0)
                 this.tuanfilters = TuanFilters.getInstance({
                     sortTrigger: wrap.find('#J_sortTrigger'),
                     sortPanel: wrap.find('#J_sortPanel'),

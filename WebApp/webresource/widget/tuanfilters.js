@@ -126,7 +126,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.val||curr.type!=-4){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(AirportStation, function(val){%>',
-                        '<li data-type="-4" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-4&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
+                        '<li data-type="-4" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-4&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -134,9 +134,9 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             '<%if(tuanType!=7 && SubwayLine.length){%>',
                 '<div class="J_positionTabPanel"<%if(curr.type!=19){%> style="height:285px;display:none"<%}%>>',
                     '<ul class="pop_filter_baselist" style="min-height:285px" id="J_subwayLine">',
-                        '<li<%if(!curr.val||curr.type!=19){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
+                        '<li<%if(!curr.line){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(SubwayLine, function(val){%>',
-                        '<li data-type="-5" data-value="<%=val.val%>" data-text="<%=val.txt%>"<%if(curr.type==19&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt03"></span><span class="txt02"><%=val.groupCount%></span></li>',
+                        '<li data-type="-5" data-value="<%=val.val%>" data-text="<%=val.txt%>"<%if(curr.line==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt03"><%if(curr.line==val.val&&curr.type==-3){%><%=curr.name%><%}%></span><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                     '<ul class="pop_filter_baselist" style="min-height:285px;display:none;" id="J_subwayStation"></ul>',
@@ -147,7 +147,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.val||curr.type!=-2){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(Attraction, function(val){%>',
-                        '<li data-type="-2" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-2&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
+                        '<li data-type="-2" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-2&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -168,7 +168,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             '<li data-type="-3"><div class="pop_filter_back">返回</div></li>',
             '<li data-type="19" data-line="<%=lineId%>"<%if(!val){%> class="choosed"<%}%> data-text="<%=lineName%>"><div class="txt01">全线</div></li>',
             '<%_.each(arr, function(a,i){%>',
-            '<li data-type="-3" data-line="<%=lineId%>" data-pos=\'<%=JSON.stringify(a.pos)%>\' data-text="<%=a.txt%>">',
+            '<li data-type="-3" data-value="<%=a.val%>" data-line="<%=lineId%>" data-pos=\'<%=JSON.stringify(a.pos)%>\' data-text="<%=a.txt%>"<%if(val==a.val){%> class="choosed"<%}%>>',
                 '<div class="txt01"><%=a.txt%></div>',
             '</li>',
             '<%})%>'
@@ -486,10 +486,11 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                 break;
                             case 19: //选择地铁全线
                                 var line = item.data('line');
-                                var currLine = subwayLineWrap.find('data-value="' + line + '"');
+                                var currLine = subwayLineWrap.find('li[data-value="' + line + '"]');
                                 positionfilterStore.set({
                                     'type': 19,
                                     'name': name,
+                                    'line': line,
                                     'val': line
                                 });
                                 //返回到地铁线列
@@ -511,18 +512,15 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                             case -4: //机场车站
                             case -2: //景点
                             case -1: //大学周边
-                                positionfilterStore.set({
-                                    'type': type,
-                                    'name': name,
-                                    'pos': item.data('pos')
-                                });
-                                customFiltersStore.setAttr('distance', {
-                                    val: StringsData.SEARCH_DISTANCE,
-                                    txt: StringsData.SEARCH_DISTANCE_TEXT
-                                });
+                                var obj = {'type': type, 'name': name, 'pos': item.data('pos')};
+                                var val = item.data('value');
+                                if (val) {
+                                    obj.val = val;
+                                }
                                 if (type == -3) {
                                     var line = item.data('line');
-                                    var currLine = subwayLineWrap.find('data-value="' + line + '"');
+                                    var currLine = subwayLineWrap.find('li[data-value="' + line + '"]');
+                                    obj.line = line;
                                     //返回到地铁线列
                                     subwayLineWrap.show();
                                     subwayStationWrap.hide();
@@ -530,6 +528,11 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                     currLine.addClass('choosed').siblings().removeClass('choosed');
                                     currLine.find('.txt03').text(name);//把地铁站回显到地铁线右侧
                                 }
+                                positionfilterStore.set(obj);
+                                customFiltersStore.setAttr('distance', {
+                                    val: StringsData.SEARCH_DISTANCE,
+                                    txt: StringsData.SEARCH_DISTANCE_TEXT
+                                });
                                 break;
                         }
                     } else if (type == -3) {//从地铁站返回到地铁线
@@ -910,10 +913,10 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         getSubwayStation: function (lineId, lineName) {
             var ret = { val: '', lineId: lineId, lineName: lineName, arr: [] };
             var conditionData = conditionStore.get();
-            // var data = customFiltersStore.getAttr(typeKey);
-            // if (data && data.val) {
-                // ret.val = data.val;
-            // }
+            var data = positionfilterStore.get();
+            if (data && data.type == -3 && data.val) {
+                ret.val = data.val;
+            }
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var groupCondition = conditionData.categroy[0].groupCondition;
                 if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
