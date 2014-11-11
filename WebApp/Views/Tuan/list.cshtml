@@ -7,8 +7,20 @@
     "url_schema": [
         "/list",
         "list",
-        "tuan/city_{{(letter)pinyin}}/hotelid_{{(int)hotelid}}",
-        "tuan/city_{{(letter)pinyin}}"
+        "tuan/city_{{(letter)pinyin}}", 
+        "tuan/city_{{(letter)pinyin}}/hotelid_{{(int)hotelid}}", 
+        "tuan/city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}",
+        "tuan/city_{{(letter)pinyin}}/zone_{{(int)zone}}",
+        "tuan/city_{{(letter)pinyin}}/location_{{(int)location}}",
+        "tuan/city_{{(letter)pinyin}}/sort_{{(int)sort}}",
+        "tuan/city_{{(letter)pinyin}}/inprice_{inprice}/item_{{(int)ctype}}",
+        "tuan/city_{{(letter)pinyin}}/inprice_{inprice}",
+        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}",
+        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotellevel_{{(int)hotellevel}}",
+        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotelgroupid_{{(int)hotelgroupid}}",
+        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/zone_{{(int)zone}}",
+        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/location_{{(int)location}}",
+        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/sort_{{(int)sort}}"
     ],
     "viewName": "list",
     "model": {
@@ -34,27 +46,55 @@
             name: 'ListSearch',
             runat: 'server',
             url:'@ConfigurationManager.AppSettings["restfullApi"]/json/ListSearch',
-            postdata: {
-                bdate: "2014-11-07 14:53:49",
-                contentType: "json",
-                ctyId: function (){
-                    console.log(Lizard.D('CitySearch'));
-					return Lizard.D('CitySearch').cityid||2;
-				},
-                ctyName: function (){
-                    return Lizard.D('CitySearch').cityname||'上海';
-                },
-                ctype: 0,
-                edate: "2014-11-07 14:53:49",
-                environment: 0,
-                flag: 0,
-                pageIdx: 1,
-                productType: "0",
-                qparams: [],
-                sortRule: "2",
-                sortType: "0",
-                ver: 6
-            },
+            postdata: (function(){
+                var postData,
+                    hotelId = Lizard.P('hotelid'),
+                    typesMap = {
+                        'hotelid': 0,
+                        'zone': 5,  //商业区
+                        'hotelgroupid': 3,
+                        'location': 4,  //行政区
+                        'activity': 11, //活动
+                        'district': 16, //景区
+                        'markland': 17,  //地标
+                        'hotellevel': 2, //星级
+                        'inprice': 1     //'价格范围'
+                    };
+
+                function generateQParams(){
+                    var qparams = [],
+                        val,
+                        item;
+            
+                    for(item in typesMap){
+                        val = Lizard.P(item);
+                        val!==undefined && qparams.push({type: typesMap[item], value: val});
+                    };                    
+                    return qparams;
+                };
+                postData = {
+                    bdate: "2014-11-07 14:53:49",
+                    contentType: "json",
+                    ctyId: function (){
+                        console.log(Lizard.D('CitySearch'));
+					    return Lizard.D('CitySearch').cityid||2;
+				    },
+                    ctyName: function (){
+                        return Lizard.D('CitySearch').cityname||'上海';
+                    },
+                    ctype: Lizard.P('ctype') || 0,
+                    edate: "2014-11-07 14:53:49",
+                    environment: 0,
+                    flag: 0,
+                    pageIdx: 1,
+                    productType: "0",
+                    qparams: generateQParams(),
+                    sortRule: Lizard.P('sort')||"2",
+                    sortType: "1",
+                    ver: 6
+                };
+                return postData;
+            })(),
 			suspend: function(){
 			    return Lizard.runAt=='client';
 			},

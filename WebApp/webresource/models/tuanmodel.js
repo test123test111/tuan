@@ -74,10 +74,10 @@
             path = RESTAPI_PATH.test;
         };
         return {
-            //'domain': RESTAPI_DOMAIN.pro,
-            'domain': domain,
-            //'path': RESTAPI_PATH.pro
-            'path': path
+            'domain': RESTAPI_DOMAIN.pro,
+            //'domain': domain,
+            'path': RESTAPI_PATH.pro
+            //'path': path
         }
     };
 
