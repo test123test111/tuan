@@ -16,6 +16,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
     var PageView = CommonPageFactory.create("TuanBaseView");
     var isInApp = Util.isInApp();
     var ICON = {up: 'arr_up', down: 'arr_down'};
+    var filterCls = 'J_filterResultCity'; //给筛结果增加class标记
     var View = PageView.extend({
         pageid: '214002',
         hpageid: '215002',
@@ -35,7 +36,8 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             'click .J_cityItem': 'cityItemOnClick',
 
             //@since 20140609
-            'click .J_cityTagTitle': 'cityTagTitleClick'
+            'click .J_cityTagTitle': 'cityTagTitleClick',
+            'submit #J_citySearchForm': 'redirectByResult'
         },
         backAction: function () {
             this.back();
@@ -108,6 +110,16 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
 
             x = isInApp ? $parent.offset().top : $parent.offset().top - 45;
             window.scrollTo(0, x);
+        },
+        redirectByResult: function(e) {
+            e.preventDefault();
+            //如果筛选结果只有一个的话选中此城市并跳转到首页
+            var $res = this.$el.find('.' + filterCls);
+            if ($res && $res.length === 1) {
+                $res.trigger('click');
+            } else {
+                this.els.eltuancitykeyword.blur();
+            }
         },
         buildEvent: function () {
             cui.InputClear(this.els.eltuancitykeyword);
@@ -203,8 +215,8 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                 switch (flag) {
                     case 1:
                         currentnearby.attr("data-id", "nearby");
-                        currentnearby.attr("data-name", "我附近的"); //"团购"两字已经有了
-                        currentnearby.text("我附近的团购");
+                        currentnearby.attr("data-name", "附近"); //"团购"两字已经有了
+                        currentnearby.text("附近团购");
                         break;
                     case 2:
                         currentnearby.attr("data-id", "positioning");
@@ -213,8 +225,8 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                         break;
                     case 3:
                         currentnearby.attr("data-id", "positioning");
-                        currentnearby.attr("data-name", "定位失败，请点这里重试");
-                        currentnearby.text("定位失败，请点这里重试");
+                        currentnearby.attr("data-name", "定位失败，点击重试");
+                        currentnearby.text("定位失败，点击重试");
                         break;
                 }
             }
@@ -242,6 +254,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
 
             this.els.eltuancitylistbox.html($.trim(html));
             this.els.$allCityBox = this.$el.find('#J_allCitiesBox');
+            this.els.$cityTags = this.$el.find('.J_cityTagTitle');
 
             if (data.cities.length <= 0) {
                 this.els.eltuancitylistbox.find('.city_noresult').show();
@@ -300,8 +313,9 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             this.hasSearchShow = false;
             this.els.eltuancitykeyword.val('');
             this.$el.find(".history_close").hide();
+            this.$el.find('.' + filterCls).removeClass(filterCls);
             //点击取消时显示索引标签ABCD等
-            this.els.eltuancitylistbox.find('.J_cityTagTitle')
+            this.els.$cityTags
                 .addClass(ICON.down).removeClass(ICON.up)
                 .show();
             this.showHotCitys();
@@ -315,7 +329,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
         clickInput: function () {
             this.hasSearchShow = true;
             this.$el.find(".history_close").show();
-            this.els.eltuancitylistbox.find('.J_cityTagTitle')
+            this.els.$cityTags
                 .addClass(ICON.up).removeClass(ICON.down);
             //隐藏头部
             if (this.header) {
@@ -365,9 +379,12 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
 
                 //Eidt by li.xx @since 20140609 增加所有城市之后调整 选择器
                 //筛选时隐藏索引标签ABCD等
-                this.els.eltuancitylistbox.find('.J_cityTagTitle').hide();
-                var domlist = this.els.eltuancitylistbox.find('.box-city-all .city_list>li[data-filter*=' + keyword + ']');
-                domlist.show();
+                this.els.$cityTags.hide();
+
+                this.els.$allCityBox.find('.J_cityItem').removeClass(filterCls);
+                var domlist = this.els.$allCityBox.find('.city_list>li[data-filter*=' + keyword + ']');
+
+                domlist.addClass(filterCls).show();
 
                 if (domlist.length <= 0) {
                     this.els.eltuancitylistbox.find('.city_noresult').show();
