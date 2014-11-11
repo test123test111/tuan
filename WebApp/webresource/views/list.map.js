@@ -2,8 +2,8 @@
  * 列表地图页面
  * @url: m.ctrip.com/webapp/tuan/listmap
  */
-define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'MemCache', 'AMapWidget', 'POIWidget', 'cUtility', 'cWidgetFactory', 'TuanModel', 'CommonStore', 'StoreManage'],
-    function (TuanApp, c, TuanBaseView, CommonPageFactory, TuanStore, MemCache, AMapWidget, POIWidget, Util, WidgetFactory, TuanModel, CommonStore, StoreManage) {
+define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'TuanStore', 'MemCache', 'AMapWidget', 'POIWidget', 'cUtility', 'cWidgetFactory', 'TuanModel', 'CommonStore', 'StoreManage'],
+    function (TuanApp, c, TuanBaseView, CommonPageFactory, StringsData, TuanStore, MemCache, AMapWidget, POIWidget, Util, WidgetFactory, TuanModel, CommonStore, StoreManage) {
         var MARKERS_CLS = {1: 'landmarks_hotel', 8: 'landmarks_dining', 7: 'landmarks_vacation', 6: 'landmarks_ticket', 9: 'landmarks_recreation'},
             GROUP_TEXT = {'0': '团购商户', '1': '酒店团购', '8': '美食团购', '7': '旅游度假团购', '6': '门票团购', '9': '娱乐团购'},
             CURRENT_CATEGORY_CLS = 'current',

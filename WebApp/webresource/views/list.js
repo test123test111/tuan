@@ -237,6 +237,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             var wrap = this.$el;
             //必须判断，否则会重复绑定事件
             if (!this.tuanfilters) {
+                console.log(0)
                 this.tuanfilters = TuanFilters.getInstance({
                     sortTrigger: wrap.find('#J_sortTrigger'),
                     sortPanel: wrap.find('#J_sortPanel'),
@@ -280,7 +281,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         },
         onCreate: function () {
             var wrap = this.$el;
-
             searchStore.setAttr('pageIdx', 1);
             //滚动加载下一页数据
             this.onWindowScroll = $.proxy(this._onWindowScroll, this);
@@ -425,7 +425,9 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 if (isOneYuan) {
                     this.filterWrap.hide();
                 } else {
-                    this.filterWrap.show();
+                    if (this.tuanfilters) {
+                        this.filterWrap.show();
+                    }
                     this.getConditionData(cityId);
                 }
             }
@@ -478,6 +480,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.alert && this.alert.hide();
             sort && sort.mask.root && sort.mask.root.hide();
             tuanfilters && tuanfilters.mask && tuanfilters.mask.hide();
+            this.filterWrap.hide();
         },
         onShow: function (refer) {
             this.referUrl = refer || this.getLastViewName();
