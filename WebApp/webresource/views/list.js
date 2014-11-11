@@ -250,6 +250,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     page: this,
                     sortDefaultIndex: sortStore.getAttr('sortTypeIndex') || 0
                 });
+
+                this.filterWrap.show();
+                this.filterWrap.css({'-webkit-transform': 'translate(0, 30px) translateZ(0)', 'opacity': 0});
+                this.filterWrap.animate({'-webkit-transform': 'translate(0, 0px) translateZ(0)', 'opacity': 1});
             } else {
                 this.hideFilterDropDowns();
                 this.updateFilterCategory();
@@ -276,7 +280,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         },
         onCreate: function () {
             var wrap = this.$el;
-
             searchStore.setAttr('pageIdx', 1);
             //滚动加载下一页数据
             this.onWindowScroll = $.proxy(this._onWindowScroll, this);
@@ -421,7 +424,9 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 if (isOneYuan) {
                     this.filterWrap.hide();
                 } else {
-                    this.filterWrap.show();
+                    if (this.tuanfilters) {
+                        this.filterWrap.show();
+                    }
                     this.getConditionData(cityId);
                 }
             }
@@ -474,6 +479,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.alert && this.alert.hide();
             sort && sort.mask.root && sort.mask.root.hide();
             tuanfilters && tuanfilters.mask && tuanfilters.mask.hide();
+            this.filterWrap.hide();
         },
         onShow: function (refer) {
             this.referUrl = refer || this.getLastViewName();
@@ -483,7 +489,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
 
             var self = this;
             var isNearBy;
-            var gpsInfo = geolcationStore.getAttr('gps');
 
             // TODO: 补充注释
             if (returnPageStore) { returnPageStore.remove(); }
@@ -507,6 +512,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 StoreManage.saveQueryString(function () {
                     isNearBy = self.isNearBy();
                     //调整代码执行，原先位置会导致从攻略过来，一直显示定位中
+                    var gpsInfo = geolcationStore.getAttr('gps');
                     if (isNearBy && gpsInfo) {
                         var infoWrap = self.gpsInfoWrap,
                             reloadBtn = self.gpsReloadBtn,

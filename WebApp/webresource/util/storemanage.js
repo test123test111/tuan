@@ -465,7 +465,8 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             };
             //排序 sort={sortRule}|{sortType}
             if (sort) {
-                sort = sort.split('|');
+                var spliter = sort.indexOf('/') > -1 ? '/' : '|'; //兼容"攻略"跳过来的分割线"/"
+                sort = sort.split(spliter);
                 searchStore.setAttr('sortRule', sort[0]);
                 searchStore.setAttr('sortType', sort[1] || 1);
             };

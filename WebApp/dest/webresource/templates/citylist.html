@@ -1,7 +1,7 @@
 ﻿<%if(data && data.length>0){ %>
     <h2 class="city_type J_cityType">当前</h2>
     <ul class="city_list current m_BorderRadiusWrap m_BorderRadiusWrap_city" style="display:block">
-        <li class="J_cityItem wraploading <%if(nearby==true){%>choosed<%}%>" data-name="定位中" data-id="positioning" data-filter=""><div class="ui-loading-inline"><div class="ui-loading"><span class="ico-loading"></span></div>正在获取您的位置…</div></li>
+        <li class="J_cityItem wraploading <%if(nearby==true){%>choosed<%}%>" data-name="正在获取您的位置…" data-id="positioning" data-filter=""><div class="ui-loading-inline"><div class="ui-loading"><span class="ico-loading"></span></div>正在获取您的位置…</div></li>
         <% if(currentcityid!=undefined && currentcityid!="" && currentcityname!=undefined && currentcityname!=""){ %>
         <li class="J_cityItem <% if(cityid && cityid == currentcityid){ %> choosed<%} %>" data-name="<%=currentcityname%>" data-id="<%=currentcityid%>" data-filter=""><%=currentcityname %><i>(<%=currentgroups %>)</i></li>
         <% }else{ %>
