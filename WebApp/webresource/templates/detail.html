@@ -292,8 +292,8 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
                                 <dfn>¥</dfn><%=data.price.cPrice %>
                             </del>
                         </div>
-                        <div class="ui-distance"><span class="subb_address i_bef"></span>距离该商户<%=data.distance > 1 ? (data.distance.toFixed(1) + '公里') : (Math.round(data.distance * 1000) + '米')%></div>
                     </div>
+                    <div class="ui-distance"><span class="subb_address i_bef"></span>距离该商户<%=data.distance > 1 ? (data.distance.toFixed(1) + '公里') : (Math.round(data.distance * 1000) + '米')%></div>
                 </li>
             <%})%>
             </ul>

@@ -2,8 +2,8 @@
  * 商户列表
  * @url: m.ctrip.com/webapp/tuan/hotelsubbranch
  */
-define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'cGeoService', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'StoreManage', 'text!HotelSubbranchTpl', 'cWidgetGeolocation'],
-function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, StoreManage, html) {
+define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'cGeoService', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'StoreManage', 'text!HotelSubbranchTpl', 'CallPhone', 'cWidgetGeolocation'],
+function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, StoreManage, html, CallPhone) {
     var MSG = {
             pageTitle: "商户列表"
         },
@@ -29,7 +29,7 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
     var PageView = CommonPageFactory.create("TuanBaseView");
     var View = PageView.extend({
         events: {
-            'click .J_phone': 'showPhone',
+//            'click .J_phone': 'showPhone',
             'click .J_showMap': 'showMap',
             'click .J_jumpHotel': 'jumpHotel',
             'click .J_busiCity': 'showHotel',
@@ -85,14 +85,15 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
             tuanBranchOfficeModel.setParam(param);
             //获取详细信息
             tuanBranchOfficeModel.excute(function (data) {
-                this.hideLoading();
+                self.hideLoading();
                 if (!data.groups.length) {
-                    this.showMessage('抱歉，数据加载失败，请重试!');
+                    self.showMessage('抱歉，数据加载失败，请重试!');
                     return;
                 }
                 var cityInfo = StoreManage.getCurrentCity();
                 cityInfo.CityName && (gpsInfo.CityName = cityInfo.CityName);
                 self.$el.html($.trim(self.htmlfun({ data: data.groups, gps: gpsInfo, cityId: cityId })));
+                self.CallPhone = new CallPhone({view: this});
             }, function (err) {
                 var msg = err.msg ? err.msg : '啊哦,数据加载出错了!';
                 var self = this;

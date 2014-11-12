@@ -44,7 +44,7 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
             var data = {
                 coupons: coupons,
                 dateFormat: dateFormat,
-                hasUsedCoupon: usedCoupon
+                hasUsedCoupon: usedCoupon && (typeof  usedCoupon === 'object')
             };
             this.coupons = coupons;
             wrap.html($.trim(_.template(this.tpl, data)));

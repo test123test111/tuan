@@ -26,10 +26,25 @@
                     <span class="subb_address i_bef"><%= hotelinfo.adr %></span>
                     <%if(isValidLngLat) {%><i class="icon_txt">地图</i><%} %>
                 </li>
-                <li <%if(hotelinfo.splitphone){%>class="J_phone"<%} %> data-tel="<%=hotelinfo.splitphone %>">
+                <%if (hotelinfo.phoneList && hotelinfo.phoneList.length) {
+                    var phones = _.map(hotelinfo.phoneList, function(p) {return p.phone;});
+                %>
+                <li class="arr_r wrap_phone J_phone" data-phone='<%=phones.join(",") %>'>
+                    <span class="subb_phone i_bef">
+                    <%_.each(phones, function(t) {%>
+                        <span><%=t %></span>
+                    <%}); %>
+                    </span>
+                    <i class="icon_txt"><a <%if (phones.length === 1) {%>href="tel:<%=phones[0] %>"<%} else {%>href="javascript:void(0);"<%}%>>预约/咨询</a></i>
+                </li>
+                <%}%>
+
+
+                <!--<li <%if(hotelinfo.splitphone){%>class="J_phone"<%} %> data-tel="<%=hotelinfo.splitphone %>">
                     <span class="subb_phone i_bef"><%= hotelinfo.tel %></span>
                     <%if(hotelinfo.splitphone){%><i class="icon_txt">预约/咨询</i><%} %>
-                </li>
+                </li>-->
+
                 <%if (hotelinfo.userGuide){%><li class="li_info"><%=hotelinfo.userGuide%></li><%}%>
             </ul>
             <%}) %>

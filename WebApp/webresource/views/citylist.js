@@ -95,16 +95,17 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             }, 100);
         },
         cityGroupTitleClick: function (e) {
-            var cur = $(e.currentTarget);
-            cur.parent().find('.city_list').hide();
-            cur.next('ul').toggle(200);
+            var $this = $(e.currentTarget);
+            $this.next().toggle();
+            this.els.$cityTypes.not($this).next().hide();
+            this.els.$cityTags.removeClass(ICON.up).addClass(ICON.down);
         },
         cityTagTitleClick: function (e) {
             var $this = $(e.currentTarget),
                 $parent = $this.parent(),
                 isUp = $this.hasClass(ICON.up),
                 x;
-            this.els.$allCityBox.find('.J_cityTagTitle').removeClass(ICON.up).addClass(ICON.down);
+            this.els.$cityTags.removeClass(ICON.up).addClass(ICON.down);
             if (!isUp) {
                 $this.toggleClass(ICON.down + ' ' +ICON.up);
             }
@@ -258,6 +259,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             this.els.eltuancitylistbox.html($.trim(html));
             this.els.$allCityBox = this.$el.find('#J_allCitiesBox');
             this.els.$cityTags = this.$el.find('.J_cityTagTitle');
+            this.els.$cityTypes = this.$el.find('.J_cityType');
 
             if (data.cities.length <= 0) {
                 this.els.eltuancitylistbox.find('.city_noresult').show();
@@ -362,13 +364,13 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
         },
         showHotCitys: function () {
             this.els.eltuancitylistbox.find(".city_list:not(.allcity)").show();
-            this.els.eltuancitylistbox.find(".J_cityType").show();
+            this.els.$cityTypes.show();
             this.$el.find('.s_city_num>span').text(this.citycount);
             this.els.eltuancitylistbox.find('.city_list.allcity>li[data-filter]').hide();
         },
         hideHotCitys: function () {
             this.els.eltuancitylistbox.find(".city_list.allcity").show();
-            this.els.eltuancitylistbox.find(".J_cityType").hide();
+            this.els.$cityTypes.hide();
             this.els.eltuancitylistbox.find(".city_list:not(.allcity)").hide();
         },
         searchKeyWordInput: function (e) {
