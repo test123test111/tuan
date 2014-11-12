@@ -479,7 +479,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.alert && this.alert.hide();
             sort && sort.mask.root && sort.mask.root.hide();
             tuanfilters && tuanfilters.mask && tuanfilters.mask.hide();
-            this.filterWrap.hide();
         },
         onShow: function (refer) {
             this.referUrl = refer || this.getLastViewName();
