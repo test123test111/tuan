@@ -34,6 +34,9 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             'focus #J_searchCityInput': 'clickInput',
             'input #J_searchCityInput': 'searchKeyWordInput',
             'click .J_cityItem': 'cityItemOnClick',
+            'touchmove .J_searchWrap': function(e) {
+                e.preventDefault();
+            },
 
             //@since 20140609
             'click .J_cityTagTitle': 'cityTagTitleClick',

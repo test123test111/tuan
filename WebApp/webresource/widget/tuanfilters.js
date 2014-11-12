@@ -9,6 +9,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         MSG = {
             weizhiquyu: '位置区域'
         },
+        isLoadingCondition = false,
         isYouth = Util.getAppSys() === 'youth', //是否青春版
         categoryfilterStore = TStore.GroupCategoryFilterStore.getInstance(), //团购类型
         sortStore = TStore.GroupSortStore.getInstance(), //团购排序
@@ -373,6 +374,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             this.renderPosition();
 
             trigger.on('click', function () {
+                if (isLoadingCondition) return;//正在加载数据时，位置区域不能点 TODO(提示用户)
                 if (!self._positionStatus) {
                     self.options.categoryPanel.hide();
                     self.options.filterPanel.hide();
@@ -660,6 +662,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             type |= 4096; //景点 Attraction
             type |= 8192; //酒店特色 HotelFeature
 
+            isLoadingCondition = true;
             this.options.positionTrigger.html(MSG.weizhiquyu);
             conditionModel.setParam({
                 ctyId: searchStore.getAttr('ctyId'),
@@ -668,6 +671,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             });
             conditionModel.excute(function () {
                 self.renderPosition(tuanType, function () {
+                    isLoadingCondition = false;
                     //把_positionInited设为undefined，以便重新初始化positionTab
                     self._positionInited = undefined;
                 });
