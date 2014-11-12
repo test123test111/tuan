@@ -1,106 +1,14 @@
 ﻿@{
     ViewBag.Title = "List";
 }
-@using System.Configuration;
 <script type="text/lizard-config">
 {
-    "url_schema": [
-        "/list",
-        "list",
-        "tuan/city_{{(letter)pinyin}}", 
-        "tuan/city_{{(letter)pinyin}}/hotelid_{{(int)hotelid}}", 
-        "tuan/city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}",
-        "tuan/city_{{(letter)pinyin}}/zone_{{(int)zone}}",
-        "tuan/city_{{(letter)pinyin}}/location_{{(int)location}}",
-        "tuan/city_{{(letter)pinyin}}/sort_{{(int)sort}}",
-        "tuan/city_{{(letter)pinyin}}/inprice_{inprice}/item_{{(int)ctype}}",
-        "tuan/city_{{(letter)pinyin}}/inprice_{inprice}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotellevel_{{(int)hotellevel}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotelgroupid_{{(int)hotelgroupid}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/zone_{{(int)zone}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/location_{{(int)location}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/sort_{{(int)sort}}"
-    ],
+    "url_schema": ["/list", "list"],
     "viewName": "list",
     "model": {
-        "apis": [{
-            name: 'CitySearch',
-            runat: 'server',
-            url:'@ConfigurationManager.AppSettings["restfullApi"]/json/CityABCToCityID',
-            postdata: {
-                cityabc: Lizard.P('pinyin')
-            },
-            suspend: function(){
-                return Lizard.runAt=='client';
-            },
-            filter: function(data){
-                //return data;
-                return {
-                    cityname: '北京',
-                    cityid: '1'
-                }
-            }
-
-        },{
-            name: 'ListSearch',
-            runat: 'server',
-            url:'@ConfigurationManager.AppSettings["restfullApi"]/json/ListSearch',
-            postdata: (function(){
-                var postData,
-                    hotelId = Lizard.P('hotelid'),
-                    typesMap = {
-                        'hotelid': 0,
-                        'zone': 5,  //商业区
-                        'hotelgroupid': 3,
-                        'location': 4,  //行政区
-                        'activity': 11, //活动
-                        'district': 16, //景区
-                        'markland': 17,  //地标
-                        'hotellevel': 2, //星级
-                        'inprice': 1     //'价格范围'
-                    };
-
-                function generateQParams(){
-                    var qparams = [],
-                        val,
-                        item;
-            
-                    for(item in typesMap){
-                        val = Lizard.P(item);
-                        val!==undefined && qparams.push({type: typesMap[item], value: val});
-                    };                    
-                    return qparams;
-                };
-                postData = {
-                    bdate: "2014-11-07 14:53:49",
-                    contentType: "json",
-                    ctyId: function (){
-                        console.log(Lizard.D('CitySearch'));
-					    return Lizard.D('CitySearch').cityid||2;
-				    },
-                    ctyName: function (){
-                        return Lizard.D('CitySearch').cityname||'上海';
-                    },
-                    ctype: Lizard.P('ctype') || 0,
-                    edate: "2014-11-07 14:53:49",
-                    environment: 0,
-                    flag: 0,
-                    pageIdx: 1,
-                    productType: "0",
-                    qparams: generateQParams(),
-                    sortRule: Lizard.P('sort')||"2",
-                    sortType: "1",
-                    ver: 6
-                };
-                return postData;
-            })(),
-			suspend: function(){
-			    return Lizard.runAt=='client';
-			},
-        }],
+        "apis": [],
         "filter": function (datas){
-            return datas[1];
+            return datas;
         }
     },
     "view":{
@@ -124,94 +32,7 @@
             <input type="text" placeholder="位置/品牌/名称" readonly="readonly" class="list_s_input" id="J_keywordSearch">
             <div id="J_voiceTrigger" class="btn_voice_s"></div>
         </div>
-        <div id="J_listWrap" class="pro_list_wrap">
-<%if(typeof products!='undefined' && products && products.length>0 && count && +count > 0) {%>
-    <ul class="pro_list">
-    <%
-    for(var i=0, len=products.length; i < len; i++){
-        var p=products[i];
-        var labelsNum = p.labels && p.labels.length;
-    %>
-    <li data-id="<%=p.id %>" data-len="<%=products.length %>" data-count="<%=count %>">
-        <div class="pro_list_imgbox">
-            <img data-img="<%=i %>" onerror="javascript:noPic(this);" data-lazy="<%=p.imgUrl?p.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" />
-        </div>
-        <div class="pro_list_info">
-            <h4 class="pro_list_tit"><%=(p.descriptionhead?"["+p.descriptionhead+"]":"")+p.name+(p.hotdescription?"+"+p.hotdescription:"") %></h4>
-            <p class="wrap_label">
-                <%if(false && labelsNum < 2 && p.star){%><%=p.star%><%}%>
-                <%if(p.labels && p.labels.length){ %>
-                    <em class="pro_label_list">
-                    <%_.each(p.labels || [],function(o){%>
-                        <span class="onsale_label02"><%=o.labelTxt%></span>
-                    <%}); %>
-                    </em>
-                <%} %>
-            </p>
-            <p class="pro_list_rank">
-                <%if(+p.score>0){%><span class="font_blue"><i><%=p.score %></i>分</span><%}%>
-                <span class="pro_list_sold">已售<%=p.cSold %></span>
-            </p>
-            <%if(p.distance>0){%>
-            <p class="pro_list_txt">
-                <%if(p.distance>=1){%>
-                    <%=p.distance.toFixed(1)+'公里'%>
-                <%}else{%>
-                    <%=p.distance*1000+'米'%>
-                <%}%>
-            </p>
-            <%}%>
-            <p class="pro_list_price" data-discount="<%=p.price.discount %>">
-                <span class="pro_list_oldprice">
-                    <del data-price="<%=p.price.cPrice %>">&yen;<%=p.price.cPrice %></del>
-                 <%if(p.activities && p.activities.length>0){
-                   for(var j in p.activities){
-                       if(p.activities[j].type && +p.activities[j].type==1){
-                            break;
-                        }
-                    }
-                }
-                %>
-
-                <%
-                var a1;
-                if(p.activities && p.activities.length>0){
-                    for(var j in p.activities){
-                        var a=p.activities[j];
-                        if(a && a.type && +a.type>0){
-                            if(+a.type==1){
-                                a1=a;
-                %>
-                <%
-                            }
-                            if((+a.type==2 || +a.type==3) && +a.arg>0){
-                %>
-                                <span class="onsale_label01">返 ¥<%=a.arg%></span>
-                <%
-                            }
-                        }
-                    }
-                }else{
-                    a1=false;
-                };
-                %>
-                </span>
-                &yen;<i><%=p.price.dPrice%></i>
-           </p>
-        </div>
-        <%if(p.labelVal && p.labelVal==99){ %><div class="sold_out">售完</div><%} %>
-    </li>
-    <%}%>
-    </ul>
-<%}else{
-    if(typeof msg != 'undefined' &&  msg || (msg='未知错误')){%>
-    sdfasd
-    <%}%>
-<%}%>
-
-
-
-        </div>
+        <div id="J_listWrap" class="pro_list_wrap"></div>
     </section>
 
     <!--团购类型Panel-->
@@ -290,13 +111,7 @@
                     <ul class="pop_filter_baselist" id="J_brand"></ul>
                 </div>
                 <div data-tab="trait" style="display:none">
-                    <ul class="pop_filter_baselist">
-                        <li data-filter="trait" data-value="" class="choosed"><div class="txt01">不限</div></li>
-                        <li data-filter="trait" data-value="103|101" data-text="一元酒店"><div class="txt01">一元酒店</div></li>
-                        <li data-filter="trait" data-value="103|10303" data-text="别墅轰趴"><div class="txt01">别墅轰趴</div></li>
-                        <li data-filter="trait" data-value="103|10304" data-text="住店游玩"><div class="txt01">住店游玩</div></li>
-                        <li data-filter="trait" data-value="103|10305" data-text="情侣酒店"><div class="txt01">情侣酒店</div></li>
-                    </ul>
+                    <ul class="pop_filter_baselist" id="J_trait"></ul>
                 </div>
                 <div data-tab="distance" style="overflow:hidden;max-height:295px;display:none">
                     <ul class="pop_filter_baselist" style="min-height:295px">
@@ -322,7 +137,7 @@
         <li data-id="7" data-type="1">价格高 → 低</li>
         <li data-id="6" data-type="1" id="J_sortByRate">点评分高 → 低</li>
     </ul>
-    <ul class="bottom_filter fix_bottom dflex J_filtersAndSortPanel">
+    <ul class="bottom_filter fix_bottom dflex J_filtersAndSortPanel" style="display:none;">
         <li class="fil_type" id="J_categoryTrigger" tabindex="0">全部团购</li>
         <li class="fil_pos" id="J_positionTrigger" class="position">位置区域</li>
         <li class="fil_fil" id="J_customFilters"><span class="fil_num" style="display:none">0</span>筛选</li>

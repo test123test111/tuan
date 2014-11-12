@@ -11,7 +11,7 @@ if(typeof products!="undefined" && products && products.length>0 && count && +co
         <img data-img="<%=i %>" onerror="javascript:noPic(this);" src="http://pic.c-ctrip.com/common/pic_alpha.gif" data-lazy="<%=p.imgUrl?p.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %> " />
     </div>
     <div class="pro_list_info">
-        <h4 class="pro_list_tit"><%=(p.descriptionhead?"["+p.descriptionhead+"]":"")+p.name+(p.hotdescription?"+"+p.hotdescription:"") %></h4>
+        <h4 class="pro_list_tit"><%=(p.descriptionhead && p.name.indexOf('【多店通用】') == -1 ? '[' + p.descriptionhead + ']' : '') + p.name%></h4>
         <p class="wrap_label">
             <%if(false && labelsNum < 2 && p.star){%><%=p.star%><%}%>
             <%if(p.labels && p.labels.length){ %>

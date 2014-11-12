@@ -1,30 +1,15 @@
-"use strict";
+"use strict"; //test commit
 define(['PageHistory'], function (PageHistory) {
-    var BASE_URL = '/webapp/',
-        RE_NATIVE_PAGE_URL = /^ctrip:\/\//i, //native页面url正则
+    var RE_NATIVE_PAGE_URL = /^ctrip:\/\//i, //native页面url正则
         RE_H5_PAGE_URL = /(.*)\/webapp\/(\w+)\/(.*)/, //h5页面
-        RE_H5_TUAN_PAGE = /^#\w/i,
-        TUAN_HISTORY_KEY = 'TUAN_HISTORY_KEY',
-        APP_BASE_URL = Lizard.appBaseUrl.toLowerCase(),
-        isDebugMode = window.GROUP_DEBUG_MODE || true;
-
+        RE_H5_TUAN_PAGE = /^#\w/i;
 
     var TuanApp = {
         init: function () {
-            //this.networkMonitor();
             //检查来源，并做保存来源数据
             this.saveUnion();
         },
         isSEO: Lizard.renderAt === 'server',
-        networkMonitor: function () {
-            var self = this;
-            window.addEventListener('online', function () {
-                //self.app.curView.showToast('亲，您网络恢复了');
-            });
-            window.addEventListener('offline', function () {
-                //self.app.curView.showToast('亲，您断网了，请检查手机网络');
-            });
-        },
         showLoading: function () {
             this.loading.show();
         },
@@ -48,7 +33,6 @@ define(['PageHistory'], function (PageHistory) {
                 } else {
                     location.replace(referer);
                 };
-
 
             } else {
                 if (url) {
@@ -154,7 +138,6 @@ define(['PageHistory'], function (PageHistory) {
             });
         },
         getQuery: function (e) {
-            //return this.app.request.query[e] ||this.app.request.query[e.toLowerCase()]|| null;
             return Lizard.P(e);
         },
         /**
@@ -201,45 +184,6 @@ define(['PageHistory'], function (PageHistory) {
         * 网络环境，根据它来请求不同图片
         */
         environment: 0,
-        tGoTo: function (action, opts, jump, replace, useCache) {
-            //console.log(action, opts);
-            //PageHistory.
-
-            opts = opts || {};
-            //Lizard.goTo(APP_BASE_URL + action, opts);
-            var url = APP_BASE_URL + action;
-            if (jump) {
-                url = PageHistory.forward(action, url, 1, replace);
-                this.jump(url);
-            } else {
-                url = PageHistory.forward(action, url, 2, replace);
-                opts.viewName = action;
-                if (useCache) {
-                    opts.cache = true;
-                }
-                Lizard.goTo(url, opts);
-            }
-        },
-        tBack: function (home, args, cache) {
-            //console.log(this);
-            var urlNode = PageHistory.back(home, args);
-            console.log(urlNode);
-            if (cache === undefined) cache = true;
-            if (urlNode.jump) {
-                location.href = urlNode.fullurl;
-            } else {
-                Lizard.goTo(urlNode.fullurl, { viewName: urlNode.id, cache: cache });
-            }
-
-
-            /*if (action) {
-            Lizard.back(APP_BASE_URL + action);
-            } else {
-            Lizard.back();
-            }*/
-
-
-        },
         tHome: function () {
             require(['cUtility', 'cWidgetFactory', 'cWidgetGuider'], function (Util, WidgetFactory) {
                 var Guider = WidgetFactory.create('Guider');
@@ -257,8 +201,44 @@ define(['PageHistory'], function (PageHistory) {
 
                 Guider.backToLastPage({ 'param': JSON.stringify({ "biz": "tuan", "refresh": "1" }) });
             });
+        },
+        /**
+         * 判断是够是IOS，而且系统是IOS7及以上
+         */
+        isOverOS7: function() {
+            return $.os && $.os.ios && parseInt($.os.version, 10) >= 7;
         }
     };
+
+    (function initClearLocalStorage() {
+        require(['c', 'cUtility'], function(c, Util) {
+            var btn,
+                env,
+                hasClear,
+                toast;
+            if (Util.isInApp()) {
+                //Hybrid， 非生产环境
+                env = Util.isPreProduction();
+                if (env === '0' || env === '1' || env === '2') {
+                    hasClear = true;
+                }
+            } else {
+                //H5, 非生产环境
+                if (!location.host.match(/^(m|3g|wap)\.ctrip\.com/i)) {
+                    hasClear = true;
+                }
+            }
+
+            if (hasClear) {
+                btn = $('<i style="position:fixed;bottom:100px;color:green;z-index:9999;">CL</i>').appendTo('#main');
+                btn.on('click', function() {localStorage && localStorage.clear();!toast && (toast = new c.ui.Toast());toast.show('Clear', 1);});
+                //测试提的需求： 测试环境中清空footer里的广告
+                setTimeout(function() {
+                    $('.dl_panel-bg .dl_btn-close').trigger('click');
+                }, 100)
+            }
+        });
+    })();
 
     require(['libs', 'cUtility', 'cWidgetFactory', 'cHybridFacade', 'cWidgetGuider'], function (libs, Util, WidgetFactory, Facade) {
         var Guider = WidgetFactory.create("Guider");

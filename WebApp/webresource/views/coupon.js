@@ -44,8 +44,8 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
             var data = {
                 coupons: coupons,
                 dateFormat: dateFormat,
-                hasUsedCoupon: usedCoupon ? true : false
-            }
+                hasUsedCoupon: usedCoupon
+            };
             this.coupons = coupons;
             wrap.html($.trim(_.template(this.tpl, data)));
             this.els = {
@@ -86,7 +86,7 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
                 tel: 4000086666,
                 events: {
                     returnHandler: function () {
-                        this.back();
+                        self.back();
                     },
                     homeHandler: function () {
                         self.redirectToIndex();
@@ -105,11 +105,12 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
         },
         useCouponToggle: function (e) {
             var $t = $(e.target);
-            $t.toggleClass(CHOOSED);
             if ($t.hasClass(CHOOSED)) {
+                //
+            } else {
                 this.els.couponList.removeClass(CHOOSED);
                 selectedCouponStore.remove();
-            } else {
+                selectedCouponStore.set('0');
                 this.back();
             }
         },

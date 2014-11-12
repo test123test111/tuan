@@ -28,6 +28,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             Member = WidgetFactory.create('Member'),
             MSG, //提示信息
             PHONE_NUM_KEY = "电话",
+            EN_PHONE_NUM_KEY = "Mobile",
             ORDER_NUM = {
                 max: 9,
                 min: 1
@@ -147,10 +148,12 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     // 此字段服务有可能不下发 by liwl
                     store.invoiceText = store.invoiceText || null;
 
+                    store.isInApp = isInApp;
+
                     if (coupon && coupon.pid === store.id) {
                         store.coupon = coupon;
                     } else {
-                        store.coupon = undefined;
+                        store.coupon = coupon;
                     }
 
                     this.pid = store.id;
@@ -201,18 +204,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             },
             events: {
                 'click #J_submitOrder': 'goNextStep',
-                /*'focus #J_tel': function () {
-                    var self = this;
-                    this.submitBtnTimer = setInterval(function () {
-                        self.changeBtnState();
-                    }, 500);
-                },
-                'blur #J_tel': function () {
-                    this.changeBtnState();
-                    if (this.submitBtnTimer) {
-                        clearInterval(this.submitBtnTimer);
-                    }
-                },*/
                 'click #J_invoice': function () {
                     this.forwardJump('invoice', '/webapp/tuan/invoice');
                 },
@@ -220,7 +211,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.forwardJump('coupon', '/webapp/tuan/coupon');
                 },
                 'click .J_loginBtn': 'loginAction',
-                'click #J_selectContact': 'selectContact',
+                'click #J_selectContact': 'selectContactNew',
                 'click .J_selectDate': 'selectDate'   //门票选择日期
             },
 
@@ -229,6 +220,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
              */
             initValidator: function() {
                 var self = this;
+                this.validator.removeAllFields();
 
                 this.els.selectDate.length && (this.validator.addField(new Field({
                     dom: self.els.selectDate,
@@ -340,37 +332,33 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.loadTuan();
                 };
             },
-            selectContact: function () {
+            selectContactNew: function() {
                 var self = this;
-
                 Guider.chooseContactFromAddressbook({
-                    /**
-                    * contact 数据格式
-                    *## {
-                    *##      name: '姓名',
-                    *##      phoneList: [ { '标签名':'1390000000000' }, ... ],
-                    *##      emailList: [ { '标签名':'foo@example.com' }, ... ]
-                    *## }
-                    */
-                    callback: function (contact) {
-                        var phoneList = contact && contact.phoneList,
-                            phoneListCount = phoneList && phoneList.length;
-
-                        if (phoneListCount > 0) {
-                            //如果只有一个电话
-                            if (phoneListCount == 1) {
-                                self.selectPhoneItem({ val: phoneList[0][PHONE_NUM_KEY] });
+                    callback: function (info) {
+                        var phones;
+                        if (!!info && !_.isEmpty(info)) {
+                            if (info.name === undefined && info.phoneList && !info.phoneList.length) {
+                                self.showToast("无法访问通讯录，导入失败");
                             } else {
-                                self.showPhoneListPanel(phoneList);
-                            };
-                        } else {
-                            //没有电话
+                                if (info.phoneList && info.phoneList.length) {
+                                    phones = self._formatPhoneList(info.phoneList);
+                                    if (phones.length === 1) {
+                                        self.selectPhoneItem(phones[0]);
+                                    } else {
+                                        new ScrollRadioList({
+                                            data: phones,
+                                            title: MSG.phoneListTitle,
+                                            itemClick: $.proxy(self.selectPhoneItem, self),
+                                            key: phones[0].key
+                                        }).show();
+                                    }
+                                }
+                            }
                         }
                     }
                 });
-
             },
-
             /**
              * 门票选择日期 日历功能
              */
@@ -449,36 +437,23 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             * 格式化成scrolllistn能展示的格式
             */
             _formatPhoneList: function (data) {
-                return data.map(function (item) {
-                    var val = item[PHONE_NUM_KEY];
-                    return {
-                        key: val,
-                        val: val
-                    };
+                return data.map(function (t, i) {
+                    t = _.values(t)[0];
+                    t = t.replace(/-| /g, '');
+                    (t.length > 11) && (t = t.substr(-11, 11));
+                    return {key: i + '', val: t};
                 });
             },
             /**
-            * 如果一个人有多条电话条目，显示选择框
-            * @param {Array} phonelist 电话条目列表
-            */
-            showPhoneListPanel: function (phonelist) {
-                var self = this,
-                    panel;
-
-                panel = new ScrollRadioList({
-                    data: self._formatPhoneList(phonelist),
-                    title: MSG.phoneListTitle,
-                    itemClick: $.proxy(self.selectPhoneItem, self)
-                });
-                panel.show();
-            },
-            /**
-            * 选择电话本条目
-            * @param {Object} data 电话本条目 {name: "xx", phone: "13917754444"}
-            */
+             * @param data
+             * {key: '', val: ''}
+             */
             selectPhoneItem: function (data) {
-                this.els.telDom.val(data.val);
-                this.changeBtnState();
+                var val = data.val;
+                if (val) {
+                    this.els.telDom.val(val);
+                    this.changeBtnState();
+                }
             },
             isIOS7: function () {
                 var ua = $.os;
@@ -745,11 +720,18 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             pPrice,
                             tmpPrice,
                             invoice = invoiceStore.get(),
-                            amount = store.coupon ? store.coupon.amount : 0,
+                            amount,
+                            couponType,
                             num = parseInt(self.$el.find('#J_curNum').text().trim()),
                             dPrice = self.price;
 
-//                        window.tuanDetailStore = tuanDetailStore;
+                        if (store.coupon) {
+                            amount = store.coupon.amount;
+                            couponType = store.coupon.couponType
+                        } else {
+                            amount = 0;
+                        }
+
                         tuanDetailStore.setAttr('curNum', num);
 
                         if (store.activities && store.activities.length > 0 &&
@@ -758,12 +740,20 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             pPrice = activity.arg * num;
                             self.els.pPriceDom.html(pPrice);
                         }
-
-                        tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) - amount) * num);
+                        /*
+                         * couponType
+                         * 为 2 的优惠券  实付的金额=总金额-优惠券金额
+                           为 3 的优惠券  实付金额=总金额-（优惠券金额*数量）
+                         */
+                        if (couponType === 2) {
+                            tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) * num) - amount);
+                        } else{
+                            tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) - amount) * num);
+                        }
                         tmpPrice = (tmpPrice > 0 ? tmpPrice : 0) + (invoice && invoice.deliveryMethod == 1 ? 10 : 0);
                         self.els.totalPriceDom.html(tmpPrice > 0 ? tmpPrice : 0);
                         if (self.els.couponAmount.length) {
-                            self.els.couponAmount.html(retainTwoDecimal(amount * num))
+                            (couponType === 3) && self.els.couponAmount.html(retainTwoDecimal(amount * num));
                         }
                     }
                 });

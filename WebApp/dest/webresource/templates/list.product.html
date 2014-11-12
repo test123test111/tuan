@@ -10,7 +10,7 @@
             <img data-img="<%=i %>" onerror="javascript:noPic(this);" data-lazy="<%=p.imgUrl?p.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" />
         </div>
         <div class="pro_list_info">
-            <h4 class="pro_list_tit"><%=(p.descriptionhead?"["+p.descriptionhead+"]":"")+p.name+(p.hotdescription?"+"+p.hotdescription:"") %></h4>
+            <h4 class="pro_list_tit"><%=(p.descriptionhead && p.name.indexOf('【多店通用】') == -1 ? '[' + p.descriptionhead + ']' : '') + p.name%></h4>
             <p class="wrap_label">
                 <%if(false && labelsNum < 2 && p.star){%><%=p.star%><%}%>
                 <%if(p.labels && p.labels.length){ %>
@@ -70,7 +70,7 @@
                 %>
                 </span>
                 &yen;<i><%=p.price.dPrice%></i>
-           </p>
+            </p>
         </div>
         <%if(p.labelVal && p.labelVal==99){ %><div class="sold_out">售完</div><%} %>
     </li>

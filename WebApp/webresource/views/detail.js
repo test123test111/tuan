@@ -2,8 +2,8 @@
  * 详情页
  * @url m.ctrip.com/webapp/tuan/detail/{pid}.html
  */
-define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'cWidgetFactory'],
-function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, html, WidgetFactory) {
+define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'cWidgetFactory', 'CallPhone'],
+function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, html, WidgetFactory, CallPhone) {
     var MSG = {
             pageTitle: '团购详情',
             delFavoriteSuccess: '已取消收藏',
@@ -59,7 +59,6 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             'click #J_pic': 'showImages',
             'click #J_branch': 'showBranch', //分店
             'click .J_showDetailMap': 'showMap', //地图
-            'click .J_phone': 'showPhone',
             'click #J_comment': 'showComment', //点评
             'click #J_service': 'showService', //服务优势
             'click #J_morehotel': 'showMorehotel',
@@ -67,7 +66,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             'click #J_recommendNearby': 'recommendNearby',
             'click #J_gotoHotelDetail': 'onHotelDetailClick',
             'click .J_nearProducts': 'gotoNearProduct',
-            'click #J_groupContain': 'gotoGroupContent',
+            'click #J_groupContain': 'gotoGroupContent'
         },
         onCreate: function () {
             this.htmlfun = _.template(html);
@@ -300,7 +299,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                     domain: '//' + document.domain + (port && port == 80 ? '' : (':'+port)),
                     param: '?t=1&from=' + encodeURIComponent('/webapp/tuan/detail/' + self.productId + '.html' + (this.cityId ? '?cityid=' + this.cityId : '')),
                     callback: function () {
-                        self.onLoad(self.referer);
+                        self._onLoad(self.referer);
                     }
                 });
                 return false;
@@ -315,6 +314,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             this.timer && clearInterval(this.timer);
             this.hideLoading();
             this.hideWarning404();
+            this.mask && this.mask.hide();
         },
         /**
          * 判断是否从hybrid的公共收藏列表页过来
@@ -434,6 +434,10 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             //开启倒计时
             this.showTimer(data.etime);
             this.productData = data;
+
+            this.CallPhone = new CallPhone({
+                view: this
+            });
         },
         //跳转至图文详情页
         gotoGroupContent:function(){
@@ -520,55 +524,6 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 this.timer = setInterval(_.bind(this.updateTimer, this), 600);
 
             }
-        },
-        showPhone: function (e) {
-            var phone = [],
-                telphone,
-                phoneTxt = $(e.currentTarget).attr('data-phone');
-
-            phoneTxt = phoneTxt.replace(/，/g, ",");
-            _.each(phoneTxt.split(','), function (data) {
-                phone.push(" <a href='tel:" + data + "'>" + data + "</a><br/>");
-                if (!telphone || telphone == "") telphone = data;
-            });
-            if (!telphone || telphone == "") {
-                this.showToast("没有留下电话号，无法拨打！");
-                return;
-            }
-            //初始化alert
-            this.alert = new cui.Alert({
-                title: '拨打电话',
-                message: phone.join(""),
-                buttons: [{
-                    text: '取消',
-                    click: function () {
-                        this.hide();
-                    }
-                }, {
-                    text: '<a href="tel:' + telphone + '" data-phone="' + telphone + '">拨打</a>',
-                    click: function (e) {
-                        this.hide();
-                        Guider.apply({
-                            hybridCallback: function () {
-                                var PHONE_ATTR_STR = 'data-phone',
-                                    target = $(e.target);
-
-                                if (!target.attr(PHONE_ATTR_STR)) {
-                                    target = target.find('[' + PHONE_ATTR_STR + ']');
-                                };
-
-                                e.preventDefault();
-                                Guider.callPhone({ tel: target.attr(PHONE_ATTR_STR) });
-                                return false;
-                            },
-                            callback: function () {
-                                return true;
-                            }
-                        });
-                    }
-                }]
-            });
-            this.alert.show();
         },
         updateTimer: function () {
             if (this.dateDiff > 0) {

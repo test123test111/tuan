@@ -1,8 +1,11 @@
 define(['libs', 'cUIScroll'], function(libs, Scroll) {
     var mix = $.extend;
+    var NOOP = function(){};
 
     function Tab(options) {
-        var defaultOptions = {};
+        var defaultOptions = {
+            onSwitch: NOOP
+        };
 
         this.options = mix(defaultOptions, options);
         this.panel = this.options.panel;
@@ -40,6 +43,7 @@ define(['libs', 'cUIScroll'], function(libs, Scroll) {
         },
         switch: function(index) {
             var options = this.options;
+            this.options.onSwitch();
             $(this.label[options.labelSelectedIndex]).removeClass(options.labelSelectedClass);
             $(this.label[index]).addClass(options.labelSelectedClass);
 

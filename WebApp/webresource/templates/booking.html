@@ -34,7 +34,9 @@
         <li class="">
             <span class="label">手机号码</span>
             <span class="iptbox"><input type="text" placeholder="用于接收取票凭证短信" id="J_tel" value="<%=tel%>"><i class="icon icon_del"></i></span>
-            <i class="icon icon_user" id="J_selectContact"></i>
+            <% if (isInApp) {%>
+            <i class="icon icon_user" id="J_selectContact" style="z-index: 999; padding: 10px 5px;"></i>
+            <%}%>
         </li>
     </ul>
     <%} else { %>
@@ -58,10 +60,11 @@
         <span class="price1"><i>¥</i><span id="J_pPrice"><%=activities[0].arg * curNum%></span><%if(activities[0].type == 2 && user) {%>现金<%} %><%if(activities[0].type == 3 && user){%>携程礼品卡<%} %></span>
         </li>
         <%} %>
-
         <li>手机
             <span class="inputbox"><input type="tel" placeholder="用于接收团购券号和密码" maxlength="11" required id="J_tel" value="<%=tel%>" /></span>
-            <!--<i class="icon icon_user" style="display:none" id="J_selectContact"></i>-->
+            <% if (isInApp) {%>
+            <i class="icon icon_user" id="J_selectContact" style="z-index: 999; padding: 10px 5px;"></i>
+            <%}%>
         </li>
 
         <!--
@@ -86,11 +89,20 @@
         <%}%>
 
         <%if (price.dPrice > 0) {%>
-        <li class="arr_r" id="J_coupon">优惠券
-            <%if (coupon) {%>
-            <span class="promo_code"><%=coupon.isInput ? coupon.code : coupon.title%></span><span class="txt2">- &yen; <span id="J_couponAmount"><%=retainTwoDecimal(coupon.amount * curNum)%></span></span>
-            <%} else {%>
-            <span class="num" id="J_couponCount"></span><span class="txt">未使用</span>
+        <li class="arr_r" id="J_coupon"><label>优惠券</label>
+            <%
+                var couponTypeTxt = '';
+                if (coupon && typeof coupon === 'object') {
+                    if (coupon.couponType === 2) {
+                        couponTypeTxt = '限1单使用';
+                    } else if (coupon.couponType === 3) {
+                        couponTypeTxt = '可叠加使用';
+                    }
+            %>
+            <span class="promo_code"><%=coupon.isInput ? coupon.code : coupon.title%> <span><%=couponTypeTxt %></span></span>
+            <span class="txt2">- &yen; <span id="J_couponAmount"><%=retainTwoDecimal(coupon.amount * curNum)%></span></span>
+            <%} else{%>
+            <span class="num" id="J_couponCount"></span><span class="txt"><%=coupon === '0' ? '不使用' : '' %></span>
             <%}%>
         </li>
         <%}%>

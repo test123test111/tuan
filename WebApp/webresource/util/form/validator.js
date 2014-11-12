@@ -55,6 +55,11 @@ define(['libs'], function () {
 
 			return (index > -1 && index < fields.length) && (fields.splice(index, 1))[0].destroy();
 		},
+        removeAllFields: function() {
+            while (this._fields.length) {
+                this._fields.pop().destroy();
+            }
+        },
 		/**
 		 * 执行验证，返回field字段的rule检查结果
 		 * @returns {boolean}

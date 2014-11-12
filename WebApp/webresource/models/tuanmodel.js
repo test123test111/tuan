@@ -74,10 +74,10 @@
             path = RESTAPI_PATH.test;
         };
         return {
-            'domain': RESTAPI_DOMAIN.pro,
-            //'domain': domain,
-            'path': RESTAPI_PATH.pro
-            //'path': path
+            //'domain': RESTAPI_DOMAIN.pro,
+            'domain': domain,
+            //'path': RESTAPI_PATH.pro
+            'path': path
         }
     };
 
@@ -415,7 +415,7 @@
     T.TuanCouponListModel = new cBase.Class(AbstractModel, {
         __propertys__: function(){
             this.url = '/json/CouponList';
-            this.param = {};
+            this.param = {ver: VERSION};
             this.method = 'POST';
             this.result = TuanStore.TuanCouponListStore.getInstance();
         }

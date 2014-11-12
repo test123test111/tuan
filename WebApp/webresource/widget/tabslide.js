@@ -2,7 +2,6 @@
  * @depends underscore
  */
 define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, WidgetFactory){
-   // "use strict";
     var WIDGET_NAME = 'TabSlide',
         NOOP = function(){},
         NULL = null,
@@ -18,10 +17,8 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                                                  '';
 
             return prefix;
-
         })(),
         JSCSS3Prefix = CSS3ExpandoPrefix.replace(/\-/g, '');
-
 
     /**
      * 目标是否为object
@@ -337,13 +334,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 root = env.root,
                 start = this.__lastTouchStartPos,
                 offsetX = start.left + touches.pageX - start.x;
-//                requestAnimationFrame(function(){
-//                    TabSlide.translate(root, offsetX, 0);
-//                });
-
-
         }
-
     });
     /**
      * 向左滑动

@@ -2,7 +2,6 @@
  * @depends underscore
  */
 define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, WidgetFactory){
-   // "use strict";
     var WIDGET_NAME = 'SmoothSlide',
         NOOP = function(){},
         NULL = null,
@@ -21,7 +20,6 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
 
         })(),
         JSCSS3Prefix = CSS3ExpandoPrefix.replace(/\-/g, '');
-
 
     /**
      * 目标是否为object
@@ -365,7 +363,6 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                                                             'goto'
                 ]();
 
-
         },
         __transitionEndHandler: function(event){
             var current = this._current,
@@ -385,11 +382,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 root = env.root,
                 start = this.__lastTouchStartPos,
                 offsetX = start.left + touches.pageX - start.x;
-//                requestAnimationFrame(function(){
-                    Slide.translate(root, offsetX, 0);
-//                });
-
-
+                Slide.translate(root, offsetX, 0);
         }
 
     });
@@ -437,5 +430,4 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         name: WIDGET_NAME,
         fn: Slide
     });
-
 });

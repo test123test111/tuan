@@ -9,19 +9,17 @@
 <section class="cont_wrap"<%if (isCurrentCity) {%> style="padding-top:30px"<%}%> >
 <%_.each(data, function(hotel, index){%>
     <div class="business_list">
-        <div class="busi_city J_busiCity"><%=hotel.ctyName %><span class="<%if(isCurrentCity && index == 0){%>arrow_skin01_up<%}else{%>arrow_skin01_down<%}%> J_arrow"></span></div>
-        <div class="busi_hotel J_busiHotel"<%if(isCurrentCity && index == 0){%> style="display:block;"<%}%>>
+        <div class="busi_city J_busiCity"><%=hotel.ctyName %><span class="<%if(index == 0){%>arrow_skin01_up<%}else{%>arrow_skin01_down<%}%> J_arrow"></span></div>
+        <div class="busi_hotel J_busiHotel"<%if(index == 0){%> style="display:block;"<%}%>>
             <% _.each(hotel.HotelInfos, function(hotelinfo){ %>
             <%var isValidLngLat = hotelinfo.lon>0 && hotelinfo.lat>0 && hotelinfo.lon<1000 && hotelinfo.lat<1000 %>
             <ul class="subblist">
                 <li class="arr_r J_jumpHotel" data-id="<%=hotelinfo.hotelId || ''%>" >
                     <div class="hotelname"><%=hotelinfo.name %></div>
                     <%if (isCurrentCity) {%>
-                        <%if (index == 0) {%>
-                        <span class="icon_txt"><%=hotelinfo.distance > 1 ? (hotelinfo.distance.toFixed(1) + '公里') : (parseInt(hotelinfo.distance * 1000) + '米')%></span>
-                        <%}%>
+                        <%if (index == 0) {%><span class="icon_txt"><%=hotelinfo.distance > 1 ? (hotelinfo.distance.toFixed(1) + '公里') : (parseInt(hotelinfo.distance * 1000) + '米')%></span><%}%>
                     <%} else {%>
-                        <%if(hotelinfo.score){%><span class="icon_txt"><%=hotelinfo.score.toFixed(1) + '分'%></span><%}%>
+                        <%if(hotelinfo.score > 0){%><span class="icon_txt"><%=hotelinfo.score.toFixed(1) + '分'%></span><%}%>
                     <%}%>
                 </li>
                 <li class="<%if(isValidLngLat){%>arr_r J_showMap<%} %>" data-coords="<%= hotelinfo.lon %>,<%= hotelinfo.lat %>" data-hotel-name="<%= hotelinfo.name %>">
@@ -39,3 +37,15 @@
     </div>
 <%}) %>
 </section>
+
+<!--
+@PRD http://doc.ui.sh.ctriptravel.com/axure/tuangou6.0/#p=产品详情页-评分最高商户信息重新定义
+
+同城且定位，距离
+ 1、默认展开显示当前城市包含全部适用商户信息（需展示适用商户距离用户定位的距离信息）
+ 2、折起显示其他适用商户所在城市名称，点开后展示对应城市包含全部适用商户信息（无需展示距离信息）
+
+异地或非定位，评分
+ 1、默认展开显示当前城市包含全部适用商户信息（需展示适用商户评分信息，当评分为0时不展示）
+ 2、折起显示其他适用商户所在城市名称，点开后展示对应城市包含全部适用商户信息（需展示适用商户评分信息，当评分为0时不展示）
+-->
