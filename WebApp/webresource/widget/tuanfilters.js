@@ -363,6 +363,18 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                 }
             }
         },
+        updateCategoryName: function () {
+            var tuanTypeIndex = categoryfilterStore.getAttr('tuanTypeIndex') || 0;
+            var ctype = categoryfilterStore.getAttr('tuanType') || 0;
+            if (this.categoryTab) {
+                //团购分类Tab已初始化，直接切换分类
+                this.categoryTab.switch(tuanTypeIndex);
+            } else {
+                //团购分类Tab未初始化，重现渲染分类
+                this.renderCategory();
+            }
+            this.options.categoryTrigger.html(StringsData.groupType[ctype]['name']);
+        },
         /**
         * 初始化位置区域
         */
@@ -442,7 +454,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                 panel: panel,
                 isScroll: true,
                 labelSelectedClass: 'choosed',
-                labelSelectedIndex: index[positionfilterStore.getAttr('type') || 5],
+                labelSelectedIndex: index[positionfilterStore.getAttr('type')] || 0,
                 itemClass: '.pop_filter_baselist li',
                 itemSelectedClass: 'choosed',
                 onSwitch: function () {
@@ -577,7 +589,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         positionfilterStore.remove();
                     }
 
-                    self.options.positionTrigger.html(name || MSG.weizhiquyu);
+                    self.updatePositionName(name || MSG.weizhiquyu);
 
                     //地铁站、机场车站、景点、大学周边按经纬度查询， 默认4公里，故放出"距离"筛选条件
                     if (type < 0) {
@@ -611,7 +623,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var positionTrigger = this.options.positionTrigger;
             var conditionData = conditionStore.get();
             ret.curr = positionfilterStore.get() || {};
-            positionTrigger.html(ret.curr.name || MSG.weizhiquyu);
+            this.updatePositionName();
             tuanType = tuanType || searchStore.getAttr('ctype');
             ret.tuanType = tuanType;
 
@@ -677,6 +689,19 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                 });
             }, function (err) {
             }, false, this);
+        },
+        updatePositionName: function(name) {
+            var positionTrigger = this.options.positionTrigger;
+            if (!name) {
+                var curr = positionfilterStore.get() || {};
+                var text = curr.name;
+                if (curr.type == -6) {//地图中心点不回显在位置区域
+                    text = MSG.weizhiquyu;
+                }
+                positionTrigger.html(text || MSG.weizhiquyu);
+            } else {
+                positionTrigger.html(name);
+            }
         },
         /**
         * 初始化筛选条件

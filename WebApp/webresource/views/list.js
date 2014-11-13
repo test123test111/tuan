@@ -256,22 +256,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 this.filterWrap.animate({'-webkit-transform': 'translate(0, 0px) translateZ(0)', 'opacity': 1});
             } else {
                 this.hideFilterDropDowns();
-                this.updateFilterCategory();
+                this.tuanfilters.updateCategoryName();
+                this.tuanfilters.updatePositionName();
+                this.tuanfilters.updateCustomFilterIcon();
             }
-        },
-        updateFilterCategory: function () {
-            var tuanfilters = this.tuanfilters;
-            if (!tuanfilters) return;
-            var tuanTypeIndex = categoryfilterStore.getAttr('tuanTypeIndex') || 0;
-            var ctype = categoryfilterStore.getAttr('tuanType') || 0;
-            if (this.tuanfilters.categoryTab) {
-                //团购分类Tab已初始化，直接切换分类
-                this.tuanfilters.categoryTab.switch(tuanTypeIndex);
-            } else {
-                //团购分类Tab未初始化，重现渲染分类
-                this.tuanfilters.renderCategory();
-            }
-            this.tuanfilters.options.categoryTrigger.html(StringsData.groupType[ctype]['name']);
         },
         hideFilterDropDowns: function () {
             var tuanfilters = this.tuanfilters;
@@ -412,7 +400,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
 
                 //地图页可能更改了团购分类
                 if (this.isFromListMap(this.referUrl)) {
-                    this.updateFilterCategory();
+                    this.tuanfilters && this.tuanfilters.updateCategoryName();
                 }
             } else {
                 if (Lizard.P('cityid')) {//有cityid，则是直接从外部通过url传参进入，要把url里面的参数存入searchStroe
@@ -714,18 +702,8 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     if (searchStore.getAttr('pageIdx') > 1) {
                         self.showToast('亲，数据加载完毕');
                     } else if (this.totalPages || this.totalPages <= 0) {
-                        var customdata = customFiltersStore.get() || {};
-                        var distance = customdata && customdata.distance && customdata.distance.val;
-                        var lst = {};
-                        lst.msg = (distance ? distance + '公里内' : '') + '没找到符合条件的结果，请修改条件重新查询';
-                        lst[key] = null;
-                        lst.count = 0;
-                        lst.customFilter = customdata;
-                        lst.positionFilter = positionfilterStore.get();
-                        lst.weekendsAvailable = searchStore.getAttr('weekendsAvailable');
-                        lst.keywordData = StoreManage.getCurrentKeyWord();
-                        this.renderList(lst);
-                    };
+                        this.renderNoResult('', key);
+                    }
                     searchStore.setAttr('pageIdx', 1);
                     this.isComplete = true;
                     $(window).unbind('scroll', this.onWindowScroll);
@@ -738,42 +716,37 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 this.hideLoading();
                 this.isLoading = false;
                 this.isComplete = true;
-                var d = {};
-                var customdata = customFiltersStore.get() || {};
-                var distance = customdata && customdata.distance && customdata.distance.val;
                 if (this.totalPages <= 0) {
-                    d.msg = err.msg ? err.msg : ((distance ? distance + '公里内' : '') + '没找到符合条件的结果，请修改条件重新查询');
-                    d[key] = null;
-                    d.count = 0;
-                    d.customFilter = customdata;
-                    d.positionFilter = positionfilterStore.get();
-                    d.weekendsAvailable = searchStore.getAttr('weekendsAvailable');
-                    d.keywordData = StoreManage.getCurrentKeyWord();
                     this.listWrap.empty();
-                    this.renderList(d);
+                    this.renderNoResult(err.msg, key);
                 }
                 searchStore.setAttr('pageIdx', 1);
                 $(window).unbind('scroll', this.onWindowScroll);
             }, !!fromServer, self);
         },
         emptyPage: function (title, cityName) {
-            var customdata = customFiltersStore.get() || {};
-            var lst = {};
-            lst.msg = '没找到符合条件的结果，请修改条件重新查询';
-            lst['hotels'] = null;
-            lst.count = 0;
-            lst.customFilter = {
-                'feature': {
-                    val: '',
-                    txt: title
-                }
-            }
-            lst.positionFilter = positionfilterStore.get();
-            lst.weekendsAvailable = searchStore.getAttr('weekendsAvailable');
-            lst.keywordData = StoreManage.getCurrentKeyWord();
-            this.renderList(lst);
             this.updateTitle(title);
+            this.renderNoResult('', 'hotels', {'feature': {val: '', txt: title}});
             this.gpsInfoWrap.text('距离：' + cityName + StringsData.CITY_CENTER);
+        },
+        renderNoResult: function (msg, key, customdata) {
+            var lst = {
+                count: 0,
+                positionFilter: positionfilterStore.get() || {},
+                weekendsAvailable: searchStore.getAttr('weekendsAvailable'),
+                keywordData: StoreManage.getCurrentKeyWord()
+            };
+            customdata = customdata || customFiltersStore.get() || {};
+            var distance = customdata && customdata.distance && customdata.distance.val;
+            distance = distance || lst.positionFilter.pos && lst.positionFilter.pos.distance;
+            lst[key] = null;
+            if (msg) {
+                lst.msg = msg;
+            } else {
+                lst.msg = (distance ? distance + '公里内' : '') + '没找到符合条件的结果，请修改条件重新查询';
+            }
+            lst.customFilter = customdata;
+            this.renderList(lst);
         },
         initKeywordSearch: function () {
             var searchBox = this.$el.find('#J_keywordSearch'),

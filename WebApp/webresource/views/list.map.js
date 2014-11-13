@@ -21,6 +21,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
             historyCityListStore = TuanStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
             positionfilterStore = TuanStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
             categoryfilterStore = TuanStore.GroupCategoryFilterStore.getInstance(), //团购类型
+            customFiltersStore = TuanStore.GroupCustomFilters.getInstance(), //团购自定义筛选项
             getLocalCityInfoModel = TuanModel.TuanLocalCityInfo.getInstance(),
             infoTpl = _.template([
                 '查询：<%=distance%>公里内，',
@@ -531,6 +532,17 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                             name: regeocode.formattedAddress,
                             pos: pos
                         });
+                        var qparams = searchStore.getAttr('qparams') || [];
+                        //清除qparams里面已有的商业区、行政区、地铁线、距离等参数
+                        for (var i = 0, l = qparams.length; i < l; i++) {
+                            var t = qparams[i].type;
+                            if (t == 5 || t == 4 || t == 19 || t == 9) {
+                                qparams.splice(i, 1);
+                                break;
+                            }
+                        }
+                        customFiltersStore.removeAttr('distance');
+                        searchStore.setAttr('qparams', qparams);
                     }
                     typeof callback === 'function' && callback.call(self, regeocode.formattedAddress);
                 }, function (err) {
