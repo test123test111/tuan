@@ -31,6 +31,7 @@
             StringsData: buildPath("data/strings"),
             Tab: buildPath("com/tab"),
             PageHistory: buildPath("com/history"),
+            ConsoleDebug: buildPath("com/console"),
             PageTreeConfig: buildPath("com/pagetreeconfig"),
             TuanBaseView:buildPath("com/baseview"),
             ValidatorUtil: buildPath("util/form/validator"),

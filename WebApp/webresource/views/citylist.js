@@ -355,11 +355,11 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
         updateZIndex: function(flag) {
             if (flag) {
                 this.els.searchBox.css({zIndex: 4000});
-                this.els.$allCityBox.css({position: 'relative', zIndex: 4000});
+                this.els.$allCityBox.css({position: 'relative', zIndex: 4000}).hide();
                 this.els.eltuancitykeyword.focus();
             } else {
                 this.els.searchBox.css({zIndex: 'auto'});
-                this.els.$allCityBox.css({position: 'static', zIndex: 'auto'});
+                this.els.$allCityBox.css({position: 'static', zIndex: 'auto'}).show();
             }
         },
         showHotCitys: function () {
@@ -395,6 +395,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                     this.els.eltuancitylistbox.find('.city_noresult').show();
                     this.$el.find('.s_city_num>span').text(0);
                 } else {
+                    this.els.$allCityBox.show();
                     this.els.eltuancitylistbox.find('.city_noresult').hide();
                     this.$el.find('.s_city_num>span').text(domlist.length);
                 }

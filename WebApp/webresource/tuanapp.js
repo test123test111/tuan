@@ -210,38 +210,6 @@ define(['PageHistory'], function (PageHistory) {
         }
     };
 
-    (function initClearLocalStorage() {
-        require(['c', 'cUtility'], function(c, Util) {
-            var btn,
-                env,
-                hasClear,
-                toast,
-                $con;
-            if (Util.isInApp()) {
-                //Hybrid， 非生产环境
-                env = Util.isPreProduction();
-                if (env === '0' || env === '1' || env === '2') {
-                    hasClear = true;
-                }
-            } else {
-                //H5, 非生产环境
-                if (!location.host.match(/^(m|3g|wap)\.ctrip\.com/i)) {
-                    hasClear = true;
-                }
-            }
-
-            if (hasClear) {
-                btn = $('<i style="position:fixed;bottom:100px;color:green;z-index:9999;">CL</i>').appendTo('#main');
-                btn.on('click', function() {localStorage && localStorage.clear();!toast && (toast = new c.ui.Toast());toast.show('Clear', 1);});
-                //测试提的需求： 测试环境中清空footer里的广告
-                var fn = setInterval(function() {
-                    var ads = $('.dl_panel-bg .dl_btn-close');
-                    if (ads && ads.length) {ads.trigger('click');clearInterval(fn);}
-                }, 100);
-            }
-        });
-    })();
-
     require(['libs', 'cUtility', 'cWidgetFactory', 'cHybridFacade', 'cWidgetGuider'], function (libs, Util, WidgetFactory, Facade) {
         var Guider = WidgetFactory.create("Guider");
 
@@ -264,6 +232,39 @@ define(['PageHistory'], function (PageHistory) {
                 }
             });
         }
+
+
+        (function initClearLocalStorage() {
+            var btn,env,hasClear,con;
+            if (Util.isInApp()) {
+                //Hybrid， 非生产环境
+                env = Util.isPreProduction();
+                if (env === '0' || env === '1' || env === '2') {
+                    hasClear = true;
+                }
+            } else {
+                //H5, 非生产环境
+                if (!location.host.match(/^(m|3g|wap)\.ctrip\.com/i)) {
+                    hasClear = true;
+                }
+            }
+
+            if (hasClear) {
+                btn = $('<i style="position:fixed;bottom:300px;color:green;z-index:9999;">CL</i>').appendTo('#main');
+                btn.on('click', function() {
+                    !con && require(['ConsoleDebug'], function(ConsoleDebug) {
+                        con = new ConsoleDebug();
+                    });
+                    con && con.show();
+                });
+                //测试提的需求： 测试环境中清空footer里的广告
+                var fn = setInterval(function() {
+                    var ads = $('.dl_panel-bg .dl_btn-close');
+                    if (ads && ads.length) {ads.trigger('click');clearInterval(fn);}
+                }, 100);
+            }
+
+        })();
     });
 
     //for pic Lazyload

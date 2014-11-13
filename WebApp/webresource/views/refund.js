@@ -70,11 +70,11 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                         var tmpPrice = self.tuanCouponPrice,
                             promoCouponPrice = self.promoCouponPrice,
                             couponType = self.couponType,
-                            num = this.getCurrentNum();
+                            num = parseInt(this.getCurrentNum());
 
                         if (promoCouponPrice) {
                             if (couponType === 2) {
-                                if (parseInt(num, 10) === max) {
+                                if (num === max) {
                                     //单次券，退最后一张的时候需要减去优惠券的价格
                                     tmpPrice = Math.round(tmpPrice * num - promoCouponPrice);
                                 } else {
@@ -164,10 +164,10 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 this.tuanCouponPrice = 0; //团购券单价
                 this.refundable = true; //优惠券、快递费用是否可退
 
-                //优惠券单价,@since20141112 修改为从ordercoupons取数据
-                if (data.ordercoupons) {
-                    this.promoCouponPrice = data.ordercoupons.price;
-                    this.couponType = data.ordercoupons.coupontype;
+                //优惠券单价,@since20141112 修改为从orderCoupons取数据
+                if (data.orderCoupons) {
+                    this.promoCouponPrice = data.orderCoupons.price;
+                    this.couponType = data.orderCoupons.couponType;
                 }
 
                 if (data.coupons && data.coupons.length > 0) {
@@ -289,12 +289,12 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 var self = this;
                 var reasonText = "";
                 var ticketlist = [];
-                var num = +this.els.refundCount.text(); //退回数量
+                var num = this.numberStep.getCurrentNum(); //退回数量
                 var refundType = this.els.$types.filter('.'+chooseCls).attr('data-type'),
                     ticket;
 
                 if (+num <= 0) {
-                    this.showToast("请输入需要回退的数量！");
+                    this.showToast("请输入需要退回的数量！");
                     return;
                 }
                 if (this.maxCoupons <= 0 || this.tuanCouponList.length <= 0) {

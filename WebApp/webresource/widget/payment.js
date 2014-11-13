@@ -46,7 +46,8 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
             extendToken = {
                 IsNeedCardRisk: true,//风控参数
                 payTypeList:data.payTypeList,
-                subPayTypeList: data.subPayTypeList
+                subPayTypeList: data.subPayTypeList,
+                isRealTimePay: data.IsRealPay || 0
             },
             bookingSuccessUrl = BOOKING_SUCCESS_URL.replace('{orderid}', onum);
 
