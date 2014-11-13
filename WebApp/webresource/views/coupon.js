@@ -44,7 +44,7 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
             var data = {
                 coupons: coupons,
                 dateFormat: dateFormat,
-                hasUsedCoupon: usedCoupon
+                notUse: usedCoupon && (usedCoupon.pid == this.pid) && usedCoupon.isNotUse
             };
             this.coupons = coupons;
             wrap.html($.trim(_.template(this.tpl, data)));
@@ -110,7 +110,7 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
             } else {
                 this.els.couponList.removeClass(CHOOSED);
                 selectedCouponStore.remove();
-                selectedCouponStore.set('0');
+                selectedCouponStore.set({pid: this.pid, isNotUse: true});
                 this.back();
             }
         },

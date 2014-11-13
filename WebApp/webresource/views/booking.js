@@ -150,10 +150,11 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
                     store.isInApp = isInApp;
 
+                    //优惠券默认记录原产品，换新产品之后默认不选中使用优惠券
                     if (coupon && coupon.pid === store.id) {
                         store.coupon = coupon;
                     } else {
-                        store.coupon = coupon;
+                        store.coupon = undefined;
                     }
 
                     this.pid = store.id;
@@ -870,7 +871,8 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 selectedCouponStore.remove();
             },
             isCouponUsed: function() {
-                return this.store.coupon && typeof this.store.coupon === 'object';
+                var co = this.store.coupon;
+                return co && typeof co === 'object' && !co.isNotUse;
             },
             getCouponList: function (cb) {
                 var self = this;

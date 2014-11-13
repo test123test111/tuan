@@ -93,16 +93,22 @@
             <%
                 var couponTypeTxt = '';
                 if (coupon && typeof coupon === 'object') {
-                    if (coupon.couponType === 2) {
+                    if (coupon.isNotUse) {
+            %>
+                <span class="num" id="J_couponCount"></span><span class="txt">不使用</span>
+            <%
+                    } else {
+                        if (coupon.couponType === 2) {
                         couponTypeTxt = '限1单使用';
-                    } else if (coupon.couponType === 3) {
+                        } else if (coupon.couponType === 3) {
                         couponTypeTxt = '可叠加使用';
-                    }
+                        }
             %>
             <span class="promo_code"><%=coupon.isInput ? coupon.code : coupon.title%> <span><%=couponTypeTxt %></span></span>
             <span class="txt2">- &yen; <span id="J_couponAmount"><%=retainTwoDecimal(coupon.amount * curNum)%></span></span>
-            <%} else{%>
-            <span class="num" id="J_couponCount"></span><span class="txt"><%=coupon === '0' ? '不使用' : '' %></span>
+                <%}
+            } else{%>
+            <span class="num" id="J_couponCount"></span><span class="txt"></span>
             <%}%>
         </li>
         <%}%>
