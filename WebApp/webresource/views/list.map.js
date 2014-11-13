@@ -24,7 +24,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
             customFiltersStore = TuanStore.GroupCustomFilters.getInstance(), //团购自定义筛选项
             getLocalCityInfoModel = TuanModel.TuanLocalCityInfo.getInstance(),
             infoTpl = _.template([
-                '查询：<%=distance%>公里内，',
+                '查询：<%=place%>，',
                 '<%if(count>0){%>',
                     '共<%=count%>家商户<%if(count>50){%>，展示前<%=length%>家<%}%>',
                 '<%}else{%>',
@@ -56,6 +56,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
             pageid: '260002',
             hpageid: '261002',
             isScreenQuery: false, //是否"查询屏幕范围内的团购"
+            poiMarkers: [],
             render: function () {
                 this.mapWrap = this.$el.find('#J_map');
                 this.infoWrap = this.$el.find('#J_infoWrap');
@@ -145,8 +146,23 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     this.mapWidget.setFitView();
                 }
                 this.getDistance();
+                var place = '';
+                if (this.isScreenQuery) {
+                    place = this.distance + '公里内';
+                } else {
+                    var pos = positionfilterStore.get();
+                    if (pos && pos.type) {
+                        if (pos.type == 4 || pos.type == 5) {
+                            place = pos.name;
+                        } else if ((pos.type < 0 && pos.type != -6) || pos.type == 19) {
+                            place = pos.name + '周边';
+                        }
+                    } else {
+                        place = searchStore.getAttr('ctyName');
+                    }
+                }
                 var infoText = infoTpl({
-                    distance: this.isScreenQuery ? this.distance : 50,
+                    place: place,
                     count: data.count,
                     ctext: GROUP_TEXT[this.category],
                     length: data.products.length
@@ -155,7 +171,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     this.infoWrap.show().text(infoText);
                 }
             },
-            poiMarkers: [],
             renderMarkerDOM: function (data) {
                 data.MARKERS_CLS = MARKERS_CLS;
                 return markerTpl(data);
@@ -280,6 +295,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     gpsInfo = geolcationStore.getAttr('gps'),
                     pos = positionfilterStore.getAttr('pos'),
                     posType = positionfilterStore.getAttr('type'),
+                    posName = positionfilterStore.getAttr('name'),
                     info;
 
                 if (this.isScreenQuery) {
@@ -304,6 +320,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                         info.name = cityInfo.name + StringsData.CITY_CENTER;
                     } else if (posType < 0 || posType == '5') { //地图屏幕内查询、地铁站、机场车站、景点、大学周边或商业区
                         info = pos;
+                        info.name = posName;
                     }
                 }
 
@@ -431,6 +448,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     marker;
                 //如有一个坐标为空，则不显示
                 if (!lng || !lat) {
+                    //按城市查询，未获取到城市中心经纬度：显示中国地图
+                    mapWidget.map.setCenter(new mapWidget.host.LngLat(103.38861111111, 35.563611111111));
+                    mapWidget.map.setZoom(3);
                     return;
                 }
                 //防止出现多个中心点

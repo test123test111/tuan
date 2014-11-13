@@ -97,7 +97,13 @@
                     <li data-type="<%=key%>" data-value="<%=item.val%>"><%=item.txt%></li>
                 <%}%>
             <%})%>
-            <%if (positionFilter && positionFilter.name) {%><li data-type="position"><%=positionFilter.name%></li><%}%>
+            <%if (positionFilter.name) {%>
+                <%if (positionFilter.type != -6) {%>
+                    <li data-type="position"><%=positionFilter.name%></li>
+                <%}else{%>
+                    <li data-type="position"><%=positionFilter.pos.distance%>公里</li>
+                <%}%>
+            <%}%>
             <%if (weekendsAvailable) {%><li data-type="weekendsAvailable">周末可用</li><%}%>
             <%if (keywordData && keywordData.word) {%><li data-type="keyword"><%=keywordData.word%></li><%}%>
         </ul>

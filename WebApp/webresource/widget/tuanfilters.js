@@ -127,7 +127,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.val||curr.type!=-4){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(AirportStation, function(val){%>',
-                        '<li data-type="-4" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-4&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
+                        '<li data-type="-4" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-4&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -137,7 +137,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.line){%> class="backwards"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(SubwayLine, function(val){%>',
-                        '<li data-type="-5" data-value="<%=val.val%>" data-text="<%=val.txt%>" class="arr_r<%if(curr.line==val.val){%> backwards<%}%>"><div class="txt01"><%=val.txt%></div><span class="txt03"><%if(curr.line==val.val&&curr.type==-3){%><%=curr.name%><%}%></span><span class="txt02"><%=val.groupCount%></span></li>',
+                        '<li data-type="-5" data-value="<%=val.val%>" data-text="<%=val.txt%>" class="arr_r<%if(curr.line==val.val){%> backwards<%}%>"><div class="txt01"><%=val.txt%></div><span class="txt03"><%if(curr.line==val.val&&curr.type==-3){%><%=curr.name%><%}%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -147,7 +147,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.val||curr.type!=-2){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(Attraction, function(val){%>',
-                        '<li data-type="-2" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-2&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
+                        '<li data-type="-2" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-2&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -566,6 +566,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                     //返回到地铁线列
                                     subwayLineWrap.show();
                                     subwayStationWrap.hide();
+                                    subwayLineWrap.find('li:first-child').removeClass('choosed');
                                     subwayLineWrap.find('.txt03').text('');
                                     currLine.addClass('backwards').siblings().removeClass('backwards');
                                     currLine.find('.txt03').text(name);//把地铁站回显到地铁线右侧
@@ -575,8 +576,8 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                 }
                                 positionfilterStore.set(obj);
                                 customFiltersStore.setAttr('distance', {
-                                    val: StringsData.SEARCH_DISTANCE,
-                                    txt: StringsData.SEARCH_DISTANCE_TEXT
+                                    val: 1,
+                                    txt: '1公里内'
                                 });
                                 break;
                         }
@@ -587,6 +588,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     } else {
                         resetAll(item);
                         positionfilterStore.remove();
+                        customFiltersStore.removeAttr('distance');
                     }
 
                     self.updatePositionName(name || MSG.weizhiquyu);

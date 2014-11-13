@@ -148,11 +148,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         */
         goNearbyGroup: function (data, category) {
             var searchData = searchStore.get();
-
             StoreManage.clearAll();
-            historyCityListStore.setAttr('nearby', true);
-            qparams = StoreManage.getGroupQueryParam();
-            searchStore.setAttr('qparams', qparams);
             if (category) {
                 if (category == 'nearby') {//只有“附近团购”才默认4公里
                     //设置距离条件
@@ -170,7 +166,10 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                     categoryfilterStore.setAttr('tuanTypeIndex', +index > 0 ? +index : 0);
                 }
             }
-            historyKeySearchtore.remove();
+            historyCityListStore.setAttr('nearby', true);
+            qparams = StoreManage.getGroupQueryParam();
+            searchStore.setAttr('qparams', qparams);
+            // historyKeySearchtore.remove();
             this.forwardJump('list', '/webapp/tuan/list');
         },
         /**
