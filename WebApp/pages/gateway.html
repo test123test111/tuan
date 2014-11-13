@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script>
+    (function(){
+        var testUrl = 'http://m.ctrip.com/webapp/tuan/pages/gatewray.html?openurl='+encodeURIComponent('http://m.ctrip.com/webapp/tuan/list');
+        var RE_QUERYSTRING = /(?:^\?|&)(.*?)=(.*?)(?=&|$)/g;
+        var APP_SCHEMA = 'ctrip://wireless/h5?page=/webapp/tuan/list&path=tuan';
+
+        function generateAppUrl(url){
+            return APP_SCHEMA;
+        }
+        ;
+        function openUrl(){
+
+        };
+        function getQuery(url, key){
+            return new RegExp('.*(?:\?|&)'+key+'=([^&]*)(?:&|$)', 'i');
+        };
+        console.log(getQuery(testUrl, 'openapp'));
+        debugger;
+    })();
+</script>
+</body>
+</html>
