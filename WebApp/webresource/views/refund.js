@@ -164,7 +164,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 this.tuanCouponPrice = 0; //团购券单价
                 this.refundable = true; //优惠券、快递费用是否可退
 
-                //优惠券单价,@since20141112 修改为从orderCoupons取数据
+                //优惠券单价,@tuan v2.6 修改为从orderCoupons取数据
                 if (data.orderCoupons) {
                     this.promoCouponPrice = data.orderCoupons.price;
                     this.couponType = data.orderCoupons.couponType;

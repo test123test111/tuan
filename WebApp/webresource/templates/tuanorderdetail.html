@@ -1,5 +1,7 @@
 <article  class="cont_wrap">
-    <%  var isTicket = typeof product === 'object' && product.category && (product.category.ctgoryid === 6 && product.category.subctgory === 2);
+    <%
+    var btns = typeof btn === 'object' && btn; //按钮集合
+    var isTicket = typeof product === 'object' && product.category && (product.category.ctgoryid === 6 && product.category.subctgory === 2); //是否是门票对接
         var hasInvoice = (typeof invoice!='undefined' && invoice) %>
     <section class="order_bg">
     <!--
@@ -89,16 +91,16 @@
 
         <%if(appNonsupport){%>
             <ul class="dflex scheme_01 mgb10">
-            <%if(canRefund){%>
-            <li id="J_refund">申请退款</li>
-            <%}%>
-            <%if(status==1){%>
-            <li id="J_cancelOrder">取消订单</li>
-            <%}%>
-            <%if(status>2 && canDelete){%>
-            <li id="J_deleteOrder">删除订单</li>
-            <%}%>
-        </ul>
+                <%if(canRefund && btns.refund){%>
+                <li id="J_refund">申请退款</li>
+                <%}%>
+                <%if(status==1 && btns.cancelord){%>
+                <li id="J_cancelOrder">取消订单</li>
+                <%}%>
+                <%if(status>2 && canDelete && btns.del){%>
+                <li id="J_deleteOrder">删除订单</li>
+                <%}%>
+            </ul>
         <%}%>
         <% if (isTicket && hasBinfo) {%>
             <div class="tuan_title">取票人信息</div>
@@ -131,7 +133,7 @@
     </section>
     <% }%>
     <div id="J_recommendWrap" style="display:none"></div>
-    <%if(typeof statusRmk!='undefined' && (statusRmk=='待支付')){%>
+    <%if(typeof statusRmk!='undefined' && (statusRmk=='待支付') && btns.conpay){%>
     <div style="height:45px"></div>
     <ul class="btm_price">
         <li class="item03">

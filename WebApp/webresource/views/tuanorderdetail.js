@@ -151,7 +151,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
 
                 if (data.mooncakeStatus != 4) {//当mooncakeStatus==4，是秋季大促销，不需要显示券信息
                     //加载券相关信息
-                    self._loadCoupon(self.couponsWrap, store.coupons, appNonsupport, store.status);
+                    self._loadCoupon(self.couponsWrap, store.coupons, appNonsupport, store.status, data.btn);
                 }
             }, function (error) {
                 // error = {statusText: 'timeout'};
@@ -280,10 +280,11 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         },
         // nOrderStatus {number} 订单状态
         // update by liwl
-        _loadCoupon: function (wrap, data, isCorrectChannel, nOrderStatus) {
-            if (wrap[0] && data) {
+        _loadCoupon: function (wrap, coupons, isCorrectChannel, nOrderStatus, btns) {
+            if (wrap[0] && coupons) {
                 wrap.html(_.template(htmlItem, {
-                    list: data,
+                    isShow: btns && btns.send,  //@since v2.6
+                    list: coupons,
                     orderStatus: nOrderStatus | 0
                 }));
                 if (!isCorrectChannel) {//隐藏: 发送券号密码到手机
@@ -592,3 +593,8 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
 
     return View;
 });
+
+/**
+ * changelog:
+ *  v2.6 新增btns节点，控制按钮（发送券号按钮，退款按钮，取消订单按钮，删除按钮，继续支付按钮）的显示
+ */

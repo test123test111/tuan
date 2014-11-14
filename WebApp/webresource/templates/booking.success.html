@@ -29,7 +29,7 @@
             <% }) %>
         </div>
     <% } %>
-    <%if (typeof sendcoupons !== 'undefined' && sendcoupons) {%>
+    <%if (!isNonUser && typeof sendcoupons !== 'undefined' && sendcoupons) {%>
         <div class="coupon_info">
             <div class="title"><span class="yuan"><i>¥</i><%=sendcoupons %></span>团购红包免费送</div>
             <div class="context">消费成功后，将自动发至“我的携程-优惠券”中</div>

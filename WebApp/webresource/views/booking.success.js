@@ -62,6 +62,7 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
                             }
                             data.user = self.user;
                             data.retainTwoDecimal = retainTwoDecimal;
+                            data.isNonUser = user && user.IsNonUser;
                             self.$el.html($.trim(tpl(data)));
                             if (data.product && data.product.id) {
                                 self.getCrossRecommend(data.product.id);

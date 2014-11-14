@@ -91,6 +91,12 @@ namespace Tuan.Controllers
             return View();
         }
 
+        // 酒店地图导航页面
+        public ActionResult HotelMapNav()
+        {
+            return View();
+        }
+
         // 酒店服务优势页面
         public ActionResult HotelService()
         {

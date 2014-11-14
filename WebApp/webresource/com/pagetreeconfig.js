@@ -107,6 +107,13 @@ define([], function () {
                 'hotelname': ''
             }
         },
+        //酒店地图导航
+        'hotelmapnav': {
+            'prev': 'hotelmap',
+            'url': '/webapp/tuan/hotelmapnav?url={url}',
+            'range': ['hotelmap'],
+            'params': {'url': ''}
+        },
         //团购预定页
         'booking': {
             'prev': 'detail',

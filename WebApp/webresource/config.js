@@ -61,7 +61,8 @@
             RefundTipTpl: buildPath("templates/refund.tip.html"),
             TuanOrderDetailTpl: buildPath("templates/tuanorderdetail.html"),
             OrderDetailItemTpl: buildPath("templates/order.detail.item.html"),
-            RecommendTpl: buildPath("templates/recommend.html")
+            RecommendTpl: buildPath("templates/recommend.html"),
+            MapNavTpl: buildPath('templates/hotel.map.nav.html')
         }
     });
 })();

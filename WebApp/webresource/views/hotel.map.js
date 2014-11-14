@@ -53,7 +53,7 @@ function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFacto
             }
 
             this.loadMapScript();
-            !Util.isInApp() && navigator.css('display', 'none');
+//            !Util.isInApp() && navigator.css('display', 'none');
         },
         /**
         * 显示地图导航
@@ -65,9 +65,11 @@ function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFacto
                     longitude: data.Longitude,
                     title: data.hotelName
                 };
+//            hotelMapInfo && geolocation.show_map(hotelMapInfo);
 
-            hotelMapInfo && geolocation.show_map(hotelMapInfo);
+            this.forwardJump('hotelmapnav', '/webapp/tuan/hotelmapnav?lat='+data.Latitude+'&lng='+data.Longitude+'&title='+data.hotelName);
         },
+
         onShow: function () {
             if (this.header) {
                 this.header.hide();
