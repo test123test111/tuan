@@ -1,28 +1,203 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
+<head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>携程旅行网触屏版-酒店团购</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <style type="text/css">
+        .cui-breaking-load{width: 200px; height: 71px}
+        .cui-i,.cui-i:before {
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAACOCAMAAAAoyq6hAAAAulBMVEUAAAD//////PkAAAAAAAAAAAD/+/UAAAAAAAAVPXIkd+IAAAD///8AAAAAAAAAAAD///8AAAD//////////////Pj///////////////////8kd+L///8AAAD///8AAAD///8kd+IAAAAAAAD///////////////////////////////8AAAAld+H///8kd+IAAAAkd+L///8kd+Ikd+Ild+H6mBhbf67/mRO4jlb///8kd+JngaPKkUVZ8xZrAAAAOnRSTlMADRQjCkgGmTMEkxM/doNgNGpJHOwkXaFTxyss1BvhjLsUO1WuZ2+W9neOfizNiEaTXoJ5run9uJrfMCeHKQAAEZNJREFUeF683Ht3msoex+EvqEQQDXLxAoSI0Wi0qETt3mfc+/2/rcNoN4kOA4Tb03+6qmnXyof5DUNtUVS7Ne88D/uD1yfqcBj0h8+dbquNRgnqcreYuiYhqI36OTMJIevZh4h8HOV8uQQOmiK3OkPaIdFg2GnJaII4WbkkhogE6QrVMXZr8mUlIJuvXG58NOGl0z88ZTj0Oy9111hOyR0gTlJdFGNM7nkGsjjnCxVcLkcZfE54it4CQEYJrbfBU06Dtxqb6AvyCBEpLlJJE2lLGG5q6TA4B5er4ESr7JFMDq9vuwWhUES7w9RIN+i0UQNp6RIWrqQvQtkktkcSLMGnXL5c14mDRHuaQwkdH5RcLElr+FTAsFV5jpFH7pizzXY5muBGwlcOQRBKJFmSO9PNjFAu+BR64cdOoY8kctQtCL8XkGXf/2GRbv+poP4vVEl1yZf14l2T8CAuIlBFk0grcmfyvrJUQgnItUaUvYxEftLuEhXxG8lBDapLIo5JzNzFMRiliwgzcme1WWsrbElEN/iN/bhHAHB7BA6AEkVaNEcp/RYqoZtxjrEuIVWUo0ASa7Td7JaqOCX3dLISJtDIjasiWfinRrRAkEyOevhIkrdI7zkzwOGQmeS5h9Kkz3hU7QxQ2Ul+VET48AjHyHQBqHEgI21i7Z3L2Ucy5Ux7lCgy536zX/tvnW6r18ZVu9fqdp77r9xoHZRkxFftRgSLn0SMfiAHdU24ZksyG307lUyQ6M+97lGhPWQJjP357IAjz87e40yr/lu3h0S97hvva3oo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);
+        }
+        @-webkit-keyframes cui-loading{0%{opacity:1;-webkit-transform:rotate(0deg)}100%{opacity:1;-webkit-transform:rotate(360deg)}}@-moz-keyframes cui-loading{0%{opacity:1;-moz-transform:rotate(0deg)}100%{opacity:1;-moz-transform:rotate(360deg)}}@-ms-keyframes cui-loading{0%{opacity:1;-ms-transform:rotate(0deg)}100%{opacity:1;-ms-transform:rotate(360deg)}}@keyframes cui-loading{0%{opacity:1;transform:rotate(0deg)}100%{opacity:1;transform:rotate(360deg)}}
+        .cui-breaking-load{width: 200px; height: 80px; position: absolute; left: 50%; top: 50%; margin: -50px 0 0 -100px;text-align: center;}
+        .cui-w-loading {
+            -webkit-animation: cui-loading 1.58s linear infinite;
+            -moz-animation: cui-loading 1.58s linear infinite;
+            -ms-animation: cui-loading 1.58s linear infinite;
+            animation: cui-loading 1.58s linear infinite;
+            -webkit-transform-origin: 50% 50%;
+            -moz-transform-origin: 50% 50%;
+            -ms-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+            opacity: 1;
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            height: 38px;
+            margin:-18px 0 0 -18px;
+            width: 38px;
+            background-position: -363px -1px;
+        }
+        .cui-m-logo {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            left: 50%;
+            top: 50%;
+            z-index: 9;
+            background-position: -329px 3px;
+            margin: -12px 0 0 -12px;
+        }
+        .wait-text{
+            font-size:0.7em;
+            font-style: normal;
+            position: absolute;
+            bottom: 0;
+            left: 62px;
+            color: #999;
+        }
+    </style>
 </head>
 <body>
+<div class="cui-breaking-load"><div class="cui-i cui-w-loading"></div><div class="cui-i cui-m-logo"></div><i class="wait-text">跳转中，请稍等…</i></div>
 <script>
-    (function(){
-        var testUrl = 'http://m.ctrip.com/webapp/tuan/pages/gatewray.html?openurl='+encodeURIComponent('http://m.ctrip.com/webapp/tuan/list');
-        var RE_QUERYSTRING = /(?:^\?|&)(.*?)=(.*?)(?=&|$)/g;
-        var APP_SCHEMA = 'ctrip://wireless/h5?page=/webapp/tuan/list&path=tuan';
+    'use strict';
+    var __Crypt = (function () {
+        var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        var encode = function (input) {
+            var output = "";
+            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+            var i = 0;
+            input = _utf8_encode(input);
+            while (i < input.length) {
+                chr1 = input.charCodeAt(i++);
+                chr2 = input.charCodeAt(i++);
+                chr3 = input.charCodeAt(i++);
+                enc1 = chr1 >> 2;
+                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                enc4 = chr3 & 63;
+                if (isNaN(chr2)) {
+                    enc3 = enc4 = 64
+                } else {
+                    if (isNaN(chr3)) {
+                        enc4 = 64
+                    }
+                }
+                output = output + _keyStr.charAt(enc1) + _keyStr.charAt(enc2) + _keyStr.charAt(enc3) + _keyStr.charAt(enc4)
+            }
+            return output
+        };
+        var decode = function (input) {
+            var output = "";
+            var chr1, chr2, chr3;
+            var enc1, enc2, enc3, enc4;
+            var i = 0;
+            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+            while (i < input.length) {
+                enc1 = _keyStr.indexOf(input.charAt(i++));
+                enc2 = _keyStr.indexOf(input.charAt(i++));
+                enc3 = _keyStr.indexOf(input.charAt(i++));
+                enc4 = _keyStr.indexOf(input.charAt(i++));
+                chr1 = (enc1 << 2) | (enc2 >> 4);
+                chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                chr3 = ((enc3 & 3) << 6) | enc4;
+                output = output + String.fromCharCode(chr1);
+                if (enc3 != 64) {
+                    output = output + String.fromCharCode(chr2)
+                }
+                if (enc4 != 64) {
+                    output = output + String.fromCharCode(chr3)
+                }
+            }
+            output = _utf8_decode(output);
+            return output
+        };
 
-        function generateAppUrl(url){
-            return APP_SCHEMA;
+        function _utf8_encode (string) {
+            string = string.replace(/\r\n/g, "\n");
+            var utftext = "";
+            for (var n = 0; n < string.length; n++) {
+                var c = string.charCodeAt(n);
+                if (c < 128) {
+                    utftext += String.fromCharCode(c)
+                } else {
+                    if ((c > 127) && (c < 2048)) {
+                        utftext += String.fromCharCode((c >> 6) | 192);
+                        utftext += String.fromCharCode((c & 63) | 128)
+                    } else {
+                        utftext += String.fromCharCode((c >> 12) | 224);
+                        utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                        utftext += String.fromCharCode((c & 63) | 128)
+                    }
+                }
+            }
+            return utftext
         }
-        ;
-        function openUrl(){
+
+        function _utf8_decode (utftext) {
+            var str = "";
+            var i = 0;
+            var c = 0, c1 = 0, c2 = 0, c3 = 0;
+            while (i < utftext.length) {
+                c = utftext.charCodeAt(i);
+                if (c < 128) {
+                    str += String.fromCharCode(c);
+                    i++
+                } else {
+                    if ((c > 191) && (c < 224)) {
+                        c2 = utftext.charCodeAt(i + 1);
+                        str += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                        i += 2
+                    } else {
+                        c2 = utftext.charCodeAt(i + 1);
+                        c3 = utftext.charCodeAt(i + 2);
+                        str += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                        i += 3
+                    }
+                }
+            }
+            return str;
+        }
+
+        return {encode: encode, decode: decode}
+    })();
+
+    (function () {
+        var EMPTY = '',
+            RE_H5_URL = /.*(\/webapp\/(\w+)\/.*)/i,
+            HYBRID_URL = '/index.html?from_native_page=1#',
+            APP_SCHEMA_TPL = 'ctrip://wireless/h5?type=1&url=';
+
+        function hybridUrl(h5url){
+            var parsedUrl = parseUrl(h5url);
+
+            return parsedUrl.channel + HYBRID_URL + encodeURIComponent(parsedUrl.relative);
+        };
+        function generateAppUrl (h5url) {
+            return APP_SCHEMA_TPL + __Crypt.encode(hybridUrl(h5url));
+        };
+        function parseUrl(url){
+            var rs = RE_H5_URL.exec(url);
+            return {
+                channel: rs[2] || EMPTY,
+                relative: rs[1] || EMPTY
+            }
+        };
+        function openUrl (url) {
+            var appUrl = generateAppUrl(url),
+                iframe;
+
+            /** 尝试唤起app **/
+            iframe = document.createElement('iframe');
+            iframe.src=appUrl;
+            iframe.style.display='none';
+            document.body.appendChild(iframe);
+
+            /** 降级跳转h5 **/
+            setTimeout(function(){
+                location.href=url;
+            },10);
 
         };
-        function getQuery(url, key){
-            return new RegExp('.*(?:\?|&)'+key+'=([^&]*)(?:&|$)', 'i');
+        function getQuery (url, key) {
+            var rs = new RegExp('.*(?:[\?|&])' + key + '=([^&]*)(?:&|$)', 'i').exec(url);
+
+            return rs && rs[1];
         };
-        console.log(getQuery(testUrl, 'openapp'));
-        debugger;
+        openUrl(getQuery(decodeURIComponent(location.href), 'openurl'));
     })();
 </script>
 </body>
