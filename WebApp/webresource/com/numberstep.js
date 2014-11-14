@@ -69,11 +69,14 @@ define(['libs'], function() {
                 }
                 
                 self.els.curNumDom.html(num);
-                self.options.onChange(event);
+                self.options.onChange.call(self);
             });
         },
+        triggerChange: function() {
+            this.options.onChange.call(this);
+        },
         unbindEvents: function() {
-            this.els.$numberStep.off('click');
+            this.wrap.off('click');
         },
         _changeStatus: function(type, action) {
           var method = action === 'disable' ? 'addClass' : 'removeClass';
@@ -103,7 +106,7 @@ define(['libs'], function() {
             this.els.curNumDom.text(num);
         },
         setOptions: function(name, val) {
-            val && (this.options[name] = val);
+            val && (this.options[name] = val, this.options.onChange.call(this));
         }
       
     };

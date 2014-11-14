@@ -2,7 +2,7 @@
  * 申请退款
  * @url: m.ctrip.com/webapp/tuan/refund/{orderid}.html
  */
-define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cWidgetGuider', 'cWidgetMember', 'TuanModel', 'TuanBaseView', 'cCommonPageFactory', 'text!RefundTpl'], function (TuanApp, libs, c, Util, WidgetFactory, CStore, WidgetGuider, WidgetMember, TuanModels, TuanBaseView, CommonPageFactory, html) {
+define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cWidgetGuider', 'cWidgetMember', 'TuanModel', 'TuanBaseView', 'cCommonPageFactory', 'text!RefundTpl', 'NumberStep'], function (TuanApp, libs, c, Util, WidgetFactory, CStore, WidgetGuider, WidgetMember, TuanModels, TuanBaseView, CommonPageFactory, html, NumberStep) {
     'use strict';
     var PageView = CommonPageFactory.create("TuanBaseView");
     var Member = WidgetFactory.create('Member'),
@@ -24,12 +24,14 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             return Math.round(ret * 100) / 100;
         },
         Guider = WidgetFactory.create('Guider'),
+        chooseCls = 'choosed',
+        errorCls = 'errorli',
 
         View = PageView.extend({
             pageid: '260004',
             hpageid: '261004',
             render: function () {
-                this.$el.html($.trim(html));
+                this.$el.html(html);
                 this.els = {
                     productName: this.$el.find('#J_productName'),
                     iscCount: this.$el.find('#J_iscCount'),
@@ -40,93 +42,76 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     refundInvoiceWrap: this.$el.find('#J_refundInvoiceWrap'),
                     refundInvoiceAmount: this.$el.find('#J_refundInvoiceAmount'),
                     btnMinus: this.$el.find('#J_minus'),
-                    btnPlus: this.$el.find('#J_plus')
+                    btnPlus: this.$el.find('#J_plus'),
+                    $types: this.$el.find('.J_refundType'),
+                    $numStep: this.$el.find('.J_numberStep')
                 };
             },
             onCreate: function () {
                 this.render();
             },
             events: {
-                'click .btn_blue': 'onSubmitRefund',
-                'click .minus': 'onCouponMinus',
-                'click .plus': 'onCouponPlus',
-                'click .apply_refund_reason>li': 'onRefundReasonChange'
+                'click .J_btnSubmit': 'onSubmitRefund',
+                'click .apply_refund_reason>li': 'onRefundReasonChange',
+                'click .J_refundType': 'selectRefundType'
             },
-            onCouponMinus: function (e) {
-                var cur = $(e.currentTarget),
-                    tmpPrice = this.tuanCouponPrice,
-                    promoCouponPrice = this.promoCouponPrice,
-                    num = this.els.refundCount,
-                    refundNum = (+num.text()); //退回数量
-                if (refundNum <= 1) {
-                    this.els.btnMinus.addClass(NUM_INVALID_CLS);
-                    return;
-                }
-                refundNum = refundNum <= 0 ? 0 : refundNum - 1;
-                num.text(refundNum);
-                if (refundNum < this.maxCoupons) {
-                    this.els.btnPlus.removeClass(NUM_INVALID_CLS);
-                }
-                if (promoCouponPrice) {
-                    tmpPrice = customMult(tmpPrice - promoCouponPrice > 0 ? tmpPrice - promoCouponPrice : 0, refundNum);
-                } else {
-                    tmpPrice = customMult(tmpPrice, refundNum);
-                }
-                if (this.refundable) {
-                    if (refundNum >= this.maxCoupons && promoCouponPrice) {
-                        this.els.refundCouponWrap.show();
-                        this.els.refundCouponAmount.text(promoCouponPrice);
-                    } else {
-                        this.els.refundCouponWrap.hide();
-                    }
-                    if (this.invoiceAmt > 0) {
-                        if (refundNum >= this.maxCoupons) {
-                            this.els.refundInvoiceWrap.show();
-                            this.els.refundInvoiceAmount.text(this.invoiceAmt);
+            _createNumberStep: function() {
+                var self = this,
+                    max = this.maxCoupons,
+                    min = 1,
+                    curNum = 1;
+                this.numberStep = new NumberStep({
+                    max: max,
+                    min: min,
+                    initialVal: curNum < min ? min : curNum,
+                    wrap: self.els.$numStep,
+                    html: '<i class="minus <%if(initialVal <= min ){ %>num_invalid<%} %>" data-flag="-"></i><span id="J_curNum" class="numtext"><%=initialVal %></span><i data-flag="+" class="plus <%if(initialVal >= max ){ %>num_invalid<%} %>"></i>',
+                    onChange: function () {
+                        var tmpPrice = self.tuanCouponPrice,
+                            promoCouponPrice = self.promoCouponPrice,
+                            couponType = self.couponType,
+                            num = this.getCurrentNum();
+
+                        if (promoCouponPrice) {
+                            if (couponType === 2) {
+                                if (parseInt(num, 10) === max) {
+                                    //单次券，退最后一张的时候需要减去优惠券的价格
+                                    tmpPrice = Math.round(tmpPrice * num - promoCouponPrice);
+                                } else {
+                                    tmpPrice = Math.round(tmpPrice * num);
+                                }
+                            } else{
+                                tmpPrice = customMult(tmpPrice - promoCouponPrice > 0 ? tmpPrice - promoCouponPrice : 0, num);
+                            }
                         } else {
-                            this.els.refundInvoiceWrap.hide();
+                            tmpPrice = customMult(tmpPrice, num);
                         }
+                        if (self.refundable) {
+                            if (num >= max && promoCouponPrice) {
+                                self.showCouponLabel(promoCouponPrice);
+                            } else {
+                                self.els.refundCouponWrap.hide();
+                            }
+                            if (self.invoiceAmt > 0) {
+                                if (num >= max) {
+                                    self.showInvoiceLabel(self.invoiceAmt);
+                                } else {
+                                    self.els.refundInvoiceWrap.hide();
+                                }
+                            }
+                        }
+
+                        self.els.refundAmount.text(tmpPrice);
                     }
-                }
-                this.els.refundAmount.text(tmpPrice);
+                });
             },
-            onCouponPlus: function (e) {
-                var cur = $(e.currentTarget),
-                    tmpPrice = this.tuanCouponPrice,
-                    promoCouponPrice = this.promoCouponPrice, //优惠券单价
-                    num = this.els.refundCount,
-                    refundNum = (+num.text()); //退回数量
-                if (refundNum >= this.maxCoupons) {
-                    this.els.btnPlus.addClass(NUM_INVALID_CLS);
-                    return;
-                }
-                refundNum = refundNum >= this.maxCoupons ? this.maxCoupons : refundNum + 1;
-                num.text(refundNum);
-                if (refundNum > 1) {
-                    this.els.btnMinus.removeClass(NUM_INVALID_CLS);
-                }
-                if (promoCouponPrice) {
-                    tmpPrice = customMult(tmpPrice - promoCouponPrice > 0 ? tmpPrice - promoCouponPrice : 0, refundNum);
-                } else {
-                    tmpPrice = customMult(tmpPrice, refundNum);
-                }
-                if (this.refundable) {
-                    if (refundNum >= this.maxCoupons && promoCouponPrice) {
-                        this.els.refundCouponWrap.show();
-                        this.els.refundCouponAmount.text(promoCouponPrice);
-                    } else {
-                        this.els.refundCouponWrap.hide();
-                    }
-                    if (this.invoiceAmt > 0) {
-                        if (refundNum >= this.maxCoupons) {
-                            this.els.refundInvoiceWrap.show();
-                            this.els.refundInvoiceAmount.text(this.invoiceAmt);
-                        } else {
-                            this.els.refundInvoiceWrap.hide();
-                        }
-                    }
-                }
-                this.els.refundAmount.text(tmpPrice);
+            showCouponLabel: function(price) {
+                this.els.refundCouponWrap.show();
+                this.els.refundCouponAmount.text(price);
+            },
+            showInvoiceLabel: function(invoice) {
+                this.els.refundInvoiceWrap.show();
+                this.els.refundInvoiceAmount.text(this.invoiceAmt);
             },
             onRefundReasonChange: function (e) {
                 var cur = $(e.currentTarget),
@@ -178,7 +163,12 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 this.tuanCouponList = [];
                 this.tuanCouponPrice = 0; //团购券单价
                 this.refundable = true; //优惠券、快递费用是否可退
-                this.promoCouponPrice = data.couponPrice; //优惠券单价
+
+                //优惠券单价,@since20141112 修改为从ordercoupons取数据
+                if (data.ordercoupons) {
+                    this.promoCouponPrice = data.ordercoupons.price;
+                    this.couponType = data.ordercoupons.coupontype;
+                }
 
                 if (data.coupons && data.coupons.length > 0) {
                     for (var i = 0; i < data.coupons.length; i++) {
@@ -205,20 +195,11 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 } else {
                     this.els.productName.text(data.pname);
                     this.els.iscCount.text(this.maxCoupons);
-                    this.els.refundCount.text(1); //默认退一张
-                    if (this.maxCoupons == 1) {
-                        this.els.btnPlus.addClass(NUM_INVALID_CLS);
-                    }
 
+                    this._createNumberStep();
+                    //优惠券总额
                     if (data.couponAmt > 0) {
-                        var tmp = this.tuanCouponPrice - this.promoCouponPrice;
-                        this.els.refundAmount.text(tmp > 0 ? tmp : 0);
-
-                        //显示优惠券
-                        if (this.refundable && this.maxCoupons == 1) {
-                            this.els.refundCouponWrap.show();
-                            this.els.refundCouponAmount.text(this.promoCouponPrice);
-                        }
+                        this.numberStep.triggerChange();
                     } else {
                         this.els.refundAmount.text(this.tuanCouponPrice);
                     }
@@ -228,6 +209,9 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                         this.els.refundInvoiceAmount.text(this.invoiceAmt);
                     }
                 }
+
+                //是否支持急速退
+                this.els.$types.filter('[data-type="1"]')[!!data.isFastRefund ? 'show' : 'hide']();
 
             },
             alertErrorMsg: function (title, message) {
@@ -265,9 +249,24 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 this.from = decodeURIComponent(Lizard.P('from') || '');
                 this.checkLogin() && this.loadDetail();
             },
+            selectRefundType: function(e) {
+                var $this = $(e.target);
+                this.els.$types.removeClass(errorCls)
+                    .removeClass(chooseCls);
+                $this.closest('.J_refundType').addClass(chooseCls);
+            },
             onSubmitRefund: function () {
                 var self = this,
-                    confirmAlert = new c.ui.Alert({
+                    confirmAlert;
+
+                if (!this.els.$types.filter('.' + chooseCls).length) {
+                    this.showToast('请选择退款方式',3, function() {
+                        self.els.$types.addClass(errorCls);
+                    });
+                    return false;
+                }
+
+                confirmAlert = new c.ui.Alert({
                         title: MSG.alertTitle,
                         message: MSG.confirmContent,
                         buttons: [{
@@ -291,6 +290,8 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 var reasonText = "";
                 var ticketlist = [];
                 var num = +this.els.refundCount.text(); //退回数量
+                var refundType = this.els.$types.filter('.'+chooseCls).attr('data-type'),
+                    ticket;
 
                 if (+num <= 0) {
                     this.showToast("请输入需要回退的数量！");
@@ -309,11 +310,15 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     }
                 };
                 for (var i = 0; i < +num; i++) {
-                    ticketlist.push({
+                    ticket = {
                         TicketNO: this.tuanCouponList[i],
                         OrderType: 1,
                         Trmk: reasonText || ''
-                    });
+                    };
+                    if (refundType) {
+                        ticket.PayBackType = parseInt(refundType, 10);
+                    }
+                    ticketlist.push(ticket);
                 };
                 refundTicketModel.setParam({
                     head: CStore.HeadStore.getInstance().get(),

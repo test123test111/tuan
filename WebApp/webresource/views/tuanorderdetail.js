@@ -4,8 +4,8 @@
  * @author: li.xx
  * @date: 2014-02-14
  */
-define(['TuanApp', 'libs', 'c', 'cUtilityCrypt', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetFactory', 'cUtility', 'cWidgetGuider', 'Payment', 'cWidgetTipslayer', 'CommonStore', 'TuanStore', 'TuanModel', 'text!TuanOrderDetailTpl', 'text!OrderDetailItemTpl', 'text!RecommendTpl'],
-function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactory, Util, WidgetGuider, Payment, t, CStore, TStore, TModel, html, htmlItem, recommendTpl) {
+define(['TuanApp', 'libs', 'c', 'cUtilityCrypt', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetFactory', 'cUtility', 'cWidgetGuider', 'Payment', 'cWidgetTipslayer', 'CommonStore', 'TuanStore', 'TuanModel', 'text!TuanOrderDetailTpl', 'text!OrderDetailItemTpl', 'text!RecommendTpl', 'CallPhone'],
+function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactory, Util, WidgetGuider, Payment, t, CStore, TStore, TModel, html, htmlItem, recommendTpl, CallPhone) {
     'use strict';
     //订单详情返回页，用户Store，订单详情Store，订单详情模型，发送信息模型，提示信息
     var resultStore,
@@ -138,6 +138,9 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                 data.appNonsupport = appNonsupport;
                 data.retainTwoDecimal = retainTwoDecimal;
                 self.$el.html($.trim(_.template(self.tpl, data)));
+
+                self.CallPhone = new CallPhone({view: self, ele: '#J_hotelTel'});
+
                 if (data && data.pid) {
                     self.getCrossRecommend(data.pid);
                 }
@@ -194,7 +197,6 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         events: {
             'click #J_tuanDetail': 'viewTuanDetail',
             'click #J_refund': 'goToRefundPage',
-            'click #J_hotelTel': 'showHotelTel',
             'click #J_hotelMap': 'showHotelMap',
             'click #J_retryPayment': 'retryPayment',
             'click .J_sendToPhone': 'sendCouponToPhone',
@@ -385,51 +387,6 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         },
         goToRefundPage: function () {
             this.forwardJump('refund', '/webapp/tuan/refund/' + this.orderId + '.html');
-        },
-
-        _showPhone: function (phone) {
-            var alert;
-            if (!phone || phone == "") {
-                this.showToast("没有留下电话号，无法拨打！");
-                return;
-            }
-            alert = new c.ui.Alert({
-                title: MSG.makeCallTitle,
-                message: phone,
-                buttons: [{
-                    text: MSG.cancel,
-                    click: function () {
-                        this.hide();
-                    }
-                }, {
-                    text: '<a href="tel:' + phone + '" data-phone="' + phone + '">拨打</a>',
-                    click: function (e) {
-                        var self = this;
-
-                        self.hide();
-                        Guider.apply({
-                            hybridCallback: function () {
-                                var PHONE_ATTR_STR = 'data-phone',
-                                    target = $(e.target);
-
-                                if (!target.attr(PHONE_ATTR_STR)) {
-                                    target = target.find('[' + PHONE_ATTR_STR + ']');
-                                };
-                                e.preventDefault();
-                                Guider.callPhone({ tel: target.attr(PHONE_ATTR_STR) });
-                                return false;
-                            },
-                            callback: function () {
-                                return true;
-                            }
-                        });
-                    }
-                }]
-            });
-            alert.show();
-        },
-        showHotelTel: function (event) {
-            this._showPhone($(event.currentTarget).attr('data-phone'));
         },
 
         showHotelMap: function (e) {

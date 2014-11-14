@@ -89,11 +89,20 @@
         <%}%>
 
         <%if (price.dPrice > 0) {%>
-        <li class="arr_r" id="J_coupon">优惠券
-            <%if (coupon) {%>
-            <span class="promo_code"><%=coupon.isInput ? coupon.code : coupon.title%></span><span class="txt2">- &yen; <span id="J_couponAmount"><%=retainTwoDecimal(coupon.amount * curNum)%></span></span>
-            <%} else {%>
-            <span class="num" id="J_couponCount"></span><span class="txt">未使用</span>
+        <li class="arr_r" id="J_coupon"><label>优惠券</label>
+            <%
+                var couponTypeTxt = '';
+                if (coupon && typeof coupon === 'object') {
+                    if (coupon.couponType === 2) {
+                        couponTypeTxt = '限1单使用';
+                    } else if (coupon.couponType === 3) {
+                        couponTypeTxt = '可叠加使用';
+                    }
+            %>
+            <span class="promo_code"><%=coupon.isInput ? coupon.code : coupon.title%> <span><%=couponTypeTxt %></span></span>
+            <span class="txt2">- &yen; <span id="J_couponAmount"><%=retainTwoDecimal(coupon.amount * curNum)%></span></span>
+            <%} else{%>
+            <span class="num" id="J_couponCount"></span><span class="txt"><%=coupon === '0' ? '不使用' : '' %></span>
             <%}%>
         </li>
         <%}%>

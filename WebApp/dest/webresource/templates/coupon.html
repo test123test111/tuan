@@ -1,6 +1,6 @@
 ﻿<article class="cont_wrap">
     <ul class="promo_list">
-        <li<%if (!hasUsedCoupon) {%> class="choosed"<%}%> id="J_useCouponToggle">不使用优惠券</li>
+        <li <%if (hasUsedCoupon == '0') {%> class="choosed"<%}%> id="J_useCouponToggle">不使用优惠券</li>
     </ul>
     <div id="J_enterWrap">
         <div class="tuan_title">输入优惠券码</div>
@@ -13,11 +13,18 @@
     <%if (coupons.length) {%>
     <div class="tuan_title">选择您可用的优惠券</div>
     <ul class="other_promo_list" id="J_couponList">
-        <%_.each(coupons, function(item, index) {%>
+        <%  var couponTypeTxt = '';
+            _.each(coupons, function(item, index) {
+            if (item.couponType === 2) {
+                couponTypeTxt = '限1单使用';
+            } else if (item.couponType === 3) {
+                couponTypeTxt = '可叠加使用';
+            }
+        %>
         <li data-index="<%=index%>" data-code="<%=item.code%>">
             <div class="promo_num"><%=item.amount%></div>
             <div class="title"><%=item.title%></div>
-            <div class="time">有效期至<%=dateFormat(item.edate)%></div>
+            <div class="time">有效期至<%=dateFormat(item.edate)%> <%=couponTypeTxt %></div>
         </li>
         <%})%>
     </ul>

@@ -153,7 +153,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     if (coupon && coupon.pid === store.id) {
                         store.coupon = coupon;
                     } else {
-                        store.coupon = undefined;
+                        store.coupon = coupon;
                     }
 
                     this.pid = store.id;
@@ -648,7 +648,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 if (tStore.ticketPrice) {
                     tmpPrice = tStore.ticketPrice;
                 } else {
-                    tmpPrice = tStore.price.dPrice - (this.store.coupon ? this.store.coupon.amount : 0);
+                    tmpPrice = tStore.price.dPrice - (this.isCouponUsed() ? this.store.coupon.amount : 0);
                 }
                 param.OInfo.Product.Price.Price = parseFloat(tmpPrice > 0 ? tmpPrice : 0);
                 if (headStore.getAttr('auth') /*uStore.IsNonUser == false*/) {
@@ -669,7 +669,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     param.url = externalRefer;
                 }
                 param.OInfo.Source = self._getUAInfo();
-                if (this.store.coupon) {
+                if (this.isCouponUsed()) {
                     param.OInfo.CouponInfo = { CouponCode: this.store.coupon.code };
                 }
 
@@ -720,11 +720,18 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             pPrice,
                             tmpPrice,
                             invoice = invoiceStore.get(),
-                            amount = store.coupon ? store.coupon.amount : 0,
+                            amount,
+                            couponType,
                             num = parseInt(self.$el.find('#J_curNum').text().trim()),
                             dPrice = self.price;
 
-//                        window.tuanDetailStore = tuanDetailStore;
+                        if (self.isCouponUsed()) {
+                            amount = store.coupon.amount;
+                            couponType = store.coupon.couponType;
+                        } else {
+                            amount = 0;
+                        }
+
                         tuanDetailStore.setAttr('curNum', num);
 
                         if (store.activities && store.activities.length > 0 &&
@@ -733,16 +740,28 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                             pPrice = activity.arg * num;
                             self.els.pPriceDom.html(pPrice);
                         }
-
-                        tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) - amount) * num);
+                        /*
+                         * couponType
+                         * 为 2 的优惠券  实付的金额=总金额-优惠券金额
+                           为 3 的优惠券  实付金额=总金额-（优惠券金额*数量）
+                         */
+                        if (couponType === 2) {
+                            tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) * num) - amount);
+                        } else{
+                            tmpPrice = retainTwoDecimal((parseFloat(tuanDetailStore.getAttr('ticketPrice') || dPrice) - amount) * num);
+                        }
                         tmpPrice = (tmpPrice > 0 ? tmpPrice : 0) + (invoice && invoice.deliveryMethod == 1 ? 10 : 0);
                         self.els.totalPriceDom.html(tmpPrice > 0 ? tmpPrice : 0);
                         if (self.els.couponAmount.length) {
-                            self.els.couponAmount.html(retainTwoDecimal(amount * num))
+                            if (couponType === 3) {
+                                self.els.couponAmount.html(retainTwoDecimal(amount * num));
+                            } else if (couponType === 2) {
+                                self.els.couponAmount.html(retainTwoDecimal(amount));
+                            }
                         }
                     }
                 });
-                this.numberStep.options.onChange(); //初始化调用onChange计算订单金额
+                this.numberStep.triggerChange(); //初始化调用onChange计算订单金额
             },
             _sendOrderRequest: function (param) {
                 var self = this;
@@ -792,7 +811,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     self.hideLoadingLayer();
                     self.hideLoading();
 
-                    if (self.store.coupon) {
+                    if (self.isCouponUsed()) {
                         //订单创建成功后，该优惠券不可再使用，故清理之
                         self._clearUsedCoupon();
                     };
@@ -849,6 +868,9 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             _clearUsedCoupon: function () {
                 delete this.store.coupon;
                 selectedCouponStore.remove();
+            },
+            isCouponUsed: function() {
+                return this.store.coupon && typeof this.store.coupon === 'object';
             },
             getCouponList: function (cb) {
                 var self = this;

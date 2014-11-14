@@ -3,8 +3,7 @@
  * @url: m.ctrip.com/webapp/tuan 或 m.ctrip.com/webapp/taun/home
  */
 define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'StringsData', 'cHybridFacade', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation'],
-function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, WidgetGuider, Util, cGeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
-
+function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
     var isInApp = Util.isInApp(),
         listModel = TuanModels.TuanHotListModel.getInstance(),
         searchStore = TuanStore.GroupSearchStore.getInstance(),
@@ -24,8 +23,9 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         DOWNLOAD_LINK = 'http://m.ctrip.com/m/c312', //android app下载地址
         SOURCE_ID_FOR_TUAN = '55559355', //下单统计sourceid
         EMPTY = '',
-        GeoLocation = cGeoService.GeoLocation,
+        GeoLocation = GeoService.GeoLocation,
         loadingLayer;
+
     var PageView = CommonPageFactory.create("TuanBaseView");
     View = PageView.extend({
         pageid: '214019',
@@ -84,12 +84,14 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                         isInApp ? TuanApp.backToLastPage() : TuanApp.tHome();
                     },
                     homeHandler: $.proxy(self.homeHandler, self),
-                    citybtnHandler: function () { //click citybtn按钮的回调
+                    citybtnHandler: function () { //click citybtn按钮的回调(Hybrid)
                         self.showCityPage();
                     }
                 }
             });
             this.header.show();
+            //click citybtn按钮的回调(H5)
+            this.header.root.find('#J_cityBtn').on('click', $.proxy(self.showCityPage, this));
         },
         onShow: function () {
             this.LazyLoad = new LazyLoad({ wrap: this.$el });
@@ -107,7 +109,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             this.tplReload = Lizard.T('J_Reload');
             this.tplNoproduct = Lizard.T('J_NoGroupProduct');
             this.listWrap.html(this.tplLoading);
-            this._refer = refer;
             refer = this.getLastViewName();
             if (+searchStore.getAttr('ctyId') <= 0) {
                 searchStore.setAttr('ctyId', StringsData.defaultCity.id);
@@ -119,7 +120,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 cityName = searchData.ctyName || StringsData.defaultCity.name;
 
             this.setHeader(cityName || (self.isNearBy() && '我附近的') || StringsData.defaultCity.name);
-            this.header.root.find('#J_cityBtn').on('click', $.proxy(self.showCityPage, this));
             this.getBannerSearch(cityId);
             //有时候在某些机器会报错导致页面空白
             try {
@@ -136,187 +136,12 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             isInApp && Facade.request({ name: Facade.METHOD_SET_NAVBAR_HIDDEN, isNeedHidden: false });
             //更新广告信息
             this.updateAdInfo();
-
         },
-        /**
-        * @param {Object} searchData 所有查询条件键值对
-        * @param {Object} cityListData 城市列表
-        * @return {Object} 城市对象
-        */
-        getCurrentCity: function (searchData) {
-            var city = {
-                id: searchData && searchData.ctyId || 2,
-                name: searchData && searchData.ctyName || '上海'
-            },
-                cityId = this.getQuery('cityid'); //从QueryString中获取cityid
-
-            if (cityId && +cityId > 0) {
-                city = StoreManage.findCityInfoById(cityId);
-            } else if ((+city.id) > 0) {
-                city = StoreManage.findCityInfoById(city.id);
-            };
-            if (!city || !city.id) {
-                city = StringsData.defaultCity;
-            };
-            return city;
-        },
-
         getSelectedCity: function () {
             return {
                 id: searchStore.getAttr('ctyId') || StringsData.defaultCity.id,
                 name: searchStore.getAttr('ctyName') || StringsData.defaultCity.name
             };
-        },
-
-        createGPS: function () {
-            this.gps = WidgetFactory.create('Geolocation');
-        },
-        getLocalCityInfo: function (lng, lat, cityName) {
-            var self = this,
-                cityId = StoreManage.getCityIdByName(cityName),
-                cityData;
-
-            if (cityId) {
-                cityData = {
-                    CityName: cityName,
-                    CityID: cityId
-                };
-                if (StoreManage.setCurrentCity(cityData)) {
-                    this.alertCityChange({
-                        name: cityName || '',
-                        id: cityId
-                    });
-                    //如果cityid有效，则停止想服务器发换取cityid请求
-                    return;
-                };
-            };
-            /* 发起获取cityid请求 */
-            getLocalCityInfoModel.setParam({
-                lng: lng,
-                lat: lat,
-                cityname: encodeURIComponent(cityName)
-            });
-
-            getLocalCityInfoModel.excute(_.bind(function (data) {
-                var currentCity;
-
-                self.checkParentCity(data);
-                //更新当前城市信息
-                if (typeof data != undefined && StoreManage.setCurrentCity(data)) {
-                    currentCity = StoreManage.getCurrentCity();
-                    this.alertCityChange({
-                        name: currentCity.CityName || currentCity.city,
-                        id: currentCity.CityId || currentCity.CityID //已经搞不清楚大小写了
-                    });
-                } else {
-                    if (this._autoGPSRequest != true) {
-                        this.alertErrorMsg("提示", "定位失败，无效的定位信息！");
-                    }
-                }
-            }, this));
-        },
-        /**
-        * 检查是否上级城市ID
-        * @param data
-        */
-        checkParentCity: function (data) {
-            //默认非上级城市
-            geolocationStore.setAttr('isParentCity', false);
-            if (data.IsParentCity) {
-                if (data.HasGroupProduct) {
-                    //10公里查询，提供setter getter工具类
-                    geolocationStore.setAttr('isParentCity', true);
-                } else {
-                    //如果没有则到跳到上海
-                    data.CityID = StringsData.defaultCity.id;
-                };
-            };
-        },
-        getGeolocation: function (autoGPSRequest) {
-            this._autoGPSRequest = autoGPSRequest;
-            if (!this.gps) {
-                this.createGPS();
-            };
-            if (this._autoGPSRequest != true) {
-                this.alertErrorMsg("", "正在定位，请稍候。");
-            }
-            if (this._gpsrequest != true) {
-                this._gpsrequest = true;
-                this.gps.requestCityInfo(_.bind(function (gpsInfo) {
-                    this._gpsrequest = false;
-                    gpsInfo.city = gpsInfo.city.replace('市市', '市');
-                    if (gpsInfo.city.length > 2) gpsInfo.city = gpsInfo.city.replace('市', '');
-                    geolocationStore.setAttr('gps', gpsInfo);
-                    this.getLocalCityInfo(gpsInfo.lng, gpsInfo.lat, gpsInfo.CityName || gpsInfo.city);
-
-                }, this), _.bind(function (err) {
-                    this._gpsrequest = false;
-                    if (this._autoGPSRequest != true) {
-                        this.alertErrorMsg("提示", "无法获取位置信息，您可在设置中开启定位服务，开启wifi；或重新查实定位");
-                    }
-                }, this));
-
-            }
-        },
-        alertErrorMsg: function (title, message) {
-            var alertMsg = new cUIAlert({
-                title: title,
-                message: message,
-                buttons: [{
-                    text: '知道了',
-                    click: function () {
-                        this.hide();
-                    }
-                }]
-            });
-            alertMsg.show();
-        },
-        alertCityChange: function (data) {
-            var self = this,
-                currentCity = self.getSelectedCity();
-
-            //如果用户点击取消，则不再提醒用户切换城市
-            //if (sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) != 1 && !currentCity.ctyId && currentCity.ctyId != data.id) {
-            if (sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) != 1 && (currentCity.id > 0 && currentCity.id != data.id)) {
-                var alertMsg = new cUIAlert({
-                    title: '提示',
-                    message: '目前您的定位在' + data.name + '，是否切换?',
-                    buttons: [
-                        {
-                            text: '取消',
-                            click: function () {
-                                sessionStorage.setItem(IGNORE_CITY_CHANGE_KEY, 1);
-                                this.hide();
-                            }
-                        },
-                        {
-                            text: '切换',
-                            click: function () {
-                                if (self._autoGPSRequest == true) {
-                                    var cityId = data.id;
-
-                                    searchStore.setAttr('ctyId', cityId);
-                                    searchStore.setAttr('ctyName', data.name);
-                                    self.setHeader(data.name);
-                                    self.getGroupListData();
-                                    self.getBannerSearch(cityId)
-                                } else {
-                                    self.switchCity(data);
-                                }
-                                this.hide();
-                            }
-                        }
-                    ]
-                });
-                this.isCurrentView() && alertMsg.show();
-            } else {
-                if (self._autoGPSRequest != true) {
-                    self.switchCity(data);
-                }
-            }
-        },
-        isCurrentView: function () {
-            //return TuanApp.app.curView === this;
         },
         /*
         * "我的附近"查询模式: 酒店、美食、门票、娱乐、附近团购
@@ -347,34 +172,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             }
             historyKeySearchtore.remove();
             this.forwardJump('list', '/webapp/tuan/list');
-        },
-
-        switchCity: function (data) {
-            var self = this,
-                isQueryByParentCity = geolocationStore.getAttr('isParentCity'),
-                id = data.id,
-                name = data.name,
-                gps = geolocationStore.getAttr('gps');
-
-            StoreManage.clearAll();
-            StoreManage.setCurrentCity({
-                CityID: id
-            });
-            historyCityListStore.setAttr('nearby', true);
-            qparams = StoreManage.getGroupQueryParam();
-            searchStore.setAttr('qparams', qparams);
-            searchStore.setAttr('ctyId', id);
-            searchStore.setAttr('ctyName', name);
-            searchStore.setAttr('pos', {
-                posty: StringsData.MAP_SOURCE_ID, //数据来源，默认3为高德
-                lon: gps.lng,
-                lat: gps.lat,
-                distance: self.isQueryByParentCity ? 10 : StringsData.SEARCH_DISTANCE//数据的半径，默认4，如果上级城市则按照10公里
-            });
-            //历史选择 处理start----------
-            StoreManage.addHistoryCity(id, name);
-            historyKeySearchtore.remove();
-            self.forwardJump('list', '/webapp/tuan/list');
         },
         /**
         * 获取团购列表
@@ -412,7 +209,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 this.listWrap.html(item);
                 this.LazyLoad && this.LazyLoad.updateDom();
             }
-
         },
         detailHandler: function (e) {
             var id = $(e.currentTarget).attr('data-id'),
@@ -553,9 +349,8 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 this.checkNetwork(this.getPosition);
             }
         },
-
-        /*
-        *检查是否有定位缓存， 如果有定位缓存， 就不需要发起定位了
+        /**
+        * 检查是否有定位缓存， 如果有定位缓存， 就不需要发起定位了
         */
         checkPositionCache: function () {
             var cached = false;
@@ -573,7 +368,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             }
             return cached;
         },
-        /*
+        /**
         * 检查网络
         */
         checkNetwork: function (callback) {
@@ -695,7 +490,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             this.hideLoading();
         },
         /**
-        *反查城市
+        * 反查城市
         * @param {float} lng 经度
         * @param {float} lat 纬度
         * @param {string} district 区
@@ -732,7 +527,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 typeof callback === 'function' && callback.call(self);
             }, false, this);
         },
-
         getCityFailed: function () {
             var self = this;
             self.locating = false;
@@ -762,7 +556,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             alertMsg.show();
         },
         /**
-        *提示是否需要城市切换
+        * 提示是否需要城市切换
         * @param {object} cityData 成功后的回调
         */
         promptSwitchCity: function (cityData) {
