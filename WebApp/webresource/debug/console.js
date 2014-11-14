@@ -15,7 +15,7 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
     function ConsoleDebug(options) {
         var d = {
             btn: '<i style="position:fixed;bottom:300px;color:green;z-index:9999;">CL</i>',
-            div: '<div style="position:fixed;bottom:290px;z-index:10000;display:none;width: 100%;"><button class="J_clearStorage">Clear</button><button class="J_xiaoli">Xiaoli</button><button class="J_www">www</button><button class="J_normal">Normal</button><button class="J_noOne">None</button><div class="J_debugLogSwitch"></div></div>',
+            div: '<div style="position:fixed;bottom:290px;z-index:10000;display:none;width: 100%;"><button class="J_clearStorage">Clear</button><button class="J_xiaoli">Xiaoli</button><button class="J_www">www</button><button class="J_normal">Normal</button><button class="J_noOne">None</button><button class="J_reload">Reload</button><div class="J_debugLogSwitch"></div></div>',
             conBox: '<div class="J_logContent" style="position: fixed;bottom:100px;z-index: 10001;height:180px;width: 100%;display: none;"><i>****</i><textarea style="width: 100%;height: 100%;"></textarea></div>'
         };
         this.opt = $.extend(d, options);
@@ -62,14 +62,7 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
                 self.showMask();
             });
 
-            $main.on('click', '.J_clearStorage', function() {
-                self.clearLocal();
-                self.showToast('Clear', 1, function() {
-                    self.reset();
-                });
-            });
-
-            $main.on('click', '.J_xiaoli, .J_www,.J_noOne', function(e) {
+            $main.on('click', 'button', function(e) {
                 var $this = $(e.target),
                     msg;
                 if ($this.hasClass('J_xiaoli')) {
@@ -84,6 +77,11 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
                 } else if ($this.hasClass('J_normal')) {
                     msg = '已切换为普通账户登录';
                     self.setUserLogin(NORMAL);
+                } else if ($this.hasClass('J_clearStorage')) {
+                    msg = 'Clear';
+                    self.clearLocal();
+                } else if ($this.hasClass('J_reload')) {
+                    msg = 'Reloading Page';
                 }
                 msg && self.showToast(msg, 1, function() {
                     self.refreshPage();
@@ -131,7 +129,7 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
                     }
                 });
                 this.div.find('button').addClass('btn_blue1')
-                    .css({width:'70px', display:'inline-block', 'marginRight': '3px'});
+                    .css({width:'70px', display:'inline-block', 'margin': '3px', 'line-height': '24px',height: '24px'});
             }
             this.switch[this.getStatusLocal() ? 'checked' : 'unChecked']();
             this.div.show();
