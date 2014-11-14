@@ -428,7 +428,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                     }
                     json.from = isInApp ? '/webapp/tuan/index.html#tuanorderdetail!' + self.orderId : '/webapp/tuan/tuanorderdetail/' + self.orderId + '.html';
                     json.islogin = userStore.isLogin() ? 0 : 1;
-                    Payment.submit(self, json);
+                    Payment.submit(self, json, {IsRealPay: data.IsRealPay});
                 } else {
                     self.showToast('此订单不支持继续支付！');
                 }

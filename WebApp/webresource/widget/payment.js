@@ -2,6 +2,7 @@
  * @author: xuweichen
  * @date: 14-2-13 下午1:13
  * @descriptions
+ * @since v2.6 增加参数IsRealPay，实时支付相关
  */
 define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilityCrypt'], function (Util, WidgetGuider, WidgetFactory, Facade, Crypt) {
     "use strict";
@@ -34,7 +35,7 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
     * @param {Object} data 相关参数数据
     * @param {boolean} isInApp 是否hybrid链接
     */
-    function generatePayWayUrl(data, isInApp) {
+    function generatePayWayUrl(data, isInApp, others) {
         var sback,
             rback,
             from,
@@ -47,10 +48,12 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
                 IsNeedCardRisk: true,//风控参数
                 payTypeList:data.payTypeList,
                 subPayTypeList: data.subPayTypeList,
-                isRealTimePay: data.IsRealPay || 0
             },
             bookingSuccessUrl = BOOKING_SUCCESS_URL.replace('{orderid}', onum);
 
+		if (others) {
+			extendToken.isRealTimePay = others.IsRealPay || 0;
+		}
         //isInApp ? (sback = bookingSuccessUrl, rback = BOOKING_URL) : (sback = bookingSuccessUrl, rback = BOOKING_URL);
         sback = domain + bookingSuccessUrl;
         rback = domain + BOOKING_URL;
@@ -78,10 +81,10 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
     };
     //全部都跳转web上
     Payment = isInApp ? {
-        submit: function (page, data) {
+        submit: function (page, data, others) {
             //Guider.cross({ path: 'payment', param: generatePayWayUrl(data, thirdpartUrl, true) });
 
-            var param = generatePayWayUrl(data, true);
+            var param = generatePayWayUrl(data, true, others);
             if (/file\:[\\\/]*/i.test(param)) {
                 param = "index.html#" + param.split('#')[1];
             }
@@ -90,9 +93,9 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
 
         }
     } : {
-        submit: function (page, data) {
+        submit: function (page, data, others) {
             //page.cross(generatePayWayUrl(data, thirdpartUrl));
-            page.jump(generatePayWayUrl(data));
+            page.jump(generatePayWayUrl(data, false, others));
             //window.location = generatePayWayUrl(data, thirdpartUrl);
         }
     };
