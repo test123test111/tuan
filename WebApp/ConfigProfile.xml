@@ -14,9 +14,9 @@
     <restfullApiHttps>http://m.ctrip.com/restapi/soa2/10101</restfullApiHttps>
     <restfullApi>http://m.ctrip.com/restapi/soa2/10101</restfullApi>
     <WebresourceBaseUrl>http://webresource.c-ctrip.com</WebresourceBaseUrl>
-    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
-    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
-      <WebresourceVersion></WebresourceVersion>
+    <WebresourcePDBaseUrl>/webapp/tuan/dest/GroupH5</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/GroupH5</WebresourcePDDebugUrl>
+    <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
@@ -29,9 +29,9 @@
     <restfullApiHttps>http://m.fat.ctripqa.com/soa2/10101</restfullApiHttps>
     <restfullApi>http://m.fat.ctripqa.com/soa2/10101</restfullApi>
     <WebresourceBaseUrl>http://webresource.c-ctrip.com</WebresourceBaseUrl>
-    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
-    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
-      <WebresourceVersion></WebresourceVersion>
+    <WebresourcePDBaseUrl>http://webresource.fws.qa.nt.ctripcorp.com/GroupH5/r1</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/GroupH5</WebresourcePDDebugUrl>
+    <WebresourceVersion></WebresourceVersion>
       <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
@@ -44,9 +44,9 @@
     <restfullApiHttps>http://m.fat.ctripqa.com/soa2/10101</restfullApiHttps>
     <restfullApi>http://m.fat.ctripqa.com/soa2/10101</restfullApi>
     <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
-    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
-    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
-      <WebresourceVersion></WebresourceVersion>
+    <WebresourcePDBaseUrl>http://webresource.fws.qa.nt.ctripcorp.com/GroupH5/r1</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/GroupH5</WebresourcePDDebugUrl>
+    <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
@@ -59,9 +59,9 @@
     <restfullApiHttps>http://m.uat.ctripqa.com/restapi/soa2/10101</restfullApiHttps>
     <restfullApi>http://m.uat.ctripqa.com/restapi/soa2/10101</restfullApi>
     <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
-    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
-    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
-      <WebresourceVersion></WebresourceVersion>
+    <WebresourcePDBaseUrl>http://webresource.uat.qa.nt.ctripcorp.com/GroupH5/r1</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/GroupH5</WebresourcePDDebugUrl>
+    <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
@@ -74,9 +74,9 @@
     <restfullApiHttps>http://m.uat.ctripqa.com/restapi/soa2/10101</restfullApiHttps>
     <restfullApi>http://m.uat.ctripqa.com/restapi/soa2/10101</restfullApi>
     <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
-    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
-    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
-      <WebresourceVersion></WebresourceVersion>
+    <WebresourcePDBaseUrl>http://webresource.fws.qa.nt.ctripcorp.com/GroupH5/r1</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/GroupH5</WebresourcePDDebugUrl>
+    <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>192.168.82.58</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
@@ -89,9 +89,9 @@
     <restfullApiHttps>http://m.ctrip.com/restapi/soa2/10101</restfullApiHttps>
     <restfullApi>http://m.ctrip.com/restapi/soa2/10101</restfullApi>
     <WebresourceBaseUrl>//webresource.c-ctrip.com</WebresourceBaseUrl>
-    <WebresourcePDBaseUrl>/webapp/tuan/dest/webresource</WebresourcePDBaseUrl>
-    <WebresourcePDDebugUrl>/webapp/tuan/webresource</WebresourcePDDebugUrl>
-      <WebresourceVersion></WebresourceVersion>
+    <WebresourcePDBaseUrl>http://webresource.c-ctrip.com/GroupH5/r1</WebresourcePDBaseUrl>
+    <WebresourcePDDebugUrl>/webapp/tuan/GroupH5</WebresourcePDDebugUrl>
+    <WebresourceVersion></WebresourceVersion>
     <!-- Central Logging配置 -->
     <LoggingServer.V2.IP>collector.logging.sh.ctriptravel.com</LoggingServer.V2.IP>
     <LoggingServer.V2.Port>63100</LoggingServer.V2.Port>
