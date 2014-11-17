@@ -1,5 +1,5 @@
 ﻿define(['cStore', 'cBase', 'cUtility'], function (AbstractStore, cBase, cUtility) {
-    var T = {}, VERSION = 6.0;
+    var T = {}, VERSION = 6.1;
     //当前团购详情（zhang_f）
     T.TuanDetailsStore = new cBase.Class(AbstractStore, {
         __propertys__: function () {

@@ -21,7 +21,7 @@
         <% } %>
 
         <% if (v.status == 1 && _.isEmpty(v.pwd)) { %>
-            <li class="act J_sendToPhone" data-val="<%=v.val%>" data-id="<%=v.code%>">发送券号密码到手机</li>
+            <li class="act J_sendToPhone" data-val="<%=v.val%>" data-id="<%=v.code%>">发送到手机</li>
         <% } else if (v.status == 1) {  %>
             <li class="act J_sendToPhone" data-val="<%=v.val%>" data-id="<%=v.code%>">发送到手机</li>
         <% } %>

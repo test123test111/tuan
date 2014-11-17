@@ -743,7 +743,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         }
                         /*
                          * couponType
-                         * 为 2 的优惠券  实付的金额=总金额-优惠券金额
+                         * 为 2 的优惠券  实付的金额=总金额-优惠券金额, 按订单
                            为 3 的优惠券  实付金额=总金额-（优惠券金额*数量）
                          */
                         if (couponType === 2) {
