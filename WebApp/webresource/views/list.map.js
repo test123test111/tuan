@@ -294,22 +294,33 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
             getParams: function() {
                 var searchData = searchStore.get();
                 var positionData = positionfilterStore.get();
-                if (searchData.sortRule != 8) {
-                    var t = positionData && positionData.type;
-                    if (t == 5) {
-                        searchData.pos = positionData.pos;
+                var cityId = searchData.ctyId;
+                if (positionData) {
+                    if (positionData.ctyId == cityId && searchData.sortRule != 8) {
+                        var t = positionData && positionData.type;
+                        if (t == 5) {
+                            searchData.pos = positionData.pos;
+                        }
+                        if (t == 4 || t == 19) {
+                            var cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
+                            var gps = cityInfo && cityInfo.pos || {};
+                            searchData.pos = {
+                                posty: StringsData.MAP_SOURCE_ID,
+                                lon: gps.lon || 0,
+                                lat: gps.lat || 0,
+                                name: cityInfo.name + StringsData.CITY_CENTER
+                            };
+                        }
                     }
-                    if (t == 4 || t == 19) {
-                        var cityId = searchData.ctyId;
-                        var cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
-                        var gps = cityInfo && cityInfo.pos || {};
-                        searchData.pos = {
-                            posty: StringsData.MAP_SOURCE_ID,
-                            lon: gps.lon || 0,
-                            lat: gps.lat || 0,
-                            name: cityInfo.name + StringsData.CITY_CENTER
-                        };
-                    }
+                } else {
+                    var cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
+                    var gps = cityInfo && cityInfo.pos || {};
+                    searchData.pos = {
+                        posty: StringsData.MAP_SOURCE_ID,
+                        lon: gps.lon || 0,
+                        lat: gps.lat || 0,
+                        name: cityInfo.name + StringsData.CITY_CENTER
+                    };
                 }
                 return searchData;
             },

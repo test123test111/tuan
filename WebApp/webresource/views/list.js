@@ -257,7 +257,13 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             } else {
                 this.hideFilterDropDowns();
                 this.tuanfilters.updateCategoryName();
-                this.tuanfilters.updatePositionName();
+                //从关键词页面过来会把positionfilterStore清空
+                if (!positionfilterStore.get()) {
+                    this.tuanfilters.renderPosition();
+                    this.tuanfilters._positionInited = undefined;
+                } else {
+                    this.tuanfilters.updatePositionName();
+                }
                 this.tuanfilters.updateCustomFilterIcon();
             }
         },
