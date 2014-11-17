@@ -1,5 +1,5 @@
 (function() {
-    var baseUrl = Lizard.appBaseUrl + 'GroupH5/';
+    var baseUrl = Lizard.WebresourcePDBaseUrl;
     var isDebug = typeof location != 'undefined' && location.search.indexOf('debug=1') != -1;
     var config = {
         paths: {
