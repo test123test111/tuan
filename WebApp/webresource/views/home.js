@@ -104,38 +104,64 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             this.LazyLoad.unbindEvents();
             this.hideLoading();
         },
+        getCityFromAppCached: function(cb) {
+            if (!isInApp) {
+                cb();
+                return;
+            }
+            window.app.callback = function (json_obj) {
+                if (json_obj.tagname == 'get_cached_ctrip_city') {
+                    if (json_obj.param) {
+                        var city = json_obj.param.CityEntities[0];
+                        cb({id: city.CityID, name: city.CityName});
+                    } else {
+                        cb();
+                    }
+                }
+            };
+
+            try {
+                CtripMap.app_get_cached_ctrip_city();
+            } catch(e) {
+                cb();
+            }
+        },
         onLoad: function (refer) {
             this.tplLoading = Lizard.T('J_Loading');
             this.tplReload = Lizard.T('J_Reload');
             this.tplNoproduct = Lizard.T('J_NoGroupProduct');
             this.listWrap.html(this.tplLoading);
             refer = this.getLastViewName();
-            if (+searchStore.getAttr('ctyId') <= 0) {
-                searchStore.setAttr('ctyId', StringsData.defaultCity.id);
-                searchStore.setAttr('ctyName', StringsData.defaultCity.name);
-            }
-            var self = this,
-                searchData = searchStore.get(),
-                cityId = searchData.ctyId || StringsData.defaultCity.id,
-                cityName = searchData.ctyName || StringsData.defaultCity.name;
+            var self = this;
+            this.getCityFromAppCached(function(city) {
+                city && (StringsData.defaultCity = city);
+                if (+searchStore.getAttr('ctyId') <= 0) {
+                    searchStore.setAttr('ctyId', StringsData.defaultCity.id);
+                    searchStore.setAttr('ctyName', StringsData.defaultCity.name);
+                }
+                var searchData = searchStore.get();
+                var cityId = searchData.ctyId || StringsData.defaultCity.id;
+                var cityName = searchData.ctyName || StringsData.defaultCity.name;
 
-            this.setHeader(cityName || (self.isNearBy() && '我附近的') || StringsData.defaultCity.name);
-            this.getBannerSearch(cityId);
-            //有时候在某些机器会报错导致页面空白
-            try {
-                self.getGroupListData();
-            } catch (e) { }
+                self.setHeader(cityName || (self.isNearBy() && '我附近的') || StringsData.defaultCity.name);
+                self.getBannerSearch(cityId);
 
-            //首页之后的页面回到首页，不需要提示切换城市，保持原有选择城市
-            //或者已经点击过取消切换城市
-            var noneedswitchcity = refer == "citylist" || refer == "detail" || refer == "list" || refer == "keywordsearch" || sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) == 1;
-            if (!noneedswitchcity) {
-                this.geoCallback.type = 0;
-                this.locateInterface();
-            }
-            isInApp && Facade.request({ name: Facade.METHOD_SET_NAVBAR_HIDDEN, isNeedHidden: false });
-            //更新广告信息
-            this.updateAdInfo();
+                //有时候在某些机器会报错导致页面空白
+                try {
+                    self.getGroupListData();
+                } catch (e) { }
+
+                //首页之后的页面回到首页，不需要提示切换城市，保持原有选择城市
+                //或者已经点击过取消切换城市
+                var noneedswitchcity = refer == "citylist" || refer == "detail" || refer == "list" || refer == "keywordsearch" || sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) == 1;
+                if (!noneedswitchcity) {
+                    self.geoCallback.type = 0;
+                    self.locateInterface();
+                }
+                isInApp && Facade.request({ name: Facade.METHOD_SET_NAVBAR_HIDDEN, isNeedHidden: false });
+                //更新广告信息
+                self.updateAdInfo();
+            });
         },
         getSelectedCity: function () {
             return {

@@ -644,16 +644,16 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 if (pos && posType < 0) {//地图屏幕内查询、地铁站、机场车站、景点、大学周边
                     searchStore.setAttr('pos', pos);
                 } else {
-                    // searchStore.removeAttr('pos');
-                    cityId = searchStore.getAttr('ctyId');
-                    cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
-                    gps = cityInfo && cityInfo.pos || {};
-                    searchStore.setAttr('pos', {
-                        posty: StringsData.MAP_SOURCE_ID,
-                        lon: gps.lon || 0,
-                        lat: gps.lat || 0,
-                        name: cityInfo.name + StringsData.CITY_CENTER
-                    });
+                    searchStore.removeAttr('pos');
+                    // cityId = searchStore.getAttr('ctyId');
+                    // cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
+                    // gps = cityInfo && cityInfo.pos || {};
+                    // searchStore.setAttr('pos', {
+                        // posty: StringsData.MAP_SOURCE_ID,
+                        // lon: gps.lon || 0,
+                        // lat: gps.lat || 0,
+                        // name: cityInfo.name + StringsData.CITY_CENTER
+                    // });
                 }
             }
 

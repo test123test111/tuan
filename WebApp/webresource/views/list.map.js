@@ -283,8 +283,35 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 this.centerMarker && this.centerMarker.setMap(null);
                 this.selectedCategoryItem && this.selectedCategoryItem.removeClass(CURRENT_CATEGORY_CLS);
                 selectedCategoryItem.addClass(CURRENT_CATEGORY_CLS);
-                this.poi.query(type, searchStore.get());
+                this.poi.query(type, this.getParams());
                 this.selectedCategoryItem = selectedCategoryItem;
+            },
+            /**
+             * 因地图上只能按商户展示团购产品，所以只能和列表页的商户聚合模式保持
+             * 同步，对于列表页产品聚合模式，这里统一改成商户聚合模式，即传经纬度
+             * 参数(pos)
+             */
+            getParams: function() {
+                var searchData = searchStore.get();
+                var positionData = positionfilterStore.get();
+                if (searchData.sortRule != 8) {
+                    var t = positionData && positionData.type;
+                    if (t == 5) {
+                        searchData.pos = positionData.pos;
+                    }
+                    if (t == 4 || t == 19) {
+                        var cityId = searchData.ctyId;
+                        var cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
+                        var gps = cityInfo && cityInfo.pos || {};
+                        searchData.pos = {
+                            posty: StringsData.MAP_SOURCE_ID,
+                            lon: gps.lon || 0,
+                            lat: gps.lat || 0,
+                            name: cityInfo.name + StringsData.CITY_CENTER
+                        };
+                    }
+                }
+                return searchData;
             },
             getCenterMarkerData: function () {
                 var isNearBy = StoreManage.isNearBy(),
@@ -316,8 +343,10 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     if (!pos || posType == '4' || posType == '19') { //不限或行政区、地铁线
                         cityId = searchStore.getAttr('ctyId');
                         cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
-                        info = cityInfo && cityInfo.pos;
-                        info.name = cityInfo.name + StringsData.CITY_CENTER;
+                        if (cityInfo) {
+                            info = cityInfo.pos;
+                            info.name = cityInfo.name + StringsData.CITY_CENTER;
+                        }
                     } else if (posType < 0 || posType == '5') { //地图屏幕内查询、地铁站、机场车站、景点、大学周边或商业区
                         info = pos;
                         info.name = posName;
