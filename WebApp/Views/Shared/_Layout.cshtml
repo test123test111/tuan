@@ -5,7 +5,7 @@
     @RenderPage("../Shared/Header.cshtml")
 </head>
 <body onselectstart="return false">
-    <script type="text/javascript" src="@Url.Content("~/webresource/com/compatible.js")"></script>
+    <script type="text/javascript" src="@Tuan.ConfigManager.IncludeStaticFile("com/compatible.js")"></script>
     @RenderPage("../Shared/BodyLayout.cshtml")
     @RenderBody()
     @RenderPage("../Shared/Footer.cshtml")</body>

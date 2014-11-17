@@ -1,68 +1,73 @@
-;(function () {
-    function buildPath (relative) {
-        return Lizard.WebresourcePDBaseUrl + relative;
-    };
-
-    require.config({
+(function() {
+    var baseUrl = Lizard.appBaseUrl + 'GroupH5/';
+    var isDebug = typeof location != 'undefined' && location.search.indexOf('debug=1') != -1;
+    var config = {
         paths: {
             //custom models
-            TuanApp: buildPath("tuanapp"),
-            TuanStore: buildPath("models/tuanstore"),
-            TuanModel: buildPath("models/tuanmodel"),
-            DropDown: buildPath("com/dropdown"),
-            TuanFilters: buildPath("widget/tuanfilters"),
-            SmoothSlide: buildPath("widget/slide"),
-            TabSlide: buildPath("widget/tabslide"),
-            Switch: buildPath("com/switch"),
-            VoiceSearch: buildPath("widget/voicesearch"),
-            StoreManage: buildPath("util/storemanage"),
-            HttpErrorHelper: buildPath("util/httperrortpl"),
-            NumberStep: buildPath("com/numberstep"),
-            Payment: buildPath("widget/payment"),
-            ScrollObserver: buildPath("util/scrollobserver"),
-            MemCache: buildPath("util/memcache"),
-            InvoiceStore: buildPath("thirdpart/invoicestore"),
-            AMapWidget: buildPath("widget/amap"),
-            POIWidget: buildPath("widget/poi"),
-            LazyLoad: buildPath("com/lazyload"),
-            CallPhone: buildPath("com/callPhone"),
-            FilterXss: buildPath("util/filterxss"),
-            CityListData: buildPath("data/citylist"),
-            StringsData: buildPath("data/strings"),
-            Tab: buildPath("com/tab"),
-            PageHistory: buildPath("com/history"),
-            ConsoleDebug: buildPath("debug/console"),
-            PageTreeConfig: buildPath("com/pagetreeconfig"),
-            TuanBaseView:buildPath("com/baseview"),
-            ValidatorUtil: buildPath("util/form/validator"),
-            FieldUtil: buildPath("util/form/field"),
+            TuanApp: baseUrl +"tuanapp",
+            TuanStore: baseUrl +"models/tuanstore",
+            TuanModel: baseUrl +"models/tuanmodel",
+            DropDown: baseUrl +"com/dropdown",
+            TuanFilters: baseUrl +"widget/tuanfilters",
+            SmoothSlide: baseUrl +"widget/slide",
+            TabSlide: baseUrl +"widget/tabslide",
+            Switch: baseUrl +"com/switch",
+            VoiceSearch: baseUrl +"widget/voicesearch",
+            StoreManage: baseUrl +"util/storemanage",
+            HttpErrorHelper: baseUrl +"util/httperrortpl",
+            NumberStep: baseUrl +"com/numberstep",
+            Payment: baseUrl +"widget/payment",
+            ScrollObserver: baseUrl +"util/scrollobserver",
+            MemCache: baseUrl +"util/memcache",
+            InvoiceStore: baseUrl +"thirdpart/invoicestore",
+            AMapWidget: baseUrl +"widget/amap",
+            POIWidget: baseUrl +"widget/poi",
+            LazyLoad: baseUrl +"com/lazyload",
+            CallPhone: baseUrl +"com/callPhone",
+            FilterXss: baseUrl +"util/filterxss",
+            CityListData: baseUrl +"data/citylist",
+            StringsData: baseUrl +"data/strings",
+            Tab: baseUrl +"com/tab",
+            PageHistory: baseUrl +"com/history",
+            ConsoleDebug: baseUrl +"debug/console",
+            PageTreeConfig: baseUrl +"com/pagetreeconfig",
+            TuanBaseView:baseUrl +"com/baseview",
+            ValidatorUtil: baseUrl +"util/form/validator",
+            FieldUtil: baseUrl +"util/form/field",
 
             //模版
-            HomeTpl: buildPath("templates/home.html"),
-            ListProductTpl: buildPath("templates/list.product.html"),
-            ListBusinessTpl: buildPath("templates/list.business.html"),
-            BookingTpl: buildPath("templates/booking.html"),
-            BookingSuccessTpl: buildPath("templates/booking.success.html"),
-            CityListTpl: buildPath("templates/citylist.html"),
-            CouponTpl: buildPath("templates/coupon.html"),
-            DetailTpl: buildPath("templates/detail.html"),
-            DetailTipsTpl: buildPath("templates/detail.tips.html"),
-            HotelCommentsTpl: buildPath("templates/hotel.comments.html"),
-            HotelImagesTpl: buildPath("templates/hotel.images.html"),
-            HotelImageSlideTpl: buildPath("templates/hotel.imageslide.html"),
-            HotelMapTpl: buildPath("templates/hotel.map.html"),
-            HotelServiceTpl: buildPath("templates/hotel.service.html"),
-            HotelSubbranchTpl: buildPath("templates/hotel.subbranch.html"),
-            LashouTpl: buildPath("templates/lashou.html"),
-            InvoiceTpl: buildPath("templates/invoice.html"),
-            KeywordSearchTpl: buildPath("templates/keywordsearch.html"),
-            NearListTpl: buildPath("templates/near.list.html"),
-            RefundTpl: buildPath("templates/refund.html"),
-            RefundTipTpl: buildPath("templates/refund.tip.html"),
-            TuanOrderDetailTpl: buildPath("templates/tuanorderdetail.html"),
-            OrderDetailItemTpl: buildPath("templates/order.detail.item.html"),
-            RecommendTpl: buildPath("templates/recommend.html"),
-            MapNavTpl: buildPath('templates/hotel.map.nav.html')
+            HomeTpl: baseUrl +"templates/home.html",
+            ListProductTpl: baseUrl +"templates/list.product.html",
+            ListBusinessTpl: baseUrl +"templates/list.business.html",
+            BookingTpl: baseUrl +"templates/booking.html",
+            BookingSuccessTpl: baseUrl +"templates/booking.success.html",
+            CityListTpl: baseUrl +"templates/citylist.html",
+            CouponTpl: baseUrl +"templates/coupon.html",
+            DetailTpl: baseUrl +"templates/detail.html",
+            DetailTipsTpl: baseUrl +"templates/detail.tips.html",
+            HotelCommentsTpl: baseUrl +"templates/hotel.comments.html",
+            HotelImagesTpl: baseUrl +"templates/hotel.images.html",
+            HotelImageSlideTpl: baseUrl +"templates/hotel.imageslide.html",
+            HotelMapTpl: baseUrl +"templates/hotel.map.html",
+            HotelServiceTpl: baseUrl +"templates/hotel.service.html",
+            HotelSubbranchTpl: baseUrl +"templates/hotel.subbranch.html",
+            LashouTpl: baseUrl +"templates/lashou.html",
+            InvoiceTpl: baseUrl +"templates/invoice.html",
+            KeywordSearchTpl: baseUrl +"templates/keywordsearch.html",
+            NearListTpl: baseUrl +"templates/near.list.html",
+            RefundTpl: baseUrl +"templates/refund.html",
+            RefundTipTpl: baseUrl +"templates/refund.tip.html",
+            TuanOrderDetailTpl: baseUrl +"templates/tuanorderdetail.html",
+            OrderDetailItemTpl: baseUrl +"templates/order.detail.item.html",
+            RecommendTpl: baseUrl +"templates/recommend.html",
+            MapNavTpl: baseUrl +"templates/hotel.map.nav.html"
         }
-    });
+    };
+
+    if (isDebug) {
+        config.urlArgs = Date.now();
+    }
+
+    require.config(config);
 })();
+
