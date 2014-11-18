@@ -78,8 +78,11 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
                     msg = '已切换为普通账户登录';
                     self.setUserLogin(NORMAL);
                 } else if ($this.hasClass('J_clearStorage')) {
-                    msg = 'Clear';
+                    msg = '';
                     self.clearLocal();
+                    self.showToast('Clear', 1, function() {
+                        self.reset();
+                    });
                 } else if ($this.hasClass('J_reload')) {
                     msg = 'Reloading Page';
                 }
@@ -96,7 +99,7 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
         },
         setUserLogin: function(user) {
             localStorage.setItem('USER', user && user.user);
-            localStorage.setItem('USER_INFO', user && user.userinfo);
+            localStorage.setItem('USERINFO', user && user.userinfo);
         },
         showToast: function(msg, time, fun) {
             !this.toast && (this.toast = new c.ui.Toast());
@@ -175,3 +178,13 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
     return ConsoleDebug;
 
 });
+
+/*
+ //                btn = $('<i style="position:fixed;bottom:300px;color:green;z-index:9999;">CL</i>').appendTo('#main');
+ //                btn.on('click', function() {
+ //                    !con && require(['ConsoleDebug'], function(ConsoleDebug) {
+ //                        con = new ConsoleDebug();
+ //                    });
+ //                    con && con.show();
+ //                });
+ */

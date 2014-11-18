@@ -81,7 +81,8 @@
         }
     };
 
-    var T = {}, VERSION = 6.0;
+    //Version 在store里面也有定义，记得同步修改
+    var T = {}, VERSION = 6.1;
     //团购详情Model (zhang_f)
     T.TuanDetailModel = new cBase.Class(AbstractModel, {
         __propertys__: function () {
