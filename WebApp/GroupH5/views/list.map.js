@@ -589,7 +589,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                             distance: self.distance
                         };
                         searchStore.setAttr('pos', pos);
-                        positionfilterStore.setAttr({
+                        positionfilterStore.set({
                             type: -6, //用-6标识是地图屏幕内查询
                             name: regeocode.formattedAddress,
                             pos: pos

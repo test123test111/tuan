@@ -258,7 +258,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 this.hideFilterDropDowns();
                 this.tuanfilters.updateCategoryName();
                 var positionData = positionfilterStore.get();
-                /* 以下情况，重现渲染位置区域：
+                /* 以下情况，重新渲染位置区域：
                  * 1. 从关键词页面清空positionfilterStore返回
                  * 2. 从地图页面屏幕范围查询后返回
                  */
@@ -269,6 +269,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     this.tuanfilters.updatePositionName();
                 }
                 this.tuanfilters.updateCustomFilterIcon();
+                /* 以下情况，重置排序：
+                 * 1. 从关键词页面清空positionfilterStore返回
+                 */
+                if (!positionData) {
+                    this.tuanfilters.sort.reset();
+                }
             }
         },
         hideFilterDropDowns: function () {
