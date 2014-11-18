@@ -156,6 +156,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                             place = pos.name;
                         } else if ((pos.type < 0 && pos.type != -6) || pos.type == 19) {
                             place = pos.name + '周边';
+                        } else if (pos.type == -6) {
+                            place = pos.pos.distance + '公里内';
                         }
                     } else {
                         place = searchStore.getAttr('ctyName');
@@ -283,7 +285,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 this.centerMarker && this.centerMarker.setMap(null);
                 this.selectedCategoryItem && this.selectedCategoryItem.removeClass(CURRENT_CATEGORY_CLS);
                 selectedCategoryItem.addClass(CURRENT_CATEGORY_CLS);
-                this.poi.query(type, this.getParams());
+                this.poi.query(this.getParams());
                 this.selectedCategoryItem = selectedCategoryItem;
             },
             /**
@@ -295,7 +297,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 var searchData = searchStore.get();
                 var positionData = positionfilterStore.get();
                 var cityId = searchData.ctyId;
-                if (positionData) {
+                if (positionData && positionData.name) {//选择了位置区域
                     if (positionData.ctyId == cityId && searchData.sortRule != 8) {
                         var t = positionData && positionData.type;
                         if (t == 5) {
@@ -312,7 +314,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                             };
                         }
                     }
-                } else {
+                } else {//没有选择位置区域，则传市中心的经纬度
                     var cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
                     var gps = cityInfo && cityInfo.pos || {};
                     searchData.pos = {

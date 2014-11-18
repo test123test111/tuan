@@ -55,10 +55,9 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         },
         /**
          * 查询poi
-         * @param {ALL | HOTEL | CATERING | VOCATION | TICKET} type POI类型
          * @param params 查询参数
          */
-        query: function(type, params, onSuccess, onError){
+        query: function(params, onSuccess, onError){
             var self = this,
                 options = self.options,
                 defaultParams = options.params;
@@ -66,9 +65,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
             if(isObject(params)){
                 params = $.extend(defaultParams, params);
             };
-            defaultParams.posty = options.source;
-            defaultParams.ctype = type || POIWidget.ALL;
-            this.model.setParam(params);
+            this.model.param = params;
             this.model.excute(function(data){
                 (onSuccess||options.onSuccess).call(self, data);
             }, function(err){
@@ -79,31 +76,6 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
             this.options.model.abort();
         }
     });
-    /**
-     * 全部分类
-     * @static
-     */
-    POIWidget.ALL = 0;
-    /**
-     * 酒店客房
-     * @static
-     */
-    POIWidget.HOTEL = 1;
-    /**
-     * 餐饮娱乐
-     * @static
-     */
-    POIWidget.CATERING = 2;
-    /**
-     * 旅游出行
-     * @static
-     */
-    POIWidget.VACATION = 3;
-    /**
-     * 门票
-     * @static
-     */
-    POIWidget.TICKIT = 4;
 
     WidgetFactory.register({
         name: WIDGET_NAME,

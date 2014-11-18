@@ -257,8 +257,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             } else {
                 this.hideFilterDropDowns();
                 this.tuanfilters.updateCategoryName();
-                //从关键词页面过来会把positionfilterStore清空
-                if (!positionfilterStore.get()) {
+                var positionData = positionfilterStore.get();
+                /* 以下情况，重现渲染位置区域：
+                 * 1. 从关键词页面清空positionfilterStore返回
+                 * 2. 从地图页面屏幕范围查询后返回
+                 */
+                if (!positionData || (positionData && positionData.type == -6)) {
                     this.tuanfilters.renderPosition();
                     this.tuanfilters._positionInited = undefined;
                 } else {
