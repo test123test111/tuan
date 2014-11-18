@@ -91,7 +91,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             });
             this.header.show();
             //click citybtn按钮的回调(H5)
-            this.header.root.find('#J_cityBtn').on('click', $.proxy(self.showCityPage, this));
+            !isInApp && this.header.root.find('#J_cityBtn').on('click', $.proxy(self.showCityPage, this));
         },
         onShow: function () {
             this.LazyLoad = new LazyLoad({ wrap: this.$el });
@@ -133,8 +133,8 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             this.listWrap.html(this.tplLoading);
             refer = this.getLastViewName();
             var self = this;
-            this.getCityFromAppCached(function(city) {
-                city && (StringsData.defaultCity = city);
+            // this.getCityFromAppCached($.proxy(function(city) {
+                // city && (StringsData.defaultCity = city);
                 if (+searchStore.getAttr('ctyId') <= 0) {
                     searchStore.setAttr('ctyId', StringsData.defaultCity.id);
                     searchStore.setAttr('ctyName', StringsData.defaultCity.name);
@@ -161,7 +161,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 isInApp && Facade.request({ name: Facade.METHOD_SET_NAVBAR_HIDDEN, isNeedHidden: false });
                 //更新广告信息
                 self.updateAdInfo();
-            });
+            // }, this));
         },
         getSelectedCity: function () {
             return {
