@@ -76,6 +76,7 @@ define(['TuanApp', 'libs', 'c', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory
             }
         },
         getCommentListData:function(pageIdx){
+            var self = this;
             TuanHotelCommentListModel.setParam({ 'hotelId': this.hotelId, 'pageIdx': pageIdx });
             //head 丢失, 重新加入
             TuanHotelCommentListModel.param.head = TuanHotelCommentListModel.getHead().get();
@@ -91,11 +92,12 @@ define(['TuanApp', 'libs', 'c', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory
             }, function (err) {
                 this.isLoading = false;
                 var msg = err.msg ? err.msg : '啊哦,数据加载出错了!';
-                var self = this;
-                this.showHeadWarning('酒店评论信息', msg, function () {
+                // var self = this;
+                // this.showHeadWarning('酒店评论信息', msg, function () {
+                self.showToast(msg, 3, function () {
                     self.backAction();
                 });
-                this.hideLoading();
+                self.hideLoading();
             }, true, this);
         },
         _onWindowScroll:function(){
