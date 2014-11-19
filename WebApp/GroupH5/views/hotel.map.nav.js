@@ -23,7 +23,7 @@ function (TuanApp, libs, TuanBaseView, CommonPageFactory, Util, html) {
             this.$el.attr('style', 'height:100%');
             this.$el.html(_.template(this.tpl, {url: url}));
             
-            Util.isInApp() && this.$el.find('#J_hotelMapIframe').css('top', '0px');
+            //Util.isInApp() && this.$el.find('#J_hotelMapIframe').css('top', '0px');
             
             this.header.set({
                 title: '导航页面',
