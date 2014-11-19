@@ -235,8 +235,22 @@ define(['PageHistory'], function (PageHistory) {
 
 
         (function() {
+            var hasClear = false, env;
             var count = 0, timer, con;
-            $(document).on('click', function(e) {
+            if (Util.isInApp()) {
+                //Hybrid， 非生产环境
+                env = Util.isPreProduction();
+                if (env === '0' || env === '1' || env === '2') {
+                    hasClear = true;
+                }
+            } else {
+                //H5, 非生产环境
+                if (!location.host.match(/^(m|3g|wap)\.ctrip\.com/i)) {
+                    hasClear = true;
+                }
+            }
+
+            hasClear && $(document).on('click', function(e) {
                 count++;
                 timer && clearTimeout(timer);
                 timer = setTimeout(function() {
