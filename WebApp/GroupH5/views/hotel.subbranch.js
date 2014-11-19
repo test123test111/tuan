@@ -96,11 +96,11 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
                 self.CallPhone = new CallPhone({view: this});
             }, function (err) {
                 var msg = err.msg ? err.msg : '啊哦,数据加载出错了!';
-                var self = this;
-                this.showHeadWarning('团购分店信息', msg, function () {
+                // this.showHeadWarning('团购分店信息', msg, function () {
+                self.showToast(msg, 3, function () {
                     self.backAction();
                 });
-                this.hideLoading();
+                self.hideLoading();
             }, true, this);
         },
         showPhone: function (e) {

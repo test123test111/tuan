@@ -22,7 +22,7 @@ function (TuanApp, libs, TuanBaseView, CommonPageFactory, Util, html) {
                 url = _.template(urlTpl, {dest: (p('lng')+','+p('lat')), destName: p('title')});
             this.$el.attr('style', 'height:100%');
             this.$el.html(_.template(this.tpl, {url: url}));
-            
+            this.$el.find('#J_hotelMapIframe').css('height', (this.$el.height() - 45) + 'px');
             //Util.isInApp() && this.$el.find('#J_hotelMapIframe').css('top', '0px');
             
             this.header.set({

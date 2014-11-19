@@ -286,20 +286,21 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 this.validator = new Validator();
             },
             getTuanDetail: function (detailId, callback) {
+                var self = this;
                 var callback = $.type(callback) === "function" ? callback.bind(this) : function () { };
 
                 tuanDetailModel.setParam({ id: detailId, environment: TuanApp.environment });
                 this.showLoading();
                 tuanDetailModel.excute(function (data) {
                     callback();
-                    this.hideLoading();
+                    self.hideLoading();
                 }, function (err) {
                     var msg = err.msg ? err.msg : '啊哦,数据加载出错了!';
-                    var self = this;
-                    this.showHeadWarning('团购详情', msg, function () {
+                    // this.showHeadWarning('团购详情', msg, function () {
+                    self.showToast(msg, 3, function () {
                         self.cancelOrder();
                     });
-                    this.hideLoading();
+                    self.hideLoading();
 
                     callback();
                 }, false, this);
