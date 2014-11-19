@@ -495,8 +495,14 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 tuanfilters.options.filterPanel.hide();
             }
         },
+        parseSEOPostData: function(){
+            var dataField = $.trim(this.$el.find('#J_seoPostData').text());
+
+            dataField && searchStore.set(JSON.parse(dataField));
+        },
         onShow: function (refer) {
             this.referUrl = refer || this.getLastViewName();
+            this.parseSEOPostData();
             //定位提示容
             this.gpsInfoWrap = this.$el.find('#J_gpsInfo');
             this.gpsReloadBtn = this.$el.find('#J_reloadGPS');
