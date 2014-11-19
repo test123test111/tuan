@@ -154,7 +154,7 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
             var o = {};
             var id = tuanDetailsStore.getAttr('id');
             var cityid = this.cityId;
-            id && (o.id = id);
+            id && (o.did = id);
             cityid && (o.cityid = cityid);
             this.back(o);
         },
