@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Configuration;
+@{
     ViewBag.Title = "Home";
 }
 <script type="text/lizard-config">
@@ -6,16 +7,52 @@
     "url_schema": ["/home", "home"],
     "viewName": "home",
     "model": {
-        "apis": [],
-        "filter": function (datas){
-            return datas;
+        "apis": [{
+            name: 'BannerSearch',
+            runat: 'server',
+            url: '@ConfigurationManager.AppSettings["restfullApi"]/json/BannerSearch',
+            postdata: {
+                cid: 2
+            },
+            suspend: function() {
+                return Lizard.runAt == 'client';
+            },
+            filter: function(data) {
+                return data;
+            }
+        }, {
+            name: 'HotCitySearch',
+            runat: 'server',
+            url: '@ConfigurationManager.AppSettings["restfullApi"]/json/HotCitySearch',
+            postdata: {
+                isseo: 1,
+                ctyId: 2,
+                environment: 1
+            },
+            suspend: function() {
+                return Lizard.runAt == 'client';
+            },
+            filter: function(data) {
+                return data;
+            }
+        }],
+        "filter": function(datas) {
+            return {d: datas};
+        },
+        "setTDK": function(datas) {
+            var tdk = datas[1].seo || {};
+            return {
+                title: tdk.title || '',
+                description: tdk.desc || '',
+                keywords: tdk.keywords || ''
+            };
         }
     },
-    "view":{
+    "view": {
         "header": Lizard.T("J_homeHeader"),
         "viewport": Lizard.T("J_homeViewer")
     },
-    "controller": "@Tuan.ConfigManager.IncludeStaticFile("views/home.js")"
+    "controller": '@Tuan.ConfigManager.IncludeStaticFile("views/home.js")'
 }
 </script>
 <script type="text/lizard-template" id="J_homeHeader">
@@ -36,25 +73,120 @@
              <!--/END 搜索-->
         </div>
         <div class="index_link">
-		    <ul class="qr_link js_qr_link">
-			    <li data-id="1" data-type="1" data-category='hotel' data-name='酒店'><span><b class="ico_bed"></b>酒店</span></li>
-			    <li data-id="2" data-type="8" data-category='catering' data-name='美食'><span><b class="ico_dining"></b>美食</span></li>
-			    <li data-id="4" data-type="6" data-category='ticket' data-name='门票'><span><b class="ico_travel"></b>门票</span></li>
-			    <li data-id="5" data-type="9" data-category='entertainment' data-name='娱乐'><span><b class="ico_attractions"></b>娱乐</span></li>
-		    </ul>
-		    <ul class="at_link  js_qr_link">
+            <ul class="qr_link js_qr_link">
+                <li data-id="1" data-type="1" data-category='hotel' data-name='酒店'><span><b class="ico_bed"></b>酒店</span></li>
+                <li data-id="2" data-type="8" data-category='catering' data-name='美食'><span><b class="ico_dining"></b>美食</span></li>
+                <li data-id="4" data-type="6" data-category='ticket' data-name='门票'><span><b class="ico_travel"></b>门票</span></li>
+                <li data-id="5" data-type="9" data-category='entertainment' data-name='娱乐'><span><b class="ico_attractions"></b>娱乐</span></li>
+            </ul>
+            <ul class="at_link  js_qr_link">
                 <li data-id="" data-type="0" data-category='weeknew' data-name='本周新单'><i></i>本周新单</li>
-			    <li data-id="" data-type="106" data-category='onepaygroup' data-name='1元团购'><i></i>1元团购</li>
-			    <li data-id="" data-type="0" data-category='feature' data-name='当地特色'><i></i>当地特色</li>
+                <li data-id="" data-type="106" data-category='onepaygroup' data-name='1元团购'><i></i>1元团购</li>
+                <li data-id="" data-type="0" data-category='feature' data-name='当地特色'><i></i>当地特色</li>
                 <li data-id="3" data-type="7" data-category='vacation' data-name='旅游度假'><i></i>旅游度假</li>
-			    <li data-id="" data-type="" data-category='lottery' data-name='彩票'><i></i>彩 票</li>
-			    <li data-id=""  data-type=""  data-category="nearby"><i></i>附近团购</li>
-		    </ul>
-	    </div>
+                <li data-id="" data-type="" data-category='lottery' data-name='彩票'><i></i>彩 票</li>
+                <li data-id=""  data-type=""  data-category="nearby"><i></i>附近团购</li>
+            </ul>
+        </div>
         <!--/END 入口-->
-        <ul class="ad_link" style="display:none"></ul>
+        <%
+        var banners = d && d[0] && d[0].banners;
+        var count = d && d[1] && d[1].count;
+        var products = d && d[1] && d[1].products;
+        %>
+        <%if (banners && (banners.length == 2 || banners.length == 4)) {%>
+            <ul class="ad_link">
+                <%_.each(banners, function(ad){%><li data-id="<%=ad.toUrl%>"><a href="javascript:;"><img src="<%=ad.imgUrl%>" /></a></li><%})%>
+            </ul>
+        <%}else{%>
+            <ul class="ad_link" style="display:none"></ul>
+        <%}%>
         <!--/END 广告-->
-        <div class="" id="J_hotSaleWrap"></div>
+        <div class="" id="J_hotSaleWrap">
+            <div class="hot_tit">热卖推荐<a href="javascript:;" id="J_allTuan">查看全部团购</a></div>
+            <ul class="pro_list index_hot">
+            <%
+            if(typeof products!="undefined" && products && products.length>0 && count && +count > 0) {
+                for(var i=0, len=products.length; i < len; i++){
+                    var p=products[i];
+                    var labelsNum = p.labels && p.labels.length;
+            %>
+                <li data-id="<%=p.id %>" data-len="<%=products.length %>" data-count="<%=count %>">
+                <div class="pro_list_imgbox">
+                    <img data-img="<%=i %>" onerror="javascript:noPic(this);" src="http://pic.c-ctrip.com/common/pic_alpha.gif" data-lazy="<%=p.imgUrl?p.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %> " />
+                </div>
+                <div class="pro_list_info">
+                    <h4 class="pro_list_tit"><%=(p.descriptionhead && p.name.indexOf('【多店通用】') == -1 ? '[' + p.descriptionhead + ']' : '') + p.name%></h4>
+                    <p class="wrap_label">
+                        <%if(false && labelsNum < 2 && p.star){%><%=p.star%><%}%>
+                        <%if(p.labels && p.labels.length){ %>
+                            <em class="pro_label_list">
+                            <%_.each(p.labels || [],function(o){%>
+                                <span class="onsale_label02"><%=o.labelTxt%></span>
+                            <%}); %>
+                            </em>
+                        <%} %>
+                    </p>
+                    <p class="pro_list_rank">
+                        <%if(+p.score>0){%><span class="font_blue"><i><%=p.score %></i>分</span><%}%>
+                        <span class="pro_list_sold">已售<%=p.cSold %></span>
+                    </p>
+                    <%if(p.distance>0){%>
+                    <p class="pro_list_txt">
+                        <%if(p.distance>=1){%>
+                            <%=p.distance.toFixed(1)+'公里'%>
+                        <%}else{%>
+                            <%=p.distance*1000+'米'%>
+                        <%}%>
+                    </p>
+                    <%} %>
+                    <p class="pro_list_price" data-discount="<%=p.price.discount %>">
+                            <span class="pro_list_oldprice">
+                                <del data-price="<%=p.price.cPrice %>">&yen;<%=p.price.cPrice %></del>
+                             <%if(p.activities && p.activities.length>0){
+                               for(var j in p.activities){
+                                   if(p.activities[j].type && +p.activities[j].type==1){
+                                        break;
+                                    }
+                                }
+                            }
+                            %>
+
+                            <%
+                            var a1;
+                            if(p.activities && p.activities.length>0){
+                                for(var j in p.activities){
+                                    var a=p.activities[j];
+                                    if(a && a.type && +a.type>0){
+                                        if(+a.type==1){
+                                            a1=a;
+                            %>
+                            <%
+                                        }
+                                        if((+a.type==2 || +a.type==3) && +a.arg>0){
+                            %>
+                                            <span class="onsale_label01">返 ¥<%=a.arg%></span>
+                            <%
+                                        }
+                                    }
+                                }
+                            }else{
+                                a1=false;
+                            };
+                            %>
+                            </span>
+                            &yen;<i><%=p.price.dPrice%></i>
+                       </p>
+                </div>
+                <%if(p.labelVal && p.labelVal==99){ %><div class="sold_out">售完</div><%} %>
+                </li>
+                <%
+                }
+            }%>
+            </ul>
+            <!--/END 热卖-->
+            <div class="base_btn01 btn_more">查看更多推荐团购</div>
+        </div>
     </section>
 </script>
 <script type="text/lizard-template" id="J_Loading">
