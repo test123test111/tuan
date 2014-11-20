@@ -5,28 +5,27 @@
 <script type="text/lizard-config">
 {
     "url_schema": [
-        "/list",
         "list",
-        "tuan/city_{{(letter)pinyin}}",
-        "tuan/city_{{(letter)pinyin}}/hotelid_{{(int)hotelid}}",
-        "tuan/city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}",
-        "tuan/city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/hotellevel_{{(int)hotellevel}}",
-        "tuan/city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/hotellevel_{{(int)hotellevel}}/zone_{{(int)zone}}",
-        "tuan/city_{{(letter)pinyin}}/zone_{{(int)zone}}",
-        "tuan/city_{{(letter)pinyin}}/location_{{(int)location}}",
-        "tuan/city_{{(letter)pinyin}}/sort_{{(int)sort}}",
-        "tuan/city_{{(letter)pinyin}}/inprice_{{(int)inprice}}",
-        "tuan/city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/item_{{(int)ctype}}",
-        "tuan/city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/hotelgroupid_{{(int)hotelgroupid}}",
-        "tuan/city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/hotelgroupid_{{(int)hotelgroupid}}/location_{{(int)location}}/",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotellevel_{{(int)hotellevel}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotelgroupid_{{(int)hotelgroupid}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/zone_{{(int)zone}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/location_{{(int)location}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/sort_{{(int)sort}}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/inprice_{inprice}",
-        "tuan/city_{{(letter)pinyin}}/item_{{(int)ctype}}/ct_{{(int)category}}_{{(int)categoryid}}"
+        "city_{{(letter)pinyin}}",
+        "city_{{(letter)pinyin}}/hotelid_{{(int)hotelid}}",
+        "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}",
+        "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/hotellevel_{{(int)hotellevel}}",
+        "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/hotellevel_{{(int)hotellevel}}/zone_{{(int)zone}}",
+        "city_{{(letter)pinyin}}/zone_{{(int)zone}}",
+        "city_{{(letter)pinyin}}/location_{{(int)location}}",
+        "city_{{(letter)pinyin}}/sort_{{(int)sort}}",
+        "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}",
+        "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/item_{{(int)ctype}}",
+        "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/hotelgroupid_{{(int)hotelgroupid}}",
+        "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/hotelgroupid_{{(int)hotelgroupid}}/location_{{(int)location}}/",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotellevel_{{(int)hotellevel}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotelgroupid_{{(int)hotelgroupid}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/zone_{{(int)zone}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/location_{{(int)location}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/sort_{{(int)sort}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/inprice_{inprice}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/ct_{{(int)category}}_{{(int)categoryid}}"
     ],
     "viewName": "list",
     "model": {
@@ -57,7 +56,10 @@
                         '2': '100|250',
                         '3': '250|400',
                         '4': '400|600',
-                        '5': '601|'
+                        '5': '601|',
+                        '10': '|2000',
+                        '11': '2001|3000',
+                        '12': '3001|5000'
                     },
                     //key为url里面的ctype，val为真实的ctype
                     index2ctype = {
@@ -66,7 +68,9 @@
                         '2': '8', //美食
                         '3': '7', //旅游度假
                         '4': '6', //门票
-                        '5': '9' //娱乐
+                        '5': '9', //娱乐
+                        '6': '6', //门票(临时兼容老版SEO的URL)
+                        '7': '7'  //旅游度假(临时兼容老版SEO的URL)
                     },
                     typesMap = {
                         'hotelid': 18, //酒店查询
@@ -360,18 +364,18 @@
         <li data-id="7" data-type="1">价格高 → 低</li>
         <li data-id="6" data-type="1" id="J_sortByRate">点评分高 → 低</li>
     </ul>
-    <ul class="bottom_filter fix_bottom dflex J_filtersAndSortPanel">
+    <ul class="bottom_filter fix_bottom dflex J_filtersAndSortPanel" style="z-index:2001">
         <li class="fil_type" id="J_categoryTrigger" tabindex="0">全部团购</li>
         <li class="fil_pos" id="J_positionTrigger" class="position">位置区域</li>
         <li class="fil_fil" id="J_customFilters"><span class="fil_num" style="display:none">0</span>筛选</li>
         <li class="fil_sort" id="J_sortTrigger" tabindex="0">最受欢迎</li>
     </ul>
-        <!--script/input都不能用-->
-        <%if(Lizard.runAt=='server'){%>
-            <textarea style="display:none;" id="J_seoPostData">
-                <%=Lizard.__postData%>
-            </textarea>
-        <%}%>
+    <!--script/input都不能用-->
+    <%if(Lizard.runAt!='client'){%>
+        <textarea style="display:none;" id="J_seoPostData">
+            <%=Lizard.__postData%>
+        </textarea>
+    <%}%>
 </script>
 <script type="text/lizard-template" id="J_lottery_empty_list">
 <article  class="cont_wrap page_blank">
