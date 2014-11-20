@@ -315,7 +315,7 @@
           _.each(data.relatedProducts,function(data, num){
            %>
           <li <%if(num>=MAX_VISIBLE){%>style="display:none"<%}%> class="J_relatedProducts <%if(num>=MAX_VISIBLE){%>J_relatedRest<%}%> arr_r" data-id="<%=data.id %>">
-            <div class="ellipsis"><%=data.name %></div>
+            <div class="ellipsis"><a href="http://m.ctrip.com/html5/tuan/<%=data.id%>.html" title="<%=data.name%>"><%=data.name %></a></div>
             <div class="tuan_price">
               &yen;<%=data.dPrice %>
             </div>
@@ -338,10 +338,11 @@
                 <% _.each(data.nearGroups,function(data,num){%>
                     <li class="J_nearProducts" data-id="<%=data.id %>">
                         <div class="pic_thumb">
-                            <img src="<%=data.imgUrl %>" alt="" width="150" height="112">
+                            <a href="http://m.ctrip.com/html5/tuan/<%=data.id%>.html" title="<%=data.name%>"><img src="<%=data.imgUrl %>" alt="" width="150" height="112"></a>
                         </div>
                         <div class="hotel_info">
-                            <div class="hotel_tit"><%=data.name %></div>
+                            <div class="hotel_tit">
+                            <a href="http://m.ctrip.com/html5/tuan/<%=data.id%>.html" title="<%=data.name%>"><%=data.name %></a></div>
                             <div class="hotel_price">
                                 <span class="txt_color01"><dfn>¥</dfn><%=data.price.dPrice %></span>
                                 <del class="txt_color02">

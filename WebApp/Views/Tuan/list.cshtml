@@ -69,8 +69,10 @@
                         '3': '7', //旅游度假
                         '4': '6', //门票
                         '5': '9', //娱乐
+                        '8': '8', //美食(临时兼容老版SEO的URL)
+                        '7': '7', //旅游度假(临时兼容老版SEO的URL)
                         '6': '6', //门票(临时兼容老版SEO的URL)
-                        '7': '7'  //旅游度假(临时兼容老版SEO的URL)
+                        '9': '9'  //娱乐(临时兼容老版SEO的URL)
                     },
                     typesMap = {
                         'hotelid': 18, //酒店查询
@@ -183,7 +185,10 @@
                         <img data-img="<%=i %>" onerror="javascript:noPic(this);" data-lazy="<%=p.imgUrl?p.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" />
                     </div>
                     <div class="pro_list_info">
-                        <h4 class="pro_list_tit"><%=(p.descriptionhead?"["+p.descriptionhead+"]":"")+p.name+(p.hotdescription?"+"+p.hotdescription:"") %></h4>
+                        <h4 class="pro_list_tit">
+                            <%var _title_=(p.descriptionhead?"["+p.descriptionhead+"]":"")+p.name+(p.hotdescription?"+"+p.hotdescription:"") %>
+                            <a href="http://m.ctrip.com/html5/tuan/<%=p.id%>.html" title="<%=_title_%>"><%=_title_%></a>
+                        </h4>
                         <p class="wrap_label">
                             <%if(false && labelsNum < 2 && p.star){%><%=p.star%><%}%>
                             <%if(p.labels && p.labels.length){ %>
