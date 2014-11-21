@@ -7,25 +7,47 @@
     "url_schema": [
         "list",
         "city_{{(letter)pinyin}}",
+        "city_{{(letter)pinyin}}/",
         "city_{{(letter)pinyin}}/hotelid_{{(int)hotelid}}",
+        "city_{{(letter)pinyin}}/hotelid_{{(int)hotelid}}/",
         "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}",
+        "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/",
         "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/hotellevel_{{(int)hotellevel}}",
+        "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/hotellevel_{{(int)hotellevel}}/",
         "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/hotellevel_{{(int)hotellevel}}/zone_{{(int)zone}}",
+        "city_{{(letter)pinyin}}/hotelgroupid_{{(int)hotelgroupid}}/hotellevel_{{(int)hotellevel}}/zone_{{(int)zone}}/",
         "city_{{(letter)pinyin}}/zone_{{(int)zone}}",
+        "city_{{(letter)pinyin}}/zone_{{(int)zone}}/",
         "city_{{(letter)pinyin}}/location_{{(int)location}}",
+        "city_{{(letter)pinyin}}/location_{{(int)location}}/",
         "city_{{(letter)pinyin}}/sort_{{(int)sort}}",
+        "city_{{(letter)pinyin}}/sort_{{(int)sort}}/",
+        "city_{{(letter)pinyin}}/hotellevel_{{(int)hotellevel}}",
+        "city_{{(letter)pinyin}}/hotellevel_{{(int)hotellevel}}/",
         "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}",
+        "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/",
         "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/item_{{(int)ctype}}",
+        "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/item_{{(int)ctype}}/",
         "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/hotelgroupid_{{(int)hotelgroupid}}",
+        "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/hotelgroupid_{{(int)hotelgroupid}}/",
+        "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/hotelgroupid_{{(int)hotelgroupid}}/location_{{(int)location}}",
         "city_{{(letter)pinyin}}/inprice_{{(int)inprice}}/hotelgroupid_{{(int)hotelgroupid}}/location_{{(int)location}}/",
         "city_{{(letter)pinyin}}/item_{{(int)ctype}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/",
         "city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotellevel_{{(int)hotellevel}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotellevel_{{(int)hotellevel}}/",
         "city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotelgroupid_{{(int)hotelgroupid}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/hotelgroupid_{{(int)hotelgroupid}}/",
         "city_{{(letter)pinyin}}/item_{{(int)ctype}}/zone_{{(int)zone}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/zone_{{(int)zone}}/",
         "city_{{(letter)pinyin}}/item_{{(int)ctype}}/location_{{(int)location}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/location_{{(int)location}}/",
         "city_{{(letter)pinyin}}/item_{{(int)ctype}}/sort_{{(int)sort}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/sort_{{(int)sort}}/",
         "city_{{(letter)pinyin}}/item_{{(int)ctype}}/inprice_{inprice}",
-        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/ct_{{(int)category}}_{{(int)categoryid}}"
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/inprice_{inprice}/",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/ct_{{(int)category}}_{{(int)categoryid}}",
+        "city_{{(letter)pinyin}}/item_{{(int)ctype}}/ct_{{(int)category}}_{{(int)categoryid}}/"
     ],
     "viewName": "list",
     "model": {
@@ -50,7 +72,9 @@
             runat: 'server',
             url: '@ConfigurationManager.AppSettings["restfullApi"]/json/ListSearch',
             postdata: (function() {
-                var postData, hotelId = Lizard.P('hotelid'),
+                var postData,
+                    sort = Lizard.P('sort'),
+                    hotelId = Lizard.P('hotelid'),
                     priceRange = {
                         '1': '0|99',
                         '2': '100|250',
@@ -95,7 +119,7 @@
                             Lizard.P('category') && qparams.push({
                                 type: typesMap[item],
                                 value: Lizard.P('category') + "|" + Lizard.P('categoryid')
-                            })
+                            });
                         } else {
                             val = Lizard.P(item);
                             //如果是价格区间
@@ -128,10 +152,35 @@
                     pageIdx: 1,
                     productType: "0",
                     qparams: generateQParams(),
-                    sortRule: Lizard.P('sort') || "2",
-                    sortType: "1",
+                    sortRule: "2",
+                    sortType: "0",
                     ver: 6
                 };
+                if (sort) {
+                    switch (sort) {
+                        case '2':
+                        case '4':
+                            postData.sortRule = '7';
+                            postData.sortType = '2';
+                            break;
+                        case '3':
+                            postData.sortRule = '7';
+                            postData.sortType = '1';
+                            break;
+                        case '5':
+                            postData.sortRule = '3';
+                            postData.sortType = '1';
+                            break;
+                        case '9':
+                            postData.sortRule = '1';
+                            postData.sortType = '1';
+                            break;
+                        case '11':
+                            postData.sortRule = '6';
+                            postData.sortType = '1';
+                            break;
+                    }
+                }
                 Lizard.__postData = JSON.stringify(postData);
                 return postData;
             })(),
