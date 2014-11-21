@@ -252,8 +252,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 });
 
                 this.filterWrap.show();
-                this.filterWrap.css({'-webkit-transform': 'translate(0, 30px) translateZ(0)', 'opacity': 0});
-                this.filterWrap.animate({'-webkit-transform': 'translate(0, 0px) translateZ(0)', 'opacity': 1});
+                /*
+                    @since 20141120 去除动画，产品经理反应显示的太慢
+                    @author li.xx
+                 */
+                //this.filterWrap.css({'-webkit-transform': 'translate(0, 30px) translateZ(0)', 'opacity': 0});
+                //this.filterWrap.animate({'-webkit-transform': 'translate(0, 0px) translateZ(0)', 'opacity': 1});
             } else {
                 this.hideFilterDropDowns();
                 this.tuanfilters.updateCategoryName();

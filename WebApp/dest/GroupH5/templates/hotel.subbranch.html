@@ -9,12 +9,14 @@
 <section class="cont_wrap"<%if (isCurrentCity) {%> style="padding-top:30px"<%}%> >
 <%_.each(data, function(hotel, index){%>
     <div class="business_list">
-        <div class="busi_city J_busiCity"><%=hotel.ctyName %><span class="<%if(index == 0){%>arrow_skin01_up<%}else{%>arrow_skin01_down<%}%> J_arrow"></span></div>
+        <div class="busi_city_wrap J_busiCity">
+            <div class="busi_city"><%=hotel.ctyName %><span class="<%if(index == 0){%>arrow_skin01_up<%}else{%>arrow_skin01_down<%}%> J_arrow"></span></div>
+        </div>
         <div class="busi_hotel J_busiHotel"<%if(index == 0){%> style="display:block;"<%}%>>
             <% _.each(hotel.HotelInfos, function(hotelinfo){ %>
             <%var isValidLngLat = hotelinfo.lon>0 && hotelinfo.lat>0 && hotelinfo.lon<1000 && hotelinfo.lat<1000 %>
             <ul class="subblist">
-                <li class="arr_r J_jumpHotel" data-id="<%=hotelinfo.hotelId || ''%>" >
+                <li class="<%= hotelinfo.hotelId ? 'arr_r': '' %> J_jumpHotel" data-id="<%=hotelinfo.hotelId || ''%>" >
                     <div class="hotelname"><%=hotelinfo.name %></div>
                     <%if (isCurrentCity) {%>
                         <%if (index == 0) {%><span class="icon_txt"><%=hotelinfo.distance > 1 ? (hotelinfo.distance.toFixed(1) + '公里') : (parseInt(hotelinfo.distance * 1000) + '米')%></span><%}%>

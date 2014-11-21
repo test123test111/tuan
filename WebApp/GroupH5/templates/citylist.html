@@ -5,7 +5,7 @@
         <% if(currentcityid!=undefined && currentcityid!="" && currentcityname!=undefined && currentcityname!=""){ %>
         <li class="J_cityItem <% if(cityid && cityid == currentcityid){ %> choosed<%} %>" data-name="<%=currentcityname%>" data-id="<%=currentcityid%>" data-filter=""><%=currentcityname %><i>(<%=currentgroups %>)</i></li>
         <% }else{ %>
-        <li class="" style="display:none;" data-name="" data-id="" data-filter="">当前城市：</li>
+        <li class="J_cityItem currentcity" style="display:none;" data-name="" data-id="" data-filter=""></li>
         <% } %>
     </ul>
 

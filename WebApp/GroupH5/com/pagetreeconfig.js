@@ -90,12 +90,6 @@ define([], function () {
             'url': '/webapp/tuan/hotelservice',
             'range': ['detail']
         },
-        //团购温馨提示
-        'detailtips': {
-            'prev': 'detail',
-            'url': '/webapp/tuan/detailtips',
-            'range': ['detail']
-        },
         //酒店地图
         'hotelmap': {
             'prev': 'detail',
@@ -139,6 +133,12 @@ define([], function () {
         'invoice': {
             'prev': 'booking',
             'url': '/webapp/tuan/invoice',           
+            'range': ['booking']
+        },
+        //价格日历
+        'calendar': {
+            'prev': 'booking',
+            'url': '/webapp/tuan/calendar',
             'range': ['booking']
         },
         //商户列表

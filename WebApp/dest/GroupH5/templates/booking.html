@@ -121,8 +121,11 @@
         <p class="tips_attention"><%=invoiceText%></p>
     <%}%>
 </section>
-<div class="order_btnbox">
+<ul class="btm_price J_orderbtnbox">
     <%tmpPrice = retainTwoDecimal(curNum * (price.dPrice - (coupon ? coupon.amount : 0)) + (invoice && invoice.deliveryMethod == 1 ? 10 : 0))%>
-    订单总额: <span class="price2"><i>&yen;</i><span id="J_totalPrice"><%=tmpPrice > 0 ? tmpPrice : 0%></span></span>
-    <button class="order_btn" id="J_submitOrder" value="">去支付</button>
-</div>
+    <li class="item03">
+        <span class="text_transparent text_size12">订单总额：</span>¥<span id="J_totalPrice"><%=tmpPrice > 0 ? tmpPrice : 0%></span>
+    </li>
+
+    <li class="btm_tuan_btn" id="J_submitOrder">去支付</li>
+</ul>

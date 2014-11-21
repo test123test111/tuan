@@ -133,6 +133,12 @@ namespace Tuan.Controllers
             return View();
         }
 
+        //门票价格日历页面
+        public ActionResult Calendar()
+        {
+            return View();
+        }
+
         // 订单详情页面
         public ActionResult TuanOrderDetail()
         {

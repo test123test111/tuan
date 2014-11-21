@@ -93,7 +93,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             alertTitle: '提示信息',
             leaveTips: '您的订单尚未完成，确定要离开吗？',
             cancel: '取消',
-            sure: '确定',
+            sure: '离开',
             telTips: '请填写正确的手机号码',
             failTips: '抱歉，订单未能成功提交，请重试！',
             timeoutTips: '非常抱歉，由于您刚才提交的服务已超时，请稍后在“我的携程”中查看订单信息或拨打服务电话400-008-6666，以确认您的订单是否提交成功。',
@@ -136,7 +136,8 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 this.store = store;
                 if (store && store.id) {
                     store.min = store.min > ORDER_NUM.min ? store.min : ORDER_NUM.min;
-                    store.max = store.max < ORDER_NUM.max ? ORDER_NUM.max : store.max;
+                    //@since 20141121 修复产品最大购买数量的bug
+                    store.max = store.max < ORDER_NUM.max ? store.max: ORDER_NUM.max;
 
                     store.curNum = (order && order.curNum) || store.min;
                     //优先取用户选择的手机号或最后填写的手机号，次取用户绑定的手机号，再取用户未绑定的手机号
@@ -313,7 +314,9 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.$el.find('#J_invoice').hide();
                 };
                 if (this.store && this.store.id) {
-                    this.isIOS7() && this._fixIOS7Bug();
+                    //android also has this problem
+                    //this.isIOS7() &&
+                    this._fixIOS7Bug();
                     InputClear(this.els.telDom);
                 };
             },
@@ -365,75 +368,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
              * 门票选择日期 日历功能
              */
             selectDate: function() {
-                var self = this,
-                    date = this.els.selectDate.attr('data-date') || tuanDetailStore.getAttr('ckintime'),
-                    selectCls = 'cui_cld_daycrt';
-
-                //daterange: {sdate: '', edate: ''}
-                this.showLoading();
-                ticketBookingModel.setParam({pid:self.pid, daterange: {sdate: '', edate:''}});
-                ticketBookingModel.excute(function(data) {
-                    self.hideLoading();
-                    var priceDate = data.plist[0].PDList;
-                    _.each(priceDate, function(t) {
-                        t.dateStr = t.date;
-                        t.date = new Date(self._convertTimeString(t.date));
-                        t.price = parseInt(t.price, 10);
-                    });
-                    self.calendar = new HolidayPriceCalendar({
-                        monthsNum: 2,
-                        voidInvalid: true, //没有价格的日期是否有效可点,false可点
-                        priceDate: priceDate,
-                        header: {title: MSG.selectDateTitle},
-//                        startPriceTime: priceDate[0] && priceDate[0].date,
-                        onShow: function() {
-                            //隐藏上一个view， 否则会有bug：日历可以左右滑动且滑到最下面的时候会露出上一个view的内容
-                            self.hide();
-                            this.$el.find('[data-date="' + date + '"]').addClass(selectCls);
-                        },
-                        onHide: function() {
-                            self.show();
-                            this.remove();
-                        },
-                        callback: function(date, dateStyle, target) {
-                            var textVal = self._formatCalendarDate(date) + (dateStyle.holiday || dateStyle.days);
-                            this.$el.find('.' + selectCls).removeClass(selectCls);
-                            target.addClass(selectCls);
-                            self.els.selectDate.val(textVal)
-                                .attr('data-date', dateStyle.value);
-                            tuanDetailStore.setAttr('ckintimetxt', textVal);//刷新页面后用来做显示
-                            self._storeDailyPrice(priceDate, dateStyle.value);
-
-                            //价格可能会改变，需要更新总价格和单价
-                            self.numberStep.options.onChange();
-                            self._addOrRemoveHighLight(self.els.selectDate);
-                            this.hide();
-                        }
-                    });
-
-                    self.calendar.show();
-                }, function(err) {
-                    self.hideLoading();
-                });
-
-            },
-            _storeDailyPrice: function(data, date) {
-                var price;
-                _.each(data, function(t) {
-                    if (t.dateStr == date) {
-                        price = t.price;
-                        return false;
-                    }
-                });
-                tuanDetailStore.setAttr('ckintime', date);
-                tuanDetailStore.setAttr('ticketPrice', price || 0);
-            },
-            _formatCalendarDate: function(date) {
-                (typeof date === 'string') && (date = new Date(this._convertTimeString(date)));
-                return (date.getMonth()+ 1) +'月' + date.getDate() + '日 ';
-            },
-            _convertTimeString: function(dateStr) {
-                return dateStr && dateStr.replace(/-/g, '/');
+                this.forwardJump('calendar', '/webapp/tuan/calendar', {});
             },
             /**
             * 格式化成scrolllistn能展示的格式
@@ -466,7 +401,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             * 修复iphone5 ios7中提交按钮盖住手机号输入框问题
             */
             _fixIOS7Bug: function () {
-                var submitBtnPanel = $('.order_btnbox');
+                var submitBtnPanel = $('.J_orderbtnbox');
 
                 this.els.telDom.add(this.els.ticketUserDom).on('focus', function () {
                     submitBtnPanel.css({

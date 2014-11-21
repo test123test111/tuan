@@ -36,7 +36,7 @@
         </div>
         <!--地址电话-->
         <%if(hasAddrOrPhone){%>
-        <ul class="subblist">
+        <ul class="box_list box_listT2">
             <%if(ContactInfo.hotelAddr){%>
             <li class="arr_r" id="J_hotelMap" data-coords="<%=ContactInfo.hotelLnglat[0].longitude + ',' + ContactInfo.hotelLnglat[0].latitude%>" data-hotel-name="<%=ContactInfo.hotelName%>">
                 <span class="subb_address i_bef"><%=ContactInfo.hotelAddr%></span>
@@ -49,27 +49,30 @@
                 <li id="J_hotelTel" data-phone="<%=phones.join(',')%>">
                     <span class="subb_phone i_bef"><%=ContactInfo.hotline%></span>
                     <i class="icon_txt"><a <%if (phones.length === 1) {%>href="tel:<%=phones[0]%>"<%} else {%>href="javascript:void(0);" <%}%>>预约/咨询</a></i>
+
                 </li>
+            <%}%>
+
+            <!-- 门票对接增加使用时间和兑换方式-->
+            <%  var hasBinfo = (typeof binfo === 'object');
+            if (hasBinfo) {%>
+            <li class="autocon"><dl class="order_dl">
+                <dt>使用日期</dt><dd><%=binfo.ckintime %></dd>
+                <!--<dt>兑换方式</dt><dd><%=binfo.des %></dd>-->
+            </dl></li>
             <%}%>
         </ul>
         <%}%>
         <!-- 门票对接去除优惠券，需要在JS去除  -->
         <div id="J_couponsWrap"></div>
     <%}%>
-        <!-- 门票对接增加使用时间和兑换方式-->
-        <%  var hasBinfo = (typeof binfo === 'object');
-            if (hasBinfo) {%>
-            <dl class="order_dl">
-                <dt>使用时间</dt><dd><%=binfo.ckintime %></dd>
-                <!--<dt>兑换方式</dt><dd><%=binfo.des %></dd>-->
-            </dl>
-        <%}%>
+
         <div class="tuan_title">订单信息</div>
 
         <dl class="order_dl">
             <dt>订单编号</dt><dd><%=oid %></dd>
             <dt>订单状态</dt><dd><%=statusRmk %></dd>
-            <dt>预订日期</dt><dd><%=date %></dd>
+            <dt><%= isTicket ? '购买日期' : '预订日期' %></dt><dd><%=date %></dd>
             <%if(payType){%>
             <dt>支付方式</dt><dd><%=payType %></dd>
             <%}%>
@@ -103,14 +106,19 @@
             </ul>
         <%}%>
         <% if (isTicket && hasBinfo) {%>
-            <div class="tuan_title">取票人信息</div>
-            <dl class="order_dl">
-                <dt>取票人</dt><dd><%=binfo.name %></dd>
-                <dt>手机号码</dt><dd><%= contact && contact.mphone %></dd>
-            </dl>
-            <ul class="box_list box_listCoupon">
-                <li><a href="tel:400-008-6666">携程客服电话：400-008-6666</a></li>
+            <ul class="box_list">
+                <li class="title titleT2">取票人信息</li>
+                <li class="autocon">
+                    <dl class="order_dl">
+                        <dt>取票人</dt><dd><%=binfo.name %></dd>
+                        <dt>手机号码</dt><dd><%= contact && contact.mphone %></dd>
+                    </dl>
+                </li>
             </ul>
+            <div class="tuan_hotline">
+                <p class="desc">如需发票或重发取票凭证短信，请致电携程客服</p>
+                <a href="tel:400-008-6666"><p class="cont border_t_b">携程客服电话: 400-821-6666</p></a>
+            </div>
         <%}%>
     </section>
 

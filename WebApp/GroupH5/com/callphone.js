@@ -55,13 +55,16 @@ define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider', 'cUtility'], function(li
             var phoneList = $(e.currentTarget).attr(this.dataName);
             phoneList && (phoneList = phoneList.split(','));
             if (phoneList && phoneList.length) {
-                if (phoneList.length === 1) {
-                    this.makePhoneCall(phoneList[0]);
-                } else {
+                if (isInApp || phoneList.length > 1) {
                     this._initMask();
                     this._initPanel();
                     this._updatePhoneList(phoneList);
                 }
+                //if (phoneList.length === 1) {
+                //    this.makePhoneCall(phoneList[0]);
+                //} else {
+                //
+                //}
             }
         },
         _phoneItemHandler: function(e) {

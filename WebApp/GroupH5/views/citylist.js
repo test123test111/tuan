@@ -145,29 +145,15 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
         },
         getGeolocation: function () {
             var self = this;
-
             //定位成功回调
-            changeSuccessStatus = function (data) {
+             changeSuccessStatus = function (data) {
                 var currentcity = self.$el.find(".current>.currentcity");
 
                 self.upNearbyBtn(1);
                 if (currentcity.length > 0) {
-                    var domhtml = currentcity.html();
-                    var gpsInfo = geolocationStore.get();
-                    var groups = gpsInfo.gps.Groups; //该城市团购产品数量
-                    if (!groups) {
-                        //从团购城市列表获取城市信息，团购数量
-                        var cityinfo = StoreManage.findCityInfoById(data.cityId);
-                        if (cityinfo) {
-                            groups = cityinfo.cGroups || 0;
-                        }
-                    }
-                    domhtml = domhtml.replace("<!--cityname-->", data.cityName);
-                    domhtml = domhtml.replace("<!--groups-->", groups);
-                    currentcity.html(domhtml);
-                    currentcity.attr("data-name", data.cityName);
-                    currentcity.attr("data-id", data.cityId);
-                    currentcity.show();
+                    currentcity.attr('data-name', data.cityName);
+                    currentcity.attr('data-id', data.cityId);
+                    currentcity.html(data.cityName).show();
                 }
             };
 
@@ -220,7 +206,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                     case 1:
                         currentnearby.attr("data-id", "nearby");
                         currentnearby.attr("data-name", "附近"); //"团购"两字已经有了
-                        currentnearby.text("附近团购");
+                        currentnearby.text("附近团购").removeClass('wraploading');
                         break;
                     case 2:
                         currentnearby.attr("data-id", "positioning");
@@ -341,7 +327,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                 this.header.hide();
                 this.header.rootBox && this.header.rootBox.hide();
                 if (isInApp && TuanApp.isOverOS7()) {
-                    this.els.searchBox.css('border-top', '20px solid #b3b3b3');
+                    this.els.searchBox.css('border-top', '20px solid #dfeaf1');
                 }
             }
             this.updateZIndex(true);
@@ -355,7 +341,8 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
         updateZIndex: function(flag) {
             if (flag) {
                 this.els.searchBox.css({zIndex: 4000});
-                this.els.$allCityBox.css({position: 'relative', zIndex: 4000}).hide();
+                this.els.$allCityBox.css({position: 'relative', zIndex: 4000});
+                !this.els.eltuancitykeyword.val() && (this.els.$allCityBox.hide());
                 this.els.eltuancitykeyword.focus();
             } else {
                 this.els.searchBox.css({zIndex: 'auto'});
