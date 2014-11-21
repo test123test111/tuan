@@ -226,10 +226,6 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
         <p class="tac"><a href="javascript:;" class="view_unfold J_viewMoreBtn" data-state="hide">查看全部</a></p>
         <%}%>
     </nav>
-    <%}else{%>
-    <ul class="subblist">
-        <li id="J_groupContain" class="arr_r"><span><%=lashouTitle || '团购包含'%></span><i class="icon_txt"><a href="###">查看详情</a></i></li>
-    </ul>
     <%}%>
     <div class="neg_mb10">
         <div class="hot_tit">特别提示</div>
@@ -250,6 +246,11 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
             <%}%>
         <%}else{%>暂无相关信息<%}%>
     </nav>
+    <%if(lashouProject){%>
+    <ul class="subblist">
+        <li id="J_groupContain" class="arr_r"><span><%=lashouTitle || '团购包含'%></span><i class="icon_txt"><a href="###">查看详情</a></i></li>
+    </ul>
+    <%}%>
     <%if(data.relatedProducts&&data.relatedProducts.length>0) {%>
     <div class="neg_mb10">
           <div class="hot_tit">该商户其他团购</div>
