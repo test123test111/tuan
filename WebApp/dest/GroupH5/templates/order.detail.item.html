@@ -17,7 +17,7 @@
         </li>
 
         <% if (!_.isEmpty(v.pwd)) { %>
-            <li><span class="items">密码</span><span class="items"><%=v.pwd%></span></li>
+            <li><span class="items">密码</span><span class="items_desc"><%=v.pwd%></span></li>
         <% } %>
 
         <% if (v.status == 1 && _.isEmpty(v.pwd)) { %>

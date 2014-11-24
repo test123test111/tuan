@@ -476,8 +476,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         onHide: function () {
             GeoLocation.UnSubscribe('tuan/list');
             this.$el.find('#J_reloadGPS').removeClass(REFRESH_GPS_LOADING_CLS);
-            var tuanfilters = this.tuanfilters,
-                sort = tuanfilters && tuanfilters.sort;
 
             this.LazyLoad && this.LazyLoad.unbindEvents();
             $(window).unbind('scroll', this.onWindowScroll);
@@ -485,8 +483,17 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.hideLoading();
             this.scrollObserver && this.scrollObserver.disable();
             this.alert && this.alert.hide();
+
+            var tuanfilters = this.tuanfilters;
+            var mask = tuanfilters && tuanfilters.mask;
+            var sort = tuanfilters && tuanfilters.sort;
+            mask && mask.hide();
             sort && sort.mask.root && sort.mask.root.hide();
-            tuanfilters && tuanfilters.mask && tuanfilters.mask.hide();
+            if (tuanfilters) {
+                tuanfilters.options.categoryPanel.hide();
+                tuanfilters.options.positionPanel.hide();
+                tuanfilters.options.filterPanel.hide();
+            }
         },
         onShow: function (refer) {
             this.referUrl = refer || this.getLastViewName();

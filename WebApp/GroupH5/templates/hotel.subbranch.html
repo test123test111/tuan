@@ -9,7 +9,7 @@
 <section class="cont_wrap"<%if (isCurrentCity) {%> style="padding-top:30px"<%}%> >
 <%_.each(data, function(hotel, index){%>
     <div class="business_list">
-        <div class="busi_city_wrap J_busiCity">
+        <div class="busi_city_wrap J_busiCity <%= index==0 ?'J_sticky': ''%>">
             <div class="busi_city"><%=hotel.ctyName %><span class="<%if(index == 0){%>arrow_skin01_up<%}else{%>arrow_skin01_down<%}%> J_arrow"></span></div>
         </div>
         <div class="busi_hotel J_busiHotel"<%if(index == 0){%> style="display:block;"<%}%>>

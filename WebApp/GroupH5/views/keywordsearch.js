@@ -192,7 +192,8 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          onLoad: function (refer) {
              this._refer = refer;
              this.turning();
-             this.els.keywordInput.val('');
+             //@since v2.6 在搜索框中保留搜索关键词
+             this.els.keywordInput.val(StoreManage.getCurrentKeyWord() ? StoreManage.getCurrentKeyWord().word : '');
              this.els.keywordInput[0].focus();
              setTimeout(_.bind(function () {
                  this.els.keywordInput[0].focus();
@@ -269,6 +270,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                          'name': name,
                          'pos': { type: 3, lat: lat, lon: lon, name: name }
                      });
+
                  }
 
                  if (data.price) {

@@ -15,7 +15,8 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
         tuanDetailsStore = TuanStore.TuanDetailsStore.getInstance(),
         tuanBranchOfficeModel = TuanModel.TuanBranchOfficeModel.getInstance(),
         Geolocation = cGeoService.GeoLocation,
-        Guider = WidgetFactory.create('Guider');
+        Guider = WidgetFactory.create('Guider'),
+        ICON = {up: 'arrow_skin01_up', down: 'arrow_skin01_down'};
 
     /**
      * 获取yyyy-mm-dd格式时间
@@ -93,6 +94,7 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
                 var cityInfo = StoreManage.getCurrentCity();
                 cityInfo.CityName && (gpsInfo.CityName = cityInfo.CityName);
                 self.$el.html($.trim(self.htmlfun({ data: data.groups, gps: gpsInfo, cityId: cityId })));
+                self.onScroll();
                 self.CallPhone = new CallPhone({view: this});
             }, function (err) {
                 var msg = err.msg ? err.msg : '啊哦,数据加载出错了!';
@@ -197,18 +199,19 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
                 unflod,
                 arrow = target.find('.J_arrow');
 
-            if (arrow.hasClass('arrow_skin01_up')) {
-                arrow.toggleClass('arrow_skin01_up arrow_skin01_down');
+            var upDown = ICON.up + ' ' + ICON.down;
+            if (arrow.hasClass(ICON.up)) {
+                arrow.toggleClass(upDown);
                 target.removeClass('J_sticky').removeClass('busi_fixed').css('top', '0').next().hide();
                 target.parent().css('padding-top', '0');
                 document.removeEventListener('scroll', this.onScroll);
             } else {
-                unflod = this.$el.find('.arrow_skin01_up');
-                unflod.toggleClass('arrow_skin01_up arrow_skin01_down');
+                unflod = this.$el.find('.' + ICON.up);
+                unflod.toggleClass(upDown);
                 unflod.parent().removeClass('J_sticky').removeClass('busi_fixed').css('top', '0').next().hide();
                 unflod.parent().parent().css('padding-top', '0');
 
-                arrow.toggleClass('arrow_skin01_down arrow_skin01_up');
+                arrow.toggleClass(upDown);
                 target.addClass('J_sticky').next().show();
                 document.addEventListener('scroll', this.onScroll);
             }

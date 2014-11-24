@@ -8,13 +8,15 @@
     var right = data && data[1];
     var hasLeftMod = left && left.products && left.products.length > 1;
     var hasRightMod = right && right.products && right.products.length > 1;
+
+if (hasLeftMod || hasRightMod) {
 %>
-<div class="sec-viewers">
+    <div class="sec-viewers">
     <div class="tuan_title">小伙伴们还买了</div>
     <div class="ui-tab-tar">
         <ul class="dflex" id="J_tabNav">
             <%if(hasLeftMod){%><li class="sta-on" data-index="0"><%=left.channelTitle%></li><%}%>
-            <%if(hasRightMod){%><li data-index="1"><%=right.channelTitle%></li><%}%>
+            <%if(hasRightMod){%><li <%= !hasLeftMod ? 'class="sta-on"' : ''%> data-index="1"><%=right.channelTitle%></li><%}%>
         </ul>
     </div>
     <div class="ui-tab-cont mod_group_list" id="J_tabCon">
@@ -47,7 +49,7 @@
         <%}%>
 
         <%if(hasRightMod){%>
-        <div class="ui-item" style="display:none">
+        <div class="ui-item" style="<%=hasLeftMod ? 'display:none' : ''%>">
             <ul>
                 <%
                 for(var i = 0; i < right.productCount; i++){
@@ -74,3 +76,4 @@
         <%}%>
     </div>
 </div>
+<%} %>

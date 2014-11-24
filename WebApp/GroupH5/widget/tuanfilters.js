@@ -477,8 +477,10 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         self.updateCustomFilterIcon();
                         searchStore.removeAttr('pos');
                     }
+
                     if (currentKeyword) { //移除搜索关键词里重复的条件
-                        if ((type < 0 || type == '5') && (currentKeyword.type == 'zone' || currentKeyword.type == 'markland')) {
+                        //@since 20141124 移除老逻辑(currentKeyword.type == 'zone' || currentKeyword.type == 'markland')
+                        if ((type < 0 || type == '5')) {
                             StoreManage.removeCurrentKeyWord();
                         }
                         if (type == '4' && currentKeyword.type == 'location') {

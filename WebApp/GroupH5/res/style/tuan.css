@@ -26,9 +26,9 @@ input.place_search{border-radius:16px;}
 .base_bd{margin:48px 0 0;}
 .ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .noactive{background-color:#fff !important;}
-
+/*header h2*/
+header h2{letter-spacing: 2px; font-size: 1.286em;}
 /* common class */
-
 /*border-top*/
 .border_t,.list_title,.pro_list2,.hot_tit,.index_hot
 {background:#fff -webkit-linear-gradient(bottom,transparent 50%,#ddd 50%) no-repeat left top; background-size:100% 1px;}
@@ -1120,8 +1120,8 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-moz-animation:o
 .sec-net-bad .ui-tips p,.sec-noresult .ui-tips p{font-size:0.857em;}
 .sec-net-bad .btn-telephone,.sec-noresult .btn-telephone{border-radius:3px; overflow:hidden; color:#099fde; text-align:center; padding:7px; display:block; margin:10px 0; line-height:2; font-size:1.071em; font-weight:600; background-image:-webkit-linear-gradient(top, #ddd 50%, transparent 50%), -webkit-linear-gradient(left, transparent 50%, #ddd 50%), -webkit-linear-gradient(top, transparent 50%, #ddd 50%), -webkit-linear-gradient(left, #ddd 50%, transparent 50%); background-repeat:repeat-x,  repeat-y; background-size:100% 1px, 1px 100%; background-position:left top, right top, left bottom, left top; background-color:#fff;}
 .subblist .subb_phone:before{background-position:0 -93px; opacity: .4;}
-.subblist .wrap_phone{display: table; padding: 5px 0; width: 100%; min-height: 30px;}
-.subblist .wrap_phone .subb_phone{display: table-cell; vertical-align: middle; width: 75%;}
+.subblist .wrap_phone{display: table; padding: 5px 0; width: 100%; min-height: 30px; text-align: left;}
+.subblist .wrap_phone .subb_phone{display: table-cell; vertical-align: middle; width: 100%; padding-right: 100px;}
 .subblist .wrap_phone .subb_phone span{display: inline-block; white-space: nowrap; margin-right: 20px;}
 .subblist .wrap_phone .subb_phone:before{top: 50%; margin-top: -8px;}
 .subblist .wrap_phone .subb_phone:before{top: 50%; margin-top: -8px;}
