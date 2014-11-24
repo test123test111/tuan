@@ -192,7 +192,7 @@
             return datas[1];
         },
         "setTDK": function(datas) {
-            var tdk = datas[1].seo || {};
+            var tdk = datas && datas[1] && datas[1].seo || {};
             return {
                 title: tdk.title || '',
                 description: tdk.desc || '',
