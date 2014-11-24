@@ -72,9 +72,9 @@
                         '3': '250|400',
                         '4': '400|600',
                         '5': '601|',
-                        '10': '|2000',
-                        '11': '2001|3000',
-                        '12': '3001|5000'
+                        '10': '0|1999',
+                        '11': '2000|3000',
+                        '12': '3001|'
                     },
                     //key为url里面的ctype，val为真实的ctype
                     index2ctype = {
@@ -165,6 +165,10 @@
                         case '9':
                             postData.sortRule = '1';
                             postData.sortType = '1';
+                            break;
+                        case '10':
+                            postData.sortRule = '8';
+                            postData.sortType = '2';
                             break;
                         case '11':
                             postData.sortRule = '6';
