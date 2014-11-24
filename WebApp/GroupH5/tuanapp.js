@@ -207,7 +207,11 @@ define(['PageHistory'], function (PageHistory) {
          */
         isOverOS7: function() {
             return $.os && $.os.ios && parseInt($.os.version, 10) >= 7;
-        }
+        },
+        /**
+         * 判断是当前是否生产环境
+         */
+        isProduction: true
     };
 
     require(['libs', 'cUtility', 'cWidgetFactory', 'cHybridFacade', 'cWidgetGuider'], function (libs, Util, WidgetFactory, Facade) {
@@ -233,24 +237,23 @@ define(['PageHistory'], function (PageHistory) {
             });
         }
 
+        if (Util.isInApp()) {
+            //Hybrid非生产环境
+            var env = Util.isPreProduction();
+            if (env === '0' || env === '1' || env === '2') {
+                TuanApp.isProduction = false;
+            }
+        } else {
+            //H5非生产环境
+            if (!location.host.match(/^(m|3g|wap)\.ctrip\.com/i)) {
+                TuanApp.isProduction = false;
+            }
+        }
 
         (function() {
-            var hasClear = false, env;
             var count = 0, timer, con;
-            if (Util.isInApp()) {
-                //Hybrid， 非生产环境
-                env = Util.isPreProduction();
-                if (env === '0' || env === '1' || env === '2') {
-                    hasClear = true;
-                }
-            } else {
-                //H5, 非生产环境
-                if (!location.host.match(/^(m|3g|wap)\.ctrip\.com/i)) {
-                    hasClear = true;
-                }
-            }
 
-            hasClear && $(document).on('click', function(e) {
+            !TuanApp.isProduction && $(document).on('click', function(e) {
                 count++;
                 timer && clearTimeout(timer);
                 timer = setTimeout(function() {
