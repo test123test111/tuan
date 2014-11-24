@@ -188,15 +188,33 @@
                 return Lizard.runAt == 'client';
             }
         }],
+        //copy from strings.js
+        groupType: {
+            '0':    { 'index': 0, 'name': '全部', 'category': 'all' },
+            '1':    { 'index': 1, 'name': '酒店', 'category': 'hotel' },
+            '8':    { 'index': 2, 'name': '美食', 'category': 'catering' },
+            '7':    { 'index': 3, 'name': '旅游度假', 'category': 'vacation' },
+            '6':    { 'index': 4, 'name': '门票', 'category': 'ticket' },
+            '9':    { 'index': 5, 'name': '娱乐', 'category': 'entertainment' },
+            '106':  { 'index': 6, 'name': '一元', 'category': 'onepaygroup' },
+            '108':  { 'index': 7, 'name': '当地', 'category': 'feature' }
+        },
         "filter": function(datas) {
-            return datas[1];
+            var ctype = Lizard.P('ctype'),
+                renderData = datas[1],
+                groupTypeItem = this.groupType[ctype];
+
+            renderData.categoryName = groupTypeItem && groupTypeItem.name|| '全部团购';
+            renderData.h1text = renderData.seo.nowwalk;
+            return renderData;
         },
         "setTDK": function(datas) {
             var tdk = datas[1].seo || {};
             return {
                 title: tdk.title || '',
                 description: tdk.desc || '',
-                keywords: tdk.keywords || ''
+                keywords: tdk.keywords || '',
+                h1text:  tdk.nowwalk || '' //H1标题
             };
         }
     },
@@ -209,12 +227,16 @@
 </script>
 <script type="text/lizard-template" id="J_listHeader">
     <i id="J_gotoMapPage" class="rightblue">地图</i>
-    <h1>酒店客房</h1>
+    <h2><%=categoryName%>团购</h2>
     <i id="c-ui-header-return" class="returnico i_bef"></i>
 </script>
 <script type="text/lizard-template" id="J_listViewer">
     <div class="cur_pos cur_pos_has" id="J_gpsInfoWrap">
+        <%if(Lizard.runAt!='client'){%>
+        <%=h1text%>
+        <%}else{%>
         <a href="javascript:;" class="cur_reload" id="J_reloadGPS"></a><span id="J_gpsInfo">定位中</span>
+        <%}%>
     </div>
     <section class="cont_wrap" style="padding-top: 30px;" id="J_searchBoxWrap">
         <div class="list_s clear-input-box" id="J_keywordSearchPanel">
