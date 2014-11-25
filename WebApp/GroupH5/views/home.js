@@ -4,6 +4,7 @@
  */
 define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'StringsData', 'cHybridFacade','cHybridShell', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation','bridge'],
 function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, HybridShell, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
+    'use strict';
     var isInApp = Util.isInApp(),
         listModel = TuanModels.TuanHotListModel.getInstance(),
         searchStore = TuanStore.GroupSearchStore.getInstance(),
@@ -173,7 +174,11 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         * "我的附近"查询模式: 酒店、美食、门票、娱乐、附近团购
         */
         goNearbyGroup: function (data, category) {
-            var searchData = searchStore.get();
+            var searchData = searchStore.get(),
+                index,
+                qparams,
+                tuanType;
+
             StoreManage.clearAll();
             if (category) {
                 if (category == 'nearby') {//只有“附近团购”才默认4公里
