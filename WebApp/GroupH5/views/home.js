@@ -2,8 +2,8 @@
  * 首页
  * @url: m.ctrip.com/webapp/tuan 或 m.ctrip.com/webapp/taun/home
  */
-define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'StringsData', 'cHybridFacade', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation'],
-function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
+define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'StringsData', 'cHybridFacade','cHybridShell', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation','bridge'],
+function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, HybridShell, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
     var isInApp = Util.isInApp(),
         listModel = TuanModels.TuanHotListModel.getInstance(),
         searchStore = TuanStore.GroupSearchStore.getInstance(),
@@ -13,7 +13,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
         positionStore = TuanStore.TuanPositionStore.getInstance(), //定位信息
         getLocalCityInfoModel = TuanModels.TuanLocalCityInfo.getInstance(),
-        historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance(),
         bannerModel = TuanModels.BannerSearch.getInstance(),
         bannerClassModel = TuanModels.BannerClassModel.getInstance(),
         View,
@@ -23,10 +22,14 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         DOWNLOAD_LINK = 'http://m.ctrip.com/m/c312', //android app下载地址
         SOURCE_ID_FOR_TUAN = '55559355', //下单统计sourceid
         EMPTY = '',
+        PAGE_TITLE = '携程旅行网触屏版-酒店团购',
+        NEARBY_TITLE = '我的附近',
         GeoLocation = GeoService.GeoLocation,
         loadingLayer;
 
+
     var PageView = CommonPageFactory.create("TuanBaseView");
+
     View = PageView.extend({
         pageid: '214019',
         hpageid: '215019',
@@ -68,7 +71,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             var cityTitle = cityName + '团购';
 
             //修改首页的title
-            this.setTitle('携程旅行网触屏版-酒店团购');
+            this.setTitle(PAGE_TITLE);
 
             this.header.set({
                 customtitle: '<h1 id="J_headerTitle"><div id="J_cityBtn" class="list_hd_button"><em class="header_mutrow">' + cityTitle + '</em><i class="i_tri"></i></div></h1>',
@@ -80,7 +83,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 //btn: !isInApp, //如果在app里，btn: true会隐藏home按钮，bug!
                 events: {
                     returnHandler: function () {
-                        //isInApp ? Guider.home() : self.jump("/html5/");
                         isInApp ? TuanApp.backToLastPage() : TuanApp.tHome();
                     },
                     homeHandler: $.proxy(self.homeHandler, self),
@@ -108,23 +110,17 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             if (!isInApp) {
                 cb();
                 return;
-            }
-            window.app.callback = function (json_obj) {
-                if (json_obj.tagname == 'get_cached_ctrip_city') {
-                    if (json_obj.param) {
-                        var city = json_obj.param.CityEntities[0];
-                        cb({id: city.CityID, name: city.CityName});
-                    } else {
-                        cb();
-                    }
-                }
             };
+            HybridShell.Fn('get_cached_ctrip_city', function(result){
+                var city;
 
-            try {
-                CtripMap.app_get_cached_ctrip_city();
-            } catch(e) {
-                cb();
-            }
+                if (result) {
+                    city = result.CityEntities[0];
+                    cb({id: city.CityID, name: city.CityName});
+                } else {
+                    cb();
+                };
+            }).run();
         },
         onLoad: function (refer) {
             this.tplLoading = Lizard.T('J_Loading');
@@ -133,17 +129,24 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             this.listWrap.html(this.tplLoading);
             refer = this.getLastViewName();
             var self = this;
-            // this.getCityFromAppCached($.proxy(function(city) {
-                // city && (StringsData.defaultCity = city);
-                if (+searchStore.getAttr('ctyId') <= 0) {
-                    searchStore.setAttr('ctyId', StringsData.defaultCity.id);
-                    searchStore.setAttr('ctyName', StringsData.defaultCity.name);
-                }
-                var searchData = searchStore.get();
-                var cityId = searchData.ctyId || StringsData.defaultCity.id;
-                var cityName = searchData.ctyName || StringsData.defaultCity.name;
+            this.getCityFromAppCached(function(city) {
+                city && (StringsData.defaultCity = city);
 
-                self.setHeader(cityName || (self.isNearBy() && '我附近的') || StringsData.defaultCity.name);
+                var defaultCity = StringsData.defaultCity;
+                var searchData = searchStore.get();
+                var cityId = searchData.ctyId || defaultCity.id;
+                var cityName = searchData.ctyName || defaultCity.name;
+                //首页之后的页面回到首页，不需要提示切换城市，保持原有选择城市
+                //或者已经点击过取消切换城市
+                var noneedswitchcity = refer == "citylist" || refer == "detail" || refer == "list" || refer == "keywordsearch" || sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) == 1;
+
+                if (+searchStore.getAttr('ctyId') <= 0) {
+                    searchStore.setAttr('ctyId', defaultCity.id);
+                    searchStore.setAttr('ctyName', defaultCity.name);
+                }
+
+                //self.setHeader(cityName || (self.isNearBy() && '我附近的') || StringsData.defaultCity.name);
+                self.setHeader(self.isNearBy() ? NEARBY_TITLE : cityName);
                 self.getBannerSearch(cityId);
 
                 //有时候在某些机器会报错导致页面空白
@@ -151,9 +154,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                     self.getGroupListData();
                 } catch (e) { }
 
-                //首页之后的页面回到首页，不需要提示切换城市，保持原有选择城市
-                //或者已经点击过取消切换城市
-                var noneedswitchcity = refer == "citylist" || refer == "detail" || refer == "list" || refer == "keywordsearch" || sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) == 1;
                 if (!noneedswitchcity) {
                     self.geoCallback.type = 0;
                     self.locateInterface();
@@ -161,7 +161,7 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 isInApp && Facade.request({ name: Facade.METHOD_SET_NAVBAR_HIDDEN, isNeedHidden: false });
                 //更新广告信息
                 self.updateAdInfo();
-            // }, this));
+            });
         },
         getSelectedCity: function () {
             return {
@@ -195,7 +195,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
             historyCityListStore.setAttr('nearby', true);
             qparams = StoreManage.getGroupQueryParam();
             searchStore.setAttr('qparams', qparams);
-            // historyKeySearchtore.remove();
             this.forwardJump('list', '/webapp/tuan/list');
         },
         /**
