@@ -500,6 +500,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
 
             dataField && searchStore.set(JSON.parse(dataField));
         },
+        parseSEOPostData: function(){
+            var dataField = $.trim(this.$el.find('#J_seoPostData').text());
+
+            dataField && searchStore.set(JSON.parse(dataField));
+        },
         onShow: function (refer) {
             this.referUrl = refer || this.getLastViewName();
             this.parseSEOPostData();
