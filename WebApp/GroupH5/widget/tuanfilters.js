@@ -587,7 +587,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         subwayLineWrap.show();
                         subwayStationWrap.hide();
                         return;
-                    } else {
+                    } else {//点击"不限"
                         resetAll(item);
                         positionfilterStore.remove();
                         customFiltersStore.removeAttr('distance');

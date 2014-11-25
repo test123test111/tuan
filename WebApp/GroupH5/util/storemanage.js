@@ -40,7 +40,6 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
         * @return {Boolean}
         */
         isNearBy: function () {
-            //return true;
             return searchStore.getAttr('nearby') || historyCityListStore.getAttr('nearby');
         },
         /**

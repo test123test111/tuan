@@ -672,15 +672,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     searchStore.setAttr('pos', pos);
                 } else {
                     searchStore.removeAttr('pos');
-                    // cityId = searchStore.getAttr('ctyId');
-                    // cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
-                    // gps = cityInfo && cityInfo.pos || {};
-                    // searchStore.setAttr('pos', {
-                        // posty: StringsData.MAP_SOURCE_ID,
-                        // lon: gps.lon || 0,
-                        // lat: gps.lat || 0,
-                        // name: cityInfo.name + StringsData.CITY_CENTER
-                    // });
                 }
             }
 

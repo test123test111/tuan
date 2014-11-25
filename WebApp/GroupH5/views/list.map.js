@@ -443,10 +443,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                         wrap.css('background-color', '#1491c5');
                         compass = wrap;
                         layer = new c.ui.LoadingLayer(function () { this.hide(); }, '定位中...');
-                        console.log(0)
                     },
                     onGeoComplete: function (e) {
-                        console.log(1)
                         layer && layer.hide();
                         compass && compass.css('background-color', 'rgba(0,0,0,.8)');
                         //当前位置点自适应
