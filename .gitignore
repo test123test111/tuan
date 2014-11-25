@@ -8,3 +8,6 @@ __ConfigTemp
 bin
 build
 Tuan.v12.suo
+Tuan.csproj.user
+Web.config
+AppSetting.config

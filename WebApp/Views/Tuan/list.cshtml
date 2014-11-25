@@ -57,15 +57,6 @@
             url: '@ConfigurationManager.AppSettings["restfullApi"]/json/CityABCToCityID',
             postdata: {
                 cityabc: Lizard.P('pinyin')
-            },
-            suspend: function() {
-                return Lizard.runAt == 'client';
-            },
-            filter: function(data) {
-                return {
-                    cityname: '北京',
-                    cityid: '1'
-                };
             }
         }, {
             name: 'ListSearch',
@@ -81,9 +72,9 @@
                         '3': '250|400',
                         '4': '400|600',
                         '5': '601|',
-                        '10': '|2000',
-                        '11': '2001|3000',
-                        '12': '3001|5000'
+                        '10': '0|1999',
+                        '11': '2000|3000',
+                        '12': '3001|'
                     },
                     //key为url里面的ctype，val为真实的ctype
                     index2ctype = {
@@ -175,6 +166,10 @@
                             postData.sortRule = '1';
                             postData.sortType = '1';
                             break;
+                        case '10':
+                            postData.sortRule = '8';
+                            postData.sortType = '2';
+                            break;
                         case '11':
                             postData.sortRule = '6';
                             postData.sortType = '1';
@@ -183,33 +178,30 @@
                 }
                 Lizard.__postData = JSON.stringify(postData);
                 return postData;
-            })(),
-            suspend: function() {
-                return Lizard.runAt == 'client';
-            }
+            })()
         }],
-        //copy from strings.js
-        groupType: {
-            '0':    { 'index': 0, 'name': '全部', 'category': 'all' },
-            '1':    { 'index': 1, 'name': '酒店', 'category': 'hotel' },
-            '8':    { 'index': 2, 'name': '美食', 'category': 'catering' },
-            '7':    { 'index': 3, 'name': '旅游度假', 'category': 'vacation' },
-            '6':    { 'index': 4, 'name': '门票', 'category': 'ticket' },
-            '9':    { 'index': 5, 'name': '娱乐', 'category': 'entertainment' },
-            '106':  { 'index': 6, 'name': '一元', 'category': 'onepaygroup' },
-            '108':  { 'index': 7, 'name': '当地', 'category': 'feature' }
-        },
         "filter": function(datas) {
-            var ctype = Lizard.P('ctype'),
+            //copy from strings.js
+            var groupType = {
+                    '0':    { 'index': 0, 'name': '全部', 'category': 'all' },
+                    '1':    { 'index': 1, 'name': '酒店', 'category': 'hotel' },
+                    '8':    { 'index': 2, 'name': '美食', 'category': 'catering' },
+                    '7':    { 'index': 3, 'name': '旅游度假', 'category': 'vacation' },
+                    '6':    { 'index': 4, 'name': '门票', 'category': 'ticket' },
+                    '9':    { 'index': 5, 'name': '娱乐', 'category': 'entertainment' },
+                    '106':  { 'index': 6, 'name': '一元', 'category': 'onepaygroup' },
+                    '108':  { 'index': 7, 'name': '当地特色', 'category': 'feature' }
+                },
+                ctype = Lizard.P('ctype'),
                 renderData = datas[1],
-                groupTypeItem = this.groupType[ctype];
+                groupTypeItem = groupType[ctype];
 
             renderData.categoryName = groupTypeItem && groupTypeItem.name|| '全部团购';
             renderData.h1text = renderData.seo.nowwalk;
             return renderData;
         },
         "setTDK": function(datas) {
-            var tdk = datas[1].seo || {};
+            var tdk = datas && datas[1] && datas[1].seo || {};
             return {
                 title: tdk.title || '',
                 description: tdk.desc || '',
@@ -452,12 +444,4 @@
             <%=Lizard.__postData%>
         </textarea>
     <%}%>
-</script>
-<script type="text/lizard-template" id="J_lottery_empty_list">
-<article  class="cont_wrap page_blank">
-    <div class="blankCont lotteryCont">
-        <i class="icon icon_lottery"></i>
-        <p class="desc">即将上线，敬请期待</p>
-    </div>
-</article>
 </script>

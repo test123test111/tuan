@@ -620,16 +620,16 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .ico_map2 p{width:100%;overflow:hidden;height:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .map_pshow .ico_map2{-webkit-transform: translate(-50%, -35px) !important;-moz-transform: translate(-50%, -35px) !important;transform: translate(-50%, -35px) !important;display:block; margin-top:35px;-webkit-animation:mapPshow 400ms ease-in;-moz-animation:mapPshow 400ms ease-in;animation:mapPshow 400ms ease-in;}
 @-webkit-keyframes mapPshow{
-    0% {-webkit-transform: translate(-50%, 0); opacity: 0;}
-    100% {-webkit-transform: translate(-50%, -35px); opacity: 1;}
+	0% {-webkit-transform: translate(-50%, 0); opacity: 0;}
+	100% {-webkit-transform: translate(-50%, -35px); opacity: 1;}
 }
 @-moz-keyframes mapPshow{
-    0% {-moz-transform: translate(-50%, 0); opacity: 0;}
-    100% {-moz-transform: translate(-50%, -35px); opacity: 1;}
+	0% {-moz-transform: translate(-50%, 0); opacity: 0;}
+	100% {-moz-transform: translate(-50%, -35px); opacity: 1;}
 }
 @keyframes mapPshow{
-    0% {transform: translate(-50%, 0); opacity: 0;}
-    100% {transform: translate(-50%, -35px); opacity: 1;}
+	0% {transform: translate(-50%, 0); opacity: 0;}
+	100% {transform: translate(-50%, -35px); opacity: 1;}
 }
 /* 退款说明 */
 .txt_refund{padding:20px;}
@@ -643,16 +643,16 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 /* animation */
 .ani_rotation{-webkit-animation:rotate 1s linear 0 infinite;-ms-animation:rotate 1s linear 0 infinite;animation:rotate 1s linear 0 infinite;-webkit-transform-origin:50% 50%;-ms-transform-origin:50% 50%;transform-origin:50% 50%;}
 @-webkit-keyframes rotate{
-    0% {-webkit-transform:rotateZ(0);}
-    100% {-webkit-transform:rotateZ(360deg);}
+	0% {-webkit-transform:rotateZ(0);}
+	100% {-webkit-transform:rotateZ(360deg);}
 }
 @-ms-keyframes rotate{
-    0% {-ms-transform:rotateZ(0);}
-    100% {-ms-transform:rotateZ(360deg);}
+	0% {-ms-transform:rotateZ(0);}
+	100% {-ms-transform:rotateZ(360deg);}
 }
 @keyframes rotate{
-    0% {transform:rotateZ(0);}
-    100% {transform:rotateZ(360deg);}
+	0% {transform:rotateZ(0);}
+	100% {transform:rotateZ(360deg);}
 }
 /*0404 page.index*/
 .ico_bed,.ico_dining,.ico_travel,.ico_attractions,.ico_location,.ico_edit,.subb_valid:before,.ico_net,.ico_breakfast,.ico_parking,.ico_meeting,.ico_share,.ico_slippers,.ico_water,.ico_toiletries,.ico_wifi_free,.ico_hotwater,.map_type li:after,.map_curpos_btn:after,.landmarks_hotel,.landmarks_dining,.landmarks_vacation,.landmarks_ticket,.landmarks_recreation,.i_landmarks,.bottom_filter li:after,.tuan_type:after,.tuan_default:after,.btn_voice_s:after,.map_btn_search:before,.map_curpos_rebtn:before,.at_link i{background-image:url(http://pic.c-ctrip.com/h5/tuan/spr_index_3.1.png); background-repeat:no-repeat; background-size:250px 250px;}
@@ -702,8 +702,8 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .pop_bg{display:block; background-color:rgba(0,0,0,.7); width:100%; height:100%; position:fixed; top:0; z-index:1;}
 .map_navigate{overflow:hidden; width:100%; position:fixed; bottom:0; z-index:1; -webkit-animation:mapNavItem .3s 0s ease-in-out;-ms-animation:mapNavItem .3s 0s ease-in-out;animation:mapNavItem .3s 0s ease-in-out;}
 @-webkit-keyframes mapNavItem{
-    0%{opacity:0;-webkit-transform:translateY(25px);}
-    100%{opacity:1;-webkit-transform:translateY(0px);}
+	0%{opacity:0;-webkit-transform:translateY(25px);}
+	100%{opacity:1;-webkit-transform:translateY(0px);}
 }
 @-ms-keyframes mapNavItem{0%{opacity:0;-ms-transform:translateY(25px);}100%{opacity:1;-ms-transform:translateY(0px);}}
 @keyframes mapNavItem{0%{opacity:0;transform:translateY(25px);}100%{opacity:1;transform:translateY(0px);}}
@@ -954,44 +954,44 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 
 img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-moz-animation:opacity-fade-in 550ms ease-in-out;-ms-animation:opacity-fade-in 550ms ease-in-out;animation:opacity-fade-in 550ms ease-in-out;}
 .fx-drop {-webkit-animation-delay: -200ms; animation-delay: -200ms; -webkit-animation: drop 200ms cubic-bezier(0.42, 0, 1.0, 1.0) 3 alternate;
-    animation: drop 200ms cubic-bezier(0.42, 0, 1.0, 1.0) 3 alternate; }
+	animation: drop 200ms cubic-bezier(0.42, 0, 1.0, 1.0) 3 alternate; }
 /*opacity fade in*/
 @-webkit-keyframes opacity-fade-in {
-    from {
-        opacity:0;
-    }
-    to {
-        opacity:1;
-    }
+	from {
+		opacity:0;
+	}
+	to {
+		opacity:1;
+	}
 }
 @keyframes opacity-fade-in {
-    from {
-        opacity:0;
-    }
-    to {
-        opacity:1;
-    }
+	from {
+		opacity:0;
+	}
+	to {
+		opacity:1;
+	}
 }
 @-webkit-keyframes drop {
-    0% {
-        -webkit-transform: translateY( -40px );
-        transform: translateY( -40px );
-    }
-    100% {
-        -webkit-transform: translateY( 0 );
-        transform: translateY( 0 );
-    }
+	0% {
+		-webkit-transform: translateY( -40px );
+		transform: translateY( -40px );
+	}
+	100% {
+		-webkit-transform: translateY( 0 );
+		transform: translateY( 0 );
+	}
 }
 
 @keyframes drop {
-    0% {
-        -webkit-transform: translateY( -50px );
-        transform: translateY( -50px );
-    }
-    100% {
-        -webkit-transform: translateY( 0 );
-        transform: translateY( 0 );
-    }
+	0% {
+		-webkit-transform: translateY( -50px );
+		transform: translateY( -50px );
+	}
+	100% {
+		-webkit-transform: translateY( 0 );
+		transform: translateY( 0 );
+	}
 }
 /* 商户列表 */
 .business_list{margin-bottom:-1px;}
@@ -1099,8 +1099,8 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-moz-animation:o
 .ui-loading:before{content:""; width:38px; height:38px; position:absolute; top:0; left:0; background-position:-38px 0;}
 .ico-loading{width:38px; height:38px; position:absolute; top:0; left:0; background-position:0 0; -webkit-animation:icoLoading .8s 0s linear infinite;}
 @-webkit-keyframes icoLoading{
-    0%{-webkit-transform:rotate(0deg);}
-    100%{ -webkit-transform:rotate(360deg);}
+	0%{-webkit-transform:rotate(0deg);}
+	100%{ -webkit-transform:rotate(360deg);}
 }
 .sec-loading,.sec-loading2,.sec-reload{padding:50px 0; position:relative; text-align:center; display:none;}
 .sec-loading,.sec-reload{background-color:#fff;}
@@ -1152,7 +1152,7 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-moz-animation:o
 /* 订单填写页弹出 */
 .modal_fillin{position: relative; background-color: #fff; width: 300px; margin: 0 auto; text-align: center; -webkit-border-radius:5px; border-radius:5px;}
 .modal_fillin .close{position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; background: #000 no-repeat center center; background-size: 10px 10px; -webkit-border-radius:50%; border-radius:50%; opacity: 0.5;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAATVJREFUeNqcldtOAjEQhglPgJwSPGIUUC/0khte2GuidwYfAFRAE9kAGhDhKaj/xJmk27Szh0m+i+6237aTzmzRGFMAx+AelHiclQZ4Ah0ai3Bu/mMIDjIKD8Enr9+QmB4+mHiMQDml8AjMnPWP7pckXkAlQUgnjJx1b6DmO4LEK6gGhCdWymJCyakmnshEi1OwcOaN7Xla0iXeQZ3fn4GlJvRJQ+IP0AVfScKQNCQ2KVKjSpPEQWGSlOh5hHtwp63ThBdgFdjpjC9+JmkLrD07tCPiAkglbYMfRzAFt54cz7kQVGmHm4J7T2tWN3LFCy4Ir/QK/CrCgiJecmHEpNdgm0KoiakwmiK9ATulNLPc429wTi8HnpKs52jQEs9ylCiH0CdeyU6l4fZzCG0x/aMuafwnwAAsOs7VyZxD9wAAAABJRU5ErkJggg==');
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAATVJREFUeNqcldtOAjEQhglPgJwSPGIUUC/0khte2GuidwYfAFRAE9kAGhDhKaj/xJmk27Szh0m+i+6237aTzmzRGFMAx+AelHiclQZ4Ah0ai3Bu/mMIDjIKD8Enr9+QmB4+mHiMQDml8AjMnPWP7pckXkAlQUgnjJx1b6DmO4LEK6gGhCdWymJCyakmnshEi1OwcOaN7Xla0iXeQZ3fn4GlJvRJQ+IP0AVfScKQNCQ2KVKjSpPEQWGSlOh5hHtwp63ThBdgFdjpjC9+JmkLrD07tCPiAkglbYMfRzAFt54cz7kQVGmHm4J7T2tWN3LFCy4Ir/QK/CrCgiJecmHEpNdgm0KoiakwmiK9ATulNLPc429wTi8HnpKs52jQEs9ylCiH0CdeyU6l4fZzCG0x/aMuafwnwAAsOs7VyZxD9wAAAABJRU5ErkJggg==');
 }
 .modal_fillin .title{font-weight: 600; font-size: 1.142em;}
 .modal_fillin .title,.modal_fillin li{line-height: 44px; height: 44px;}
@@ -1198,8 +1198,13 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-moz-animation:o
 .box_listCoupon li .items:nth-child(3){float: right; padding-right: 15px; color: #ffb027;}
 .box_listCoupon li .items_desc{float: left; font-size: 15px;}
 .box_listCouponCancel li .items:nth-child(2),.box_listCouponCancel li .items:nth-child(3),.box_listCouponCancel li .items_desc{color: #999;}
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> release
 .box_listT2>.title{line-height: 36px; font-weight: 600;}
 .box_listT2>li {background-position: left top;}
 /* 门票订单填写页 */
