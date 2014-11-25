@@ -1198,13 +1198,6 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-moz-animation:o
 .box_listCoupon li .items:nth-child(3){float: right; padding-right: 15px; color: #ffb027;}
 .box_listCoupon li .items_desc{float: left; font-size: 15px;}
 .box_listCouponCancel li .items:nth-child(2),.box_listCouponCancel li .items:nth-child(3),.box_listCouponCancel li .items_desc{color: #999;}
-<<<<<<< HEAD
-
-
-=======
-
-
->>>>>>> release
 .box_listT2>.title{line-height: 36px; font-weight: 600;}
 .box_listT2>li {background-position: left top;}
 /* 门票订单填写页 */
