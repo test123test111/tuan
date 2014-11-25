@@ -57,6 +57,9 @@
             url: '@ConfigurationManager.AppSettings["restfullApi"]/json/CityABCToCityID',
             postdata: {
                 cityabc: Lizard.P('pinyin')
+            },
+            suspend: function() {
+                return Lizard.runAt == 'client';
             }
         }, {
             name: 'ListSearch',
@@ -178,7 +181,10 @@
                 }
                 Lizard.__postData = JSON.stringify(postData);
                 return postData;
-            })()
+            })(),
+            suspend: function() {
+                return Lizard.runAt == 'client';
+            }
         }],
         "filter": function(datas) {
             //copy from strings.js
