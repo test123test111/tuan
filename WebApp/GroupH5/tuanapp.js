@@ -3,7 +3,7 @@ define(['PageHistory'], function (PageHistory) {
     var RE_NATIVE_PAGE_URL = /^ctrip:\/\//i, //native页面url正则
         RE_H5_PAGE_URL = /(.*)\/webapp\/(\w+)\/(.*)/, //h5页面
         RE_H5_TUAN_PAGE = /^#\w/i;
-    window._log = function() {};
+    window._log = {stash: [], log: function(s) {this.stash.push(s ? JSON.stringify(s) : s)}};
     var TuanApp = {
         init: function () {
             //检查来源，并做保存来源数据

@@ -2,6 +2,15 @@
  * Created by li.xx on 14-11-6.
  * @contact li.xx@ctrip.com
  * @description 封装一下打电话的模块
+ * @usage
+ *  <%var phones = _.map(phoneList, function(p) {return p.phone;});%>
+ *  <li id="J_hotelTel" data-phone="<%=phones.join(',')%>">
+    <span class="subb_phone i_bef">
+        <%_.each(phones, function(t) {%><span><%=t %></span><%}); %>
+    </span>
+    <i class="icon_txt">
+        <a <%if (phones.length === 1) {%>href="tel:<%=phones[0]%>"<%} else {%>href="javascript:void(0);" <%}%>>预约/咨询</a>
+    </i></li>
  */
 define(['libs', 'c', 'cWidgetFactory', 'cWidgetGuider', 'cUtility'], function(libs, c, WidgetFactory, WidgetGuider, Util) {
     'use strict';

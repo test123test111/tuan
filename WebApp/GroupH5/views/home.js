@@ -26,8 +26,6 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
         NEARBY_TITLE = '我的附近',
         GeoLocation = GeoService.GeoLocation,
         loadingLayer;
-
-
     var PageView = CommonPageFactory.create("TuanBaseView");
 
     View = PageView.extend({
