@@ -11,8 +11,8 @@
   <dev>
     <Debug>true</Debug>
     <CustomErrorsMode>Off</CustomErrorsMode>
-    <restfullApiHttps>http://m.ctrip.com/restapi/soa2/10101</restfullApiHttps>
-    <restfullApi>http://m.ctrip.com/restapi/soa2/10101</restfullApi>
+    <restfullApiHttps>http://m.fat.ctripqa.com/soa2/10101</restfullApiHttps>
+    <restfullApi>http://m.fat.ctripqa.com/soa2/10101</restfullApi>
     <WebresourceBaseUrl>http://webresource.c-ctrip.com</WebresourceBaseUrl>
     <WebresourcePDBaseUrl>/webapp/tuan/dest/GroupH5</WebresourcePDBaseUrl>
     <WebresourcePDDebugUrl>/webapp/tuan/GroupH5</WebresourcePDDebugUrl>
