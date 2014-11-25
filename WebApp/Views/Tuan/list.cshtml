@@ -180,21 +180,21 @@
                 return postData;
             })()
         }],
-        //copy from strings.js
-        groupType: {
-            '0':    { 'index': 0, 'name': '全部', 'category': 'all' },
-            '1':    { 'index': 1, 'name': '酒店', 'category': 'hotel' },
-            '8':    { 'index': 2, 'name': '美食', 'category': 'catering' },
-            '7':    { 'index': 3, 'name': '旅游度假', 'category': 'vacation' },
-            '6':    { 'index': 4, 'name': '门票', 'category': 'ticket' },
-            '9':    { 'index': 5, 'name': '娱乐', 'category': 'entertainment' },
-            '106':  { 'index': 6, 'name': '一元', 'category': 'onepaygroup' },
-            '108':  { 'index': 7, 'name': '当地', 'category': 'feature' }
-        },
         "filter": function(datas) {
-            var ctype = Lizard.P('ctype'),
+            //copy from strings.js
+            var groupType = {
+                    '0':    { 'index': 0, 'name': '全部', 'category': 'all' },
+                    '1':    { 'index': 1, 'name': '酒店', 'category': 'hotel' },
+                    '8':    { 'index': 2, 'name': '美食', 'category': 'catering' },
+                    '7':    { 'index': 3, 'name': '旅游度假', 'category': 'vacation' },
+                    '6':    { 'index': 4, 'name': '门票', 'category': 'ticket' },
+                    '9':    { 'index': 5, 'name': '娱乐', 'category': 'entertainment' },
+                    '106':  { 'index': 6, 'name': '一元', 'category': 'onepaygroup' },
+                    '108':  { 'index': 7, 'name': '当地特色', 'category': 'feature' }
+                },
+                ctype = Lizard.P('ctype'),
                 renderData = datas[1],
-                groupTypeItem = this.groupType[ctype];
+                groupTypeItem = groupType[ctype];
 
             renderData.categoryName = groupTypeItem && groupTypeItem.name|| '全部团购';
             renderData.h1text = renderData.seo.nowwalk;
