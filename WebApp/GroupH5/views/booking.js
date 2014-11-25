@@ -14,21 +14,15 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             unionStore = CStore.UnionStore && CStore.UnionStore.getInstance(), //订单存储相关
             createOrderModel = TModel.TuanCreateOrder.getInstance(),
             tuanDetailModel = TModel.TuanDetailModel.getInstance(),
-            orderDetailStore = TStore.TuanOrderDetailStore.getInstance(),
             couponListModel = TModel.TuanCouponListModel.getInstance(), //获取优惠券列表
-            couponListStore = TStore.TuanCouponListStore.getInstance(), //存储的优惠券列表
             selectedCouponStore = TStore.TuanSelectedCouponStore.getInstance(), //选择的优惠券
             notUserLoginModel = UserModel.NotUserLoginModel.getInstance(), //非会员登录
-            searchStore = TStore.GroupSearchStore.getInstance(),
-            ticketBookingModel = TModel.TicketBookingModel.getInstance(), //门票对接选择日期
             isInApp = Util.isInApp(),
             headStore = CStore.HeadStore.getInstance(),
             Payment = WidgetFactory.create('Payment'),
             Guider = WidgetFactory.create('Guider'),
             Member = WidgetFactory.create('Member'),
             MSG, //提示信息
-            PHONE_NUM_KEY = "电话",
-            EN_PHONE_NUM_KEY = "Mobile",
             ORDER_NUM = {
                 max: 9,
                 min: 1
@@ -82,7 +76,9 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 601002: "保存信用卡信息错误",
                 601003: "增加支付记录失败",
                 601004: "调用支付接口失败"
-            };
+            },
+            PageView,
+            View;
 
         MSG = {
             submitTitle: '订单提交',
@@ -109,18 +105,16 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             submitError: '网络不给力，请稍后再试'
         };
         //保留两位有效数字
-        //TODO: 与原方法不一致.
         function retainTwoDecimal(str) {
             var num = parseFloat(str);
-            if (isNaN(num)) {
-                return str;
+            if (isNaN(num)) {return str;
             }
 
             return Math.round(num * 100) / 100;
         }
         function isNotEmpty(v) {return !!v;}
-        var PageView = CommonPageFactory.create("TuanBaseView");
-        var View = PageView.extend({
+        PageView = CommonPageFactory.create("TuanBaseView");
+        View = PageView.extend({
             pageid: '214015',
             hpageid: '215015',
             tpl: html,

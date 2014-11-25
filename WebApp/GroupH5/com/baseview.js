@@ -109,6 +109,7 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
                 if (useCache) {
                     ops.cache = true;
                 }
+                ops.loading = false; //默认不出现loading框
 
                 Lizard.goTo(url, ops);
             }
