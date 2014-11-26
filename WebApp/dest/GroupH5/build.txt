@@ -26,7 +26,6 @@ com/numberstep.js
 widget/payment.js
 util/scrollobserver.js
 util/memcache.js
-thirdpart/invoicestore.js
 widget/amap.js
 widget/poi.js
 com/lazyload.js
