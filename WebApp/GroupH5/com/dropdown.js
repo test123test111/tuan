@@ -1,3 +1,4 @@
+/*jshint -W030 */
 /**
  * @author: xuweichen
  * @date: 14-2-13 上午11:07
@@ -45,9 +46,9 @@ define(['libs', 'cUIMask'], function (libs, Mask) {
                 }
             });
             this.panel.css('z-index', 9999);
-        };
+        }
         this._bindEvents();
-    };
+    }
 
     DropDown.prototype = {
         constructor: DropDown,
@@ -56,14 +57,14 @@ define(['libs', 'cUIMask'], function (libs, Mask) {
                 options = this.options,
                 trigger = this.trigger;
 
-            this._showHandler = $.proxy(function (e) {
+            this._showHandler = $.proxy(function () {
                 if (this.opened) {
                     this.hide();
                     options.onHide.call(self);
                 } else {
                     this.show();
                     options.onShow.call(self);
-                };
+                }
             }, this);
 
             this._selectHandler = $.proxy(function (e) {
@@ -73,7 +74,7 @@ define(['libs', 'cUIMask'], function (libs, Mask) {
                 this.hide();
             }, this);
 
-            this._hideHandler = $.proxy(function (e) {
+            this._hideHandler = $.proxy(function () {
                 var self = this;
                 setTimeout(function () {
                     self.hide();
@@ -105,13 +106,13 @@ define(['libs', 'cUIMask'], function (libs, Mask) {
             if (this.options.hasEffect) {
                 panel.css({
                     '-webkit-transform': 'translate(0, 30px) translateZ(0)',
-                    'opacity': 0,
+                    'opacity': 0
                 });
                 panel.animate({
                     '-webkit-transform': 'translate(0, -8px) translateZ(0)',
-                    'opacity': 1,
+                    'opacity': 1
                 });
-            };
+            }
             this.mask && this.mask.show();
             this.trigger.addClass(this.options.activeTriggerCls);
             this.opened = true;
@@ -141,7 +142,9 @@ define(['libs', 'cUIMask'], function (libs, Mask) {
                 selectedItemCls = options.selectedItemCls;
 
             selected && selected.removeClass(selectedItemCls);
-            if (item.tagName != "LI") item = item.parentNode;
+            if (item.tagName != "LI") {
+                item = item.parentNode;
+            }
             this.selectedIndex = this.items.indexOf(item);
             item = $(item);
             this.label.html(item.attr('data-name') || item.text());
@@ -150,7 +153,7 @@ define(['libs', 'cUIMask'], function (libs, Mask) {
             this._selected = item;
         },
         reset: function (noevent, index) {
-            this.select(this.items[typeof index == 'number' ? index : this.options.selectedIndex], noevent)
+            this.select(this.items[typeof index == 'number' ? index : this.options.selectedIndex], noevent);
         }
     };
     return DropDown;

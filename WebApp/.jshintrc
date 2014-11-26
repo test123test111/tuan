@@ -1,0 +1,54 @@
+{
+    //检查未定义变量
+    "undef": true,
+    //检查没有引用的变量
+    "unused": true,
+    //预声明全局变量
+    "predef": [
+        //携程全局变量
+        "_",
+        "define",
+        "$",
+        "Lizard",
+        "CtripMap",
+        "require",
+        //浏览器全局变量
+        "window",
+        "location",
+        "sessionStorage",
+        "top",
+        "self",
+        "Image",
+        "parent",
+        "window",
+        "screen",
+        "document",
+        "navigator",
+        "alert",
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval",
+        "console"
+    ],
+    //if while等必须用花括号, 例如if(){xx}
+    "curly": true,
+    //禁止重载native对象的prototype，例如Array
+    "freeze": true,
+    //"indent": true, //tab宽度严查
+    "latedef": "nofunc",
+    //禁止在var之前使用变量，方法除外
+    //"quotmark": "doule", //统一使用双引号
+    //函数最大限制参数量
+    //"maxparams": 3,
+    //语句嵌套层数
+    "maxdepth": 3,
+    //调用构造函数必须用new
+    "nonew": true,
+    //类名必须大写开头
+    "newcap": true,
+    //检查是否有debugger
+    "debug": true,
+    //检查是否包含eval语句
+    "evil": true
+}

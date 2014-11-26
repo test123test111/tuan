@@ -1,4 +1,5 @@
-﻿/**
+﻿/*jshint -W030 */
+/**
  * @description 团购城市列表页
  */
 define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cGeoService', 'TuanModel', 'TuanStore', 'StoreManage', 'text!CityListTpl', 'HttpErrorHelper', 'cUtility'],
@@ -15,6 +16,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
 
     var PageView = CommonPageFactory.create("TuanBaseView");
     var isInApp = Util.isInApp();
+    var NOOP = function(){};
     var ICON = {up: 'arr_up', down: 'arr_down'};
     var filterCls = 'J_filterResultCity'; //给筛结果增加class标记
     var View = PageView.extend({
@@ -144,18 +146,18 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             }, false, this);
         },
         getGeolocation: function () {
-            var self = this;
-            //定位成功回调
-             changeSuccessStatus = function (data) {
-                var currentcity = self.$el.find(".current>.currentcity");
+            var self = this,
+                //定位成功回调
+                changeSuccessStatus = function (data) {
+                    var currentcity = self.$el.find(".current>.currentcity");
 
-                self.upNearbyBtn(1);
-                if (currentcity.length > 0) {
-                    currentcity.attr('data-name', data.cityName);
-                    currentcity.attr('data-id', data.cityId);
-                    currentcity.html(data.cityName).show();
-                }
-            };
+                    self.upNearbyBtn(1);
+                    if (currentcity.length > 0) {
+                        currentcity.attr('data-name', data.cityName);
+                        currentcity.attr('data-id', data.cityId);
+                        currentcity.html(data.cityName).show();
+                    }
+                };
 
 
             //定位信息还存在，未过期， cityid, cityname缓存有值, 不需要重新发起定位
@@ -175,7 +177,9 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                     //把定位信息存储到store中
                     positionStore.set(address);
                     address.city = address.city.replace('市市', '市');
-                    if (address.city.length > 2) address.city = address.city.replace('市', '');
+                    if (address.city.length > 2) {
+                        address.city = address.city.replace('市', '');
+                    }
                     geolocationStore.setAttr('gps', address);
                     var geoInfo = {
                         lng: address.lng,
@@ -188,8 +192,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                     self.getCityInfo(geoInfo, changeSuccessStatus);
                 },
                 onError: this.geoError,
-                onPosComplete: function (lng, lat) {
-                },
+                onPosComplete: NOOP,
                 onPosError: this.geoError
             }, this, true);
         },
@@ -223,9 +226,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
         },
         createPage: function (data) {
             var searchData = tuanSearchStore.get();
-            var historyCityData = historyCityListStore.get();
             var ctyId = searchData.ctyId;
-            var ctyName = searchData.ctyName;
             var currentCityName, currentCityId, currentGroups;
             var nearby = false; //城市列表不会有选中"我的附近"
 
@@ -255,7 +256,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
 
             this.getGeolocation();
             //定位成功，默认选中 我附近的团购
-            if (nearby == true && typeof currentCityId != "undefined" && currentCityId != null && currentCityId != "") {
+            if (nearby === true && typeof currentCityId != "undefined" && currentCityId !== null && currentCityId !== "") {
                 nearby = true;
                 historyCityListStore.setAttr("nearby", nearby);
                 tuanSearchStore.setAttr('ctyId', currentCityId);
@@ -276,7 +277,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             this.buildEvent();
         },
         //加载数据时
-        onLoad: function (referUrl) {
+        onLoad: function () {
             this.setHeader();
             this.updatePage(function () {
                 this.hideLoading();
@@ -300,7 +301,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             this.header.show();
             !isInApp && this.header.rootBox.show();
         },
-        cancelInput: function (e) {
+        cancelInput: function () {
             this.hasSearchShow = false;
             this.els.eltuancitykeyword.val('');
             this.$el.find(".history_close").hide();
@@ -395,7 +396,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
         },
         onHide: function () {
             //查询视图是否未hide.
-            if (this.hasSearchShow == true) {
+            if (this.hasSearchShow === true) {
                 this.cancelInput();
             }
             GeoLocation.UnSubscribe('tuan/citylist');
@@ -431,10 +432,10 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                     positionStore.setAttr("cityId", data.CityID);
                     positionStore.setAttr("cityName", data.CityName);
                     positionStore.setAttr("hasGroupProduct", data.HasGroupProduct);
-                    StoreManage.setCurrentCity(data)
+                    StoreManage.setCurrentCity(data);
                 }
                 typeof callback === 'function' && callback.call(self, cityData);
-            }, function (err) {
+            }, function () {
                 self.locating = false;
                 positionStore.setAttr("cityId", null);
                 positionStore.setAttr("cityName", null);

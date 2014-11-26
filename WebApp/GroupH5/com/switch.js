@@ -1,11 +1,11 @@
+/*jshint -W030 */
 /**
  * @author: xuweichen
  * @date: 14-2-13 上午11:07
  * @descriptions
  */
-define(['cBase'], function (Base) {
+define(['cBase'], function () {
     var NOOP = function () { },
-        Switch,
         mix = $.extend;
 
 
@@ -21,7 +21,7 @@ define(['cBase'], function (Base) {
         };
         this.initialize(options);
         this.turn(this.isTurnOn, true);
-    };
+    }
     Switch.prototype = {
         initialize: function (options) {
             mix(this.options, options);
@@ -32,7 +32,7 @@ define(['cBase'], function (Base) {
                 this.cursor = this.options.cursor;
             } else {
                 this.cursor = this.wrap.find(this.options.cursorCls);
-            };
+            }
             this.bindEvents();
         },
         renderHTML: function () {
@@ -58,12 +58,14 @@ define(['cBase'], function (Base) {
                 isTurnOn = !this.isTurnOn;
             } else {
                 isTurnOn = isOn;
-            };
+            }
             try{
                 this.wrap && this.wrap[isTurnOn ? 'addClass' : 'removeClass'](options.turnOnCls);
                 options.onChange.call(this, isTurnOn);
                 this.isTurnOn = isTurnOn;
-             }catch(ex){TuanApp.app.curView.showToast(ex);}
+             }catch(err){
+                //log error
+            }
         },
         on: function () {
             this.turn(true);

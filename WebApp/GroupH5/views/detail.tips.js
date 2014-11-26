@@ -51,7 +51,7 @@ define(['TuanApp', 'libs', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 't
         backAction: function () {
             this.back();
         },
-        backHome: function (e) {
+        backHome: function () {
             TuanApp.tHome();
         }
     });

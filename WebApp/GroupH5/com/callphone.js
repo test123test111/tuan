@@ -1,3 +1,4 @@
+/*jshint -W030 */
 /**
  * Created by li.xx on 14-11-6.
  * @contact li.xx@ctrip.com

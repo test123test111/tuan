@@ -1,3 +1,4 @@
+/*jshint -W030 */
 /**
  * Created by li.xx on 2014/11/20.
  * @contact li.xx@ctrip.com
@@ -68,7 +69,7 @@ define(['TuanApp', 'libs', 'TuanBaseView', 'cCommonPageFactory', 'cUtility', 'Tu
                     });
                     self.$el.append(self.calendar.$el);
                     self.calendar.show();
-                }, function(err) {
+                }, function() {
                     self.hideLoading();
                 });
 

@@ -1,4 +1,6 @@
-﻿/**
+﻿/*jshint -W073*/
+/* 临时文件，懒的解决 -w073问题*/
+/**
  * @author: hxren@ctrip.com
  * @date: 2014/09/02
  * @descriptions: 兼容使用lizard1.1框架的页面。 实现方案：解析1.1页面的参数，直接跳转到lizard2.0的页面
@@ -13,13 +15,15 @@
     //如果hybrid不需要解析
     if (useragent.indexOf('CtripWireless') > -1) {
         return true;
-    };
+    }
 
-    var _getUrlQuerys = function (name, checkKeyExist) {
+    var _getUrlQuerys = function (name/*, checkKeyExist*/) {
         var urls = document.location.search || document.location.hash,
-            re = new RegExp("(\\\?|&)" + name + "=([^&]+)(&|$)", "i"),
+            re = new RegExp("(\\?|&)" + name + "=([^&]+)(&|$)", "i"),
             m = urls.match(re);
-        if (m) return m[2];
+        if (m) {
+            return m[2];
+        }
         return null;
     };
 
@@ -73,28 +77,28 @@
             //querysing array
             var qsArray = [];
             if (+cityid > 0) {
-                qsArray.push("cityid=" + cityid)
+                qsArray.push("cityid=" + cityid);
             }
             if (kwd) {
-                qsArray.push("kwd=" + kwd)
+                qsArray.push("kwd=" + kwd);
             }
             if (place) {
-                qsArray.push("place=" + place)
+                qsArray.push("place=" + place);
             }
             if (lng) {
-                qsArray.push("lng=" + lng)
+                qsArray.push("lng=" + lng);
             }
             if (lat) {
-                qsArray.push("lat=" + lat)
+                qsArray.push("lat=" + lat);
             }
             if (ctype) {
-                qsArray.push("ctype=" + ctype)
+                qsArray.push("ctype=" + ctype);
             }
             if (star) {
-                qsArray.push("star=" + star)
+                qsArray.push("star=" + star);
             }
             if (price) {
-                qsArray.push("price=" + price)
+                qsArray.push("price=" + price);
             }
             if (marketingArgs.length > 0) {
                 qsArray.concat(marketingArgs);
@@ -115,7 +119,7 @@
                 }
                 location.replace(detailurl);
             }
-        };
+        }
         //团购订单填写页
         if (/#booking/i.test(_hashs)) {
             var detailid = _getUrlQuerys("detailid") || _getUrlQuerys("productid");
@@ -143,7 +147,7 @@
                 }
             }
             location.replace(orderdetailurl);
-        };
+        }
 
         //申请退款
         if (/#refund/i.test(_hashs)) {

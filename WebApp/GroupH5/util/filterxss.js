@@ -1,9 +1,9 @@
-﻿/**
+﻿/*嵌套太深了，工具类，暂不去解决嵌套问题*/
+/*jshint -W073*/
+
+/**
 * 过滤XSS攻击
 */
-
-"use strict"
-
 define(function () {
     var defaultWhiteList = {
         h1: [],
@@ -95,7 +95,7 @@ define(function () {
     *                   isClosing：是否为闭合标签，如</a>
     * @return {String} 若不返回任何值，则默认替换<>为&lt;&gt;
     */
-    function defaultOnIgnoreTag(tag, html, options) {
+    function defaultOnIgnoreTag(/*tag,*/ html/*, options*/) {
         return noTag(html);
     }
 
@@ -121,7 +121,7 @@ define(function () {
     /**
     * XSS过滤对象
     *
-    * @param {Object} options 选项：whiteList, onTagAttr, onIgnoreTag
+    * @param {Object} options选项：whiteList, onTagAttr, onIgnoreTag
     */
     function FilterXSS(options) {
         'use strict';
@@ -143,7 +143,6 @@ define(function () {
         * @return {String}
         */
         filterAttributes: function (tagName, attrs) {
-            'use strict';
 
             tagName = tagName.toLowerCase();
             var me = this;
@@ -152,15 +151,17 @@ define(function () {
             var _attrs = '';
             var tmpName = false;
             var hasSprit = false;
-
+            var v;
             var addAttr = function (name, value) {
                 name = name.trim();
                 if (!hasSprit && name === '/') {
                     hasSprit = true;
                     return;
-                };
+                }
                 name = name.replace(REGEXP_ATTR_NAME, '').toLowerCase();
-                if (name.length < 1) return;
+                if (name.length < 1) {
+                    return;
+                }
                 if (whites.indexOf(name) !== -1) {
                     if (value) {
                         value = value.trim().replace(REGEXP_QUOTE, '&quote;');
@@ -193,7 +194,7 @@ define(function () {
                         if (j === -1) {
                             break;
                         } else {
-                            var v = attrs.slice(lastPos + 1, j).trim();
+                            v = attrs.slice(lastPos + 1, j).trim();
                             addAttr(tmpName, v);
                             tmpName = false;
                             i = j;
@@ -203,7 +204,7 @@ define(function () {
                     }
                 }
                 if (c === ' ') {
-                    var v = attrs.slice(lastPos, i).trim();
+                    v = attrs.slice(lastPos, i).trim();
                     if (tmpName === false) {
                         addAttr(v);
                     } else {
@@ -222,7 +223,9 @@ define(function () {
                     addAttr(tmpName, attrs.slice(lastPos));
                 }
             }
-            if (hasSprit) _attrs += '/';
+            if (hasSprit) {
+                _attrs += '/';
+            }
 
             return _attrs.trim();
         },
@@ -236,15 +239,15 @@ define(function () {
         */
         addNewTag: function (tag, currentPos, targetPos) {
             'use strict';
-
+            var tagName;
             var rethtml = '';
             var spos = tag.slice(0, 2) === '</' ? 2 : 1;
 
             var i = tag.indexOf(' ');
             if (i === -1) {
-                var tagName = tag.slice(spos, tag.length - 1).trim();
+                tagName = tag.slice(spos, tag.length - 1).trim();
             } else {
-                var tagName = tag.slice(spos, i + 1).trim();
+                tagName = tag.slice(spos, i + 1).trim();
             }
             tagName = tagName.toLowerCase();
             if (tagName in this.whiteList) {
@@ -287,10 +290,12 @@ define(function () {
             var quoteStart = false;
             var currentPos = 0;
 
-            if ($.type(html) !== "string") return "";
+            if ($.type(html) !== "string") {
+                return "";
+            }
 
             // 逐个分析字符
-            for (var currentPos = 0, len = html.length; currentPos < len; currentPos++) {
+            for (var len = html.length; currentPos < len; currentPos++) {
                 var c = html[currentPos];
                 if (tagStart === false) {
                     if (c === '<') {
@@ -382,5 +387,5 @@ define(function () {
                 }
             };
         }
-    }
+    };
 });

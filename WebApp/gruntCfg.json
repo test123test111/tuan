@@ -2,7 +2,7 @@
     "webresourceSrc": "GroupH5",
     "buConfig": "config.js",
     "isSimple": true,
-    "jshint": false,
+    "jshint": true,
     "hybrid": {
         "hostname": "127.0.0.1",
         "views": {

@@ -1,3 +1,4 @@
+/*jshint -W030 */
 /**
  * @depends underscore
  */
@@ -28,12 +29,14 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
      */
     function isObject(o){
         return o === Object(o);
-    };
+    }
     /**
      *
      */
-    function loadImg(img, onload, onerror){
-        if(!img||$(img).data('loaded')) return;
+    function loadImg(img/*, onload, onerror*/){
+        if(!img||$(img).data('loaded')) {
+            return;
+        }
         var tmp = new Image();
 
         tmp.src = img.dataset['data-src'] || img.getAttribute('data-src');
@@ -41,11 +44,11 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
             img.src = tmp.src;
             $(img).data('loaded', true);
         };
-    };
+    }
     // 如果WidgetFactory已经注册了ListView，就无需重复注册
     if (WidgetFactory.hasWidget(WIDGET_NAME)) {
         return;
-    };
+    }
 
     Slide = new cBase.Class({
         __propertys__: function(){
@@ -128,14 +131,14 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                  * @event 初始化完
                  */
                 onInit: NOOP
-            }
+            };
         },
         initialize: function(options){
             var opts;
 
             if(isObject(options)){
                 this.options = $.extend(this.options, options);
-            };
+            }
             opts = this.options;
             this.container = opts.container;
             this.tpl = opts.tpl;
@@ -148,7 +151,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
 
             }else{
                 console.error('no container!');
-            };
+            }
         },
         /**
          * 是否可交互，轮播，滑动等
@@ -268,10 +271,12 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
             //连播边界处理
             if(continuous){
                 //左边界
-                if(index<0) index = max-1;
-                //右边界
-                if(index>=max) index=0;
-            };
+                if(index<0) {
+                    index = max-1;
+                }else if(index>=max) {//右边界
+                    index=0;
+                }
+            }
             //边界判断
             if(index>=0 && index<max){
                 Slide.animate(env.root, direction * width * this._current, direction * width * index, this.options.animationDuration);
@@ -283,7 +288,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
 
             }else{
                 this.goto(this._current);
-            };
+            }
 
         },
         _showCurrent: function(root, index){
@@ -296,9 +301,13 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         _prefetch: function(direction){
 
             //如果无需预取
-            if(this.options.prefetch<0) return;
+            if(this.options.prefetch<0) {
+                return;
+            }
 
-            if(!direction) direction = Slide.LEFT;
+            if(!direction) {
+                direction = Slide.LEFT;
+            }
 
             var current = this._current,
                 prefetchCount = this.options.prefetch,
@@ -310,7 +319,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 item = this.items[current + prefetchCount - i * direction];
                 item = item && item.children[0];
                 item && loadImg(item);
-            } while (i-=direction);
+            } while (!!(i-=direction));
         },
         _getSwipeDirection: function(start, end){
             var offset = end - start,
@@ -319,7 +328,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
 
             if(offsetABS>0 && offsetABS >this.options.minSwipe){
                 direction = offset/offsetABS;
-            };
+            }
             return direction;
         },
         _getRuntimeEnv: function(){
@@ -336,7 +345,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 root: root,
                 stage: stage,
                 count: itemsCount
-            }
+            };
 
         },
         __touchStartHandler: function(event){
@@ -350,7 +359,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 left: Number(translateX),
                 x   : touches.pageX,
                 y   : touches.pageY,
-                t   : +new Date //时间戳
+                t   : +new Date() //时间戳
             };
         },
         __touchEndHandler: function(event){
@@ -375,7 +384,9 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         __moveHandler: function(event){
             event.preventDefault();//必须禁止默认行为，否则拖动卡
             //判断多指触摸，缩放
-            if ( event.touches.length > 1 || event.scale && event.scale !== 1) return
+            if ( event.touches.length > 1 || event.scale && event.scale !== 1) {
+                return;
+            }
 
             var touches = event.touches[0],
                 env = this._getRuntimeEnv(),
@@ -408,7 +419,9 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         var slide = dom[0],
             style = slide && slide.style;
 
-        if (!style) return;
+        if (!style) {
+            return;
+        }
 
         dom.css(CSS3ExpandoPrefix+'transition', duration + 'ms ease-out');//不要用translateX，在chrome下卡
         dom.css(CSS3ExpandoPrefix+'transform', 'translate(' + dist + 'px,0) translateZ(0)');

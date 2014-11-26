@@ -72,13 +72,13 @@
         } else {
             domain = RESTAPI_DOMAIN.test;
             path = RESTAPI_PATH.test;
-        };
+        }
         return {
             //'domain': RESTAPI_DOMAIN.pro,
             'domain': domain,
             //'path': RESTAPI_PATH.pro
             'path': path
-        }
+        };
     };
 
     //Version 在store里面也有定义，记得同步修改
@@ -518,4 +518,4 @@
     });
 
     return T;
-})
+});

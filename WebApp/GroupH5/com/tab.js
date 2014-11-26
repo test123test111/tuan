@@ -14,7 +14,7 @@ define(['libs', 'cUIScroll'], function(libs, Scroll) {
         this.inited = false;
         this.switch(this.options.labelSelectedIndex);
         this._bindEvents();
-    };
+    }
 
     Tab.prototype = {
         constructor: Tab,
@@ -32,7 +32,7 @@ define(['libs', 'cUIScroll'], function(libs, Scroll) {
                 options.onSelect($(e.currentTarget));
             }, this);
 
-            this.label.on('click', this._switchHandler)
+            this.label.on('click', this._switchHandler);
             this.panel.on('click', options.itemClass, this._selectHandler);
         },
         _unbindEvents: function() {
@@ -52,7 +52,7 @@ define(['libs', 'cUIScroll'], function(libs, Scroll) {
             currPanel.show();
             if (options.isScroll) {
                 currPanel.css({'overflow': 'hidden', 'max-height': '285px', 'margin-bottom': '5px', 'margin-top': '5px'});
-                new Scroll({
+                this.scroller = new Scroll({
                     wrapper: currPanel,
                     scroller: currPanel.find('ul')
                 });

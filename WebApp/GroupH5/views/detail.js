@@ -1,4 +1,5 @@
-﻿/**
+﻿/*jshint -W030 */
+/**
  * 详情页
  * @url m.ctrip.com/webapp/tuan/detail/{pid}.html
  */
@@ -19,8 +20,6 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         FOLD_CLS = 'view_fold',
         SUCCESS_STATUS = 'success',
         disabledCls = 'btm_tuan_btn_dis',
-        cui = c.ui,
-        refer, //网页来源，从onload里传入
         isInApp = Util.isInApp(),
         tuanDetailModel = TuanModel.TuanDetailModel.getInstance(),
         tuanDetailStore = TuanStore.TuanDetailsStore.getInstance(),
@@ -48,7 +47,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         pageid: '214008',
         hpageid: '215008',
         hasAd: false,
-        backHome: function (e) {
+        backHome: function () {
             TuanApp.tHome();
         },
         events: {
@@ -76,13 +75,13 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             this.externalReferURL = getQuery('url');
         },
         //数据加载阶段
-        _onLoad: function (referUrl) {
+        _onLoad: function () {
             //from中可能含有querystring，用getQuery获取不到完整的带querystring的URL
             this.fromUrl = Util.getUrlParam(location.href, 'from');
             //如果没有fromUrl或者来自微信
             if(!this.fromUrl || this.isFromWeChat(this.fromUrl)){
                 this.fromUrl = '';
-            };
+            }
 
             this.removeOrderData();
             this.getTuanDetail();
@@ -126,7 +125,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                     id: 'favorite',
                     classname: cls
                 };
-            };
+            }
             this.header.set(headerData);
 
             this.header.show();
@@ -144,8 +143,8 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                     self._delFavorite();
                 }else{
                     self._addFavorite();
-                };
-            };
+                }
+            }
         },
         /**
         * 获取分享配置
@@ -203,7 +202,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                         }
                     });
                 }
-            })
+            });
         },
         /**
          * 更新收藏状态
@@ -224,9 +223,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
          * 更新收藏按钮
          */
         updateFavorButton: function(status){
-            var self = this,
-                btnId = 'favorite',
-                btn = this.header.rootBox.find('#favorite');
+            var self = this;
 
             self.setHeader(status);
             Guider.apply({
@@ -262,7 +259,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 if(ret && ret.ResponseStatus.Ack.toLowerCase() === SUCCESS_STATUS){
                     self.updateFavorStatus(true, ret.favorId);
                     self.showToast(MSG.addFavoriteSuccess);
-                };
+                }
             }, function(){
                 self.showToast(MSG.addFavoriteError);
             });
@@ -281,7 +278,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 if(ret && ret.ResponseStatus.Ack.toLowerCase() === SUCCESS_STATUS){
                     self.updateFavorStatus(false);
                     self.showToast(MSG.delFavoriteSuccess);
-                };
+                }
             }, function(){
                 self.showToast(MSG.delFavoriteError);
             });
@@ -303,7 +300,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                     }
                 });
                 return false;
-            };
+            }
             return true;
         },
         onShow: function () {
@@ -330,7 +327,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             if(this.isFromHybridFavorPage()){
                 Guider.backToLastPage({'param': JSON.stringify({"biz":"tuan","refresh": "1"})});
                 return;
-            };
+            }
             var url = decodeURIComponent(this.fromUrl || '');
             //如果url中指定了from
             if (url) {
@@ -340,7 +337,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                     location.href = url;
                 } else {
                     TuanApp.jumpToPage(url, this);     
-                };
+                }
             } else {
                 this.back();
             }
@@ -399,7 +396,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 self.updateFavorStatus(favorInfo && favorInfo.isFavor, favorInfo && favorInfo.favorId);
                 //绑定分享
                 self.bindShareEvent();
-            }, function (err) {
+            }, function () {
                 var self = this;
                 this.showWarning404($.proxy(self.getTuanDetail, self));
 
@@ -422,14 +419,14 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 labelText = "已售完";
             } else if (labelVal == 100) {
                 labelText = "已结束";
-            };
+            }
             if (labelText) {
                 btnSubmit.attr('class', disabledCls).text(labelText).removeAttr('id');
-            };
+            }
 
             if (!isCorrectChannel) {
                 btnSubmit.attr('class', disabledCls);
-            };
+            }
 
             //开启倒计时
             this.showTimer(data.etime);
@@ -468,7 +465,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 hidden.hide();
             }
         },
-        showTips: function (e) {
+        showTips: function () {
             this.forwardJump('detailtips', "/webapp/tuan/detailtips");
         },
         showImages: function () {
@@ -568,7 +565,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 target.removeClass(UNFOLD_CLS).addClass(FOLD_CLS).text('收起');
             } else {
                 target.removeClass(FOLD_CLS).addClass(UNFOLD_CLS).text('查看不适用日期');
-            };
+            }
         },
         onHotelDetailClick: function(e){
             var hotelId = $(e.target).attr('data-hotel-id');
@@ -588,7 +585,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 tomorrow = new Date(today.setDate(today.getDate()+1)),
                 fromUrl = encodeURIComponent(location.href),
                 url = isInApp ?
-                'ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate='+formatDate(new Date)+'&checkOutDate='+formatDate(tomorrow)+'&hotelId='+hotelId+'&from='+fromUrl :
+                'ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate='+formatDate(new Date())+'&checkOutDate='+formatDate(tomorrow)+'&hotelId='+hotelId+'&from='+fromUrl :
                 'http://m.ctrip.com/webapp/hotel/hoteldetail/' + hotelId + '.html?from=' + fromUrl;
 
             TuanApp.jumpToPage(url, this);

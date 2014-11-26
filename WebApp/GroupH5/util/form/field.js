@@ -1,3 +1,4 @@
+/*jshint -W030 */
 /**
  * @description field模块
  * @author xuweichen@ctrip.com
@@ -34,7 +35,7 @@ define(['libs'], function () {
 			 * @type {String} 触发检查的事件类型
 			 */
 			triggerEvent: ''
-		}
+		};
 
 		self.options = mix(self.options, options || {});
 		self.dom = self.options.dom;
@@ -48,7 +49,9 @@ define(['libs'], function () {
 				dom = self.dom;
 
 			self.required = self.options.required;
-			if (!(dom && dom[0])) return;
+			if (!(dom && dom[0])) {
+				return;
+			}
 			self.__blurHandler = function () {
 				self.check();
 			};
@@ -76,10 +79,13 @@ define(['libs'], function () {
 			for (; i < l; i++) {
 				rule = rules[i];
 				//如果非必填，略过
-				if (!required && !val) continue;
-				if (!(result &= (isFunction(rule) ? rule(val) : rule.test(val)))) break;
+				if (!required && !val) {
+					continue;
+				}
+				if (!(result &= (isFunction(rule) ? rule(val) : rule.test(val)))) {
+					break;
+				}
 			}
-			;
 			options.onCheck.call(this, !!result, { val: val, dom: dom, rule: i });
 			return result || !required;
 		},
@@ -94,6 +100,6 @@ define(['libs'], function () {
 			dom && dom.off(self.options.triggerEvent, self.__blurHandler);
 			return true;
 		}
-	}
+	};
 	return Field;
 });

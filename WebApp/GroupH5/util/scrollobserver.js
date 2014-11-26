@@ -21,7 +21,7 @@ define(['c'], function () {
 
     function scrollDirection(x1, x2, y1, y2) {
         return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? (x1 - x2 > 0 ? 'left' : 'right') : (y1 - y2 > 0 ? 'up' : 'down');
-    };
+    }
     function updateStatus() {
         var self = this,
             body = DOC.body,
@@ -38,7 +38,7 @@ define(['c'], function () {
             });
         } else {
             this.status = SCROLL_STATUS.SCROLLING;
-        };
+        }
         clearTimeout(timer);
         timer = setTimeout(function () {
             self.status = SCROLL_STATUS.START;
@@ -50,17 +50,13 @@ define(['c'], function () {
             lastY = body.scrollTop;
             lastX = body.scrollLeft;
         }, SCROLL_ACCURACY);
-    };
-    function scrollHandler(e) {
-        var body = DOC.body,
-        x = body.scrollLeft,
-        y = body.scrollTop;
-
+    }
+    function scrollHandler() {
         updateStatus();
         //trigger('')
-    };
+    }
     observer = {
-        init: function (options) {
+        init: function () {
             this.status = SCROLL_STATUS.END;
             this.__scrollHandler = $.proxy(scrollHandler, this);
             return this;

@@ -8,10 +8,11 @@ define(['TuanApp', 'libs', 'c', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory
         },
         cBase = c.base,
         tuanDetailsStore = TuanStore.TuanDetailsStore.getInstance(),
-        TuanHotelCommentListStore = TuanStore.TuanHotelCommentListStore.getInstance(),
-        TuanHotelCommentListModel = TuanModel.TuanHotelCommentListModel.getInstance();
-    var PageView = CommonPageFactory.create("TuanBaseView");
-    var View = PageView.extend({
+        TuanHotelCommentListModel = TuanModel.TuanHotelCommentListModel.getInstance(),
+        PageView = CommonPageFactory.create("TuanBaseView"),
+        View;
+
+    View = PageView.extend({
         pageid: '214012',
         hpageid: '215012',
         pageSize: 25, //每页加载数
@@ -29,7 +30,7 @@ define(['TuanApp', 'libs', 'c', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory
 
             this.onWindowScroll = $.proxy(this._onWindowScroll, this);
             this.showLoading();
-            if (tuanDetailsStore && tuanDetailsStore.get() != null) {
+            if (tuanDetailsStore && tuanDetailsStore.get() !== null) {
                 this.productId = tuanDetailsStore.get().id;
                 this.hotelId = tuanDetailsStore.get().hotels[0].id;
                 this.showComments();
@@ -63,10 +64,13 @@ define(['TuanApp', 'libs', 'c', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory
             this.getCommentListData(this.pageIdx);
         },
         rederList:function(data){
+            var pageNum,
+                pageIdx = this.pageIdx;
+
             data.dateFormat = cBase.Date.format;
             data.cDate = cBase.Date;
-            this.totalPages = Math.ceil(data.count / this.pageSize),
-            pageNum = isNaN(this.pageIdx) ? 1 : this.pageIdx;
+            this.totalPages = Math.ceil(data.count / this.pageSize);
+            pageNum = isNaN(pageIdx)? 1 : pageIdx;
             if(pageNum<=1){
                 this.totalWrap.html(this.totalTpl(data));
             }
@@ -110,7 +114,7 @@ define(['TuanApp', 'libs', 'c', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory
                 this.isComplete = true;
                 $(window).unbind('scroll', this.onWindowScroll);
                 return;
-            };
+            }
 
             var h = pos.pageHeight - (pos.top + pos.height);
             if (h <= 300 && !this.isComplete && !this.isLoading) {
@@ -118,10 +122,10 @@ define(['TuanApp', 'libs', 'c', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory
                 if (this.pageIdx > this.totalPages) {
                     this.isComplete = true;
                     return;
-                };
+                }
                 this.pageIdx = ++pageNum;
                 this.getCommentListData(this.pageIdx);
-            };
+            }
         },
         onShow: function () { 
             this.setHeader();
@@ -132,7 +136,7 @@ define(['TuanApp', 'libs', 'c', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory
         backAction: function () {
             this.back();
         },
-        backHome: function (e) {
+        backHome: function () {
             TuanApp.tHome();
         }
     });

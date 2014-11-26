@@ -13,7 +13,9 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
     function PageTree(cfg) {
         this.data = {};
         for (var i in cfg) {
-            if (cfg[i]) this.add(i, cfg[i].url, cfg[i].prev, cfg[i].jump, cfg[i].range, cfg[i].params);
+            if (cfg[i]) {
+                this.add(i, cfg[i].url, cfg[i].prev, cfg[i].jump, cfg[i].range, cfg[i].params);
+            }
         }
     }
     var braketReg = /\{([^\{\}]+)\}/g;
@@ -35,10 +37,11 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
         getNode: function (id, params) {
             var curNode = this.data[id];
 
-            if (!curNode) return null;
+            if (!curNode) {
+                return null;
+            }
 
-            var url = curNode.url || '',
-                prevParam = curNode.param || {};
+            var prevParam = curNode.param || {};
             params = params || {};
             var reurl = (curNode.url || '').replace(braketReg, function (a, b) {
 
@@ -52,12 +55,14 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
                 reurl: reurl,
                 jump: curNode.jump,
                 range: curNode.range
-            }
+            };
         },
         getPrevNode: function (id, params) {
             var curNode = this.data[id],
                 prevNode = curNode && curNode.prev && this.data[curNode.prev] && this.data[curNode.prev];
-            if (!prevNode) return null;
+            if (!prevNode) {
+                return null;
+            }
             params = params || {};
             var prevParam = prevNode.params || {};
             var prevurl = (prevNode.url || '').replace(braketReg, function (a, b) {
@@ -157,7 +162,9 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
             var data = this.getAttr('sequehistory') || [];
             var max = Math.max(0, data.length - 1);
             var last = data[max] || {};
-            if (last.id === obj.id) return;
+            if (last.id === obj.id) {
+                return;
+            }
             if (data.length > 10) {
                 data.splice(0, 3);
             }
@@ -234,7 +241,7 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
             url: url,
             ver: ver
         };
-    }
+    };
 
 
     var __FROM = '_____FROM_____';
@@ -275,7 +282,7 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
                     jump: true
                 };
             }
-            var jump = false, id;
+            var jump = false;
             if (top && top.id === id && prev && prev.id && (!range.length || _.indexOf(range, prev.id) > -1)) {
                 url = prev.url;
                 jump = top.ver !== prev.ver || node.jump;
@@ -329,7 +336,8 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
         */
         getLastView: function () {
             var sc = this.stack.getCache() || {};
-            var last, node
+            var last;
+
             if (sc.id) {
                 last = this.stack.top();
             } else {
@@ -390,13 +398,19 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
                 fd = null;
             if (href.indexOf(F) > -1) {
                 var hrefMap = this._getQueryString(href);
-                if (hrefMap[F]) fd = hrefMap[F];
+                if (hrefMap[F]) {
+                    fd = hrefMap[F];
+                }
             }
             if (hash.indexOf(F) > -1) {
                 var hashMap = this._getQueryString(hash);
-                if (hashMap[F]) fd = hashMap[F];
+                if (hashMap[F]) {
+                    fd = hashMap[F];
+                }
             }
-            if (fd) fd = decodeURIComponent(fd);
+            if (fd) {
+                fd = decodeURIComponent(fd);
+            }
             if (fd && !fd.match(/^\s*(?:http|\/)/)) {
                 fd = null;
             }
@@ -406,8 +420,8 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
         _getQueryString: function (url) {
             var u = (url || '').split('?');
             u.shift();
-            var u = u.join('?').split(/(?!\?[^?]*)&/g),
-                k = {}, t;
+            u = u.join('?').split(/(?!\?[^?]*)&/g);
+            var k = {}, t;
             for (var i = 0, len = u.length; i < len; i++) {
                 t = u[i].split('=');
                 k[t.shift()] = t.join('=');

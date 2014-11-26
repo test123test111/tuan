@@ -1,3 +1,5 @@
+/*jshint -W030 */
+/*jshint -W073 */
 /**
  * @author: xuweichen
  * @date: 2014-2-18
@@ -23,7 +25,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             keepGroupType && searchStore.setAttr('sortType', 0);
             !keepGroupType && customFiltersStore.remove();
             !keepGroupType && searchStore.setAttr('ctype', 0);
-            !keepGroupType && searchStore.setAttr('weekendsAvailable', 0)
+            !keepGroupType && searchStore.setAttr('weekendsAvailable', 0);
             positionfilterStore.remove();
             sortStore.remove();
             this.setCurrentKeyWord(false);
@@ -47,10 +49,12 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
         *@Param {string}Name 城市名称
         *@Description 添加城市选择历史记录
         */
-        addHistoryCity: function (Id, Name) {
+        addHistoryCity: function (Id/*, Name*/) {
             var historyCityData = historyCityListStore.get();
             var list = [];
-            if (historyCityData && historyCityData.list && $.isArray(historyCityData.list)) list = historyCityData.list;
+            if (historyCityData && historyCityData.list && $.isArray(historyCityData.list)) {
+                list = historyCityData.list;
+            }
             var obj, idx = 0;
             $.each(list, function (i, d) {
                 if (d != Id) {
@@ -60,13 +64,15 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                     idx = i;
                     return false;
                 }
-            })
+            });
             if (obj && obj == Id) {
                 list.splice(idx, 1);
                 list.unshift(Id);
             } else {
                 list.unshift(Id);
-                if (list.length > StringsData.MAX_KEYWORDS_HISTORY) list.pop();
+                if (list.length > StringsData.MAX_KEYWORDS_HISTORY) {
+                    list.pop();
+                }
             }
             historyCityListStore.setAttr("list", list);
         },
@@ -79,13 +85,15 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             var hcitylist = [];
             if (!data) {
                 var CityData = CityListStore.get();
-                if (!CityData) return;
+                if (!CityData) {
+                    return;
+                }
                 data = CityData.cities || CityData;
             }
             if (historyCityData && historyCityData.list) {
                 var ni = historyCityData.list.length > 3 ? 3 : historyCityData.list.length;
                 for (var st = 0; st < ni; st++) {
-                    var f = false, hcity = historyCityData.list[st];
+                    var hcity = historyCityData.list[st];
                     var cityinfo = this.findCityInfoById(hcity, data);
                     if (cityinfo) {
                         hcitylist.push(cityinfo);
@@ -101,9 +109,11 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
         getCityCount: function (data) {
             if (!data) {
                 var CityData = CityListStore.get();
-                if (!CityData) return;
+                if (!CityData) {
+                    return;
+                }
                 data = CityData.cities || CityData;
-            };
+            }
             var citycount = 0;
             if (data && data.cities && data.cities.length > 0) {
                 for (var i = 0, len = data.cities.length, Key; i < len; i++) {
@@ -112,7 +122,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                         citycount += Key.cities.length;
                     }
                 }
-            };
+            }
             return citycount;
         },
         /**
@@ -122,7 +132,11 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
         */
         findCityInfoById: function (cityId, data, cityName) {
             //如果没有传城市列表，默认取localStorage
-            var cityData;
+            var cityData,
+                i, j,
+                c,
+                item,
+                olen;
             if (!data) {
                 cityData = CityListStore.get();
                 //如果没有城市列表，把cityId当正确处理
@@ -135,23 +149,23 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                 } else {
                     data = cityData.cities || cityData;
                 }
-            };
-            for (var i = 0, olen = data.length, item; i < olen; i++) {
+            }
+            for (i = 0, olen = data.length; i < olen; i++) {
                 item = data[i];
                 if (item.tag == '热门' && item.cities) {
-                    for (var j in item.cities) {
-                        var c = item.cities[j];
+                    for (j in item.cities) {
+                        c = item.cities[j];
                         if (c.id == cityId) {
                             return c;
                         }
                     }
                 }
             }
-            for (var i = 0, olen = data.length, item; i < olen; i++) {
+            for (i = 0, olen = data.length; i < olen; i++) {
                 item = data[i];
                 if (item.tag != '热门' && item.cities) {
-                    for (var j in item.cities) {
-                        var c = item.cities[j];
+                    for (j in item.cities) {
+                        c = item.cities[j];
                         if (c.id == cityId) {
                             return c;
                         }
@@ -186,7 +200,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                     }
                 }
             }
-            return false
+            return false;
         },
         /**
         *@Description 获取当前定位成功的城市信息  create by zhanghd
@@ -196,7 +210,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             if (locationInfo && locationInfo.gps && +locationInfo.gps.CityId > 0) {
                 return locationInfo.gps;
             }
-            return false
+            return false;
         },
         /**
         *@Param {int} id id值
@@ -226,7 +240,9 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                 list.unshift({ id: id, word: name, type: keyType });
             } else {
                 list.unshift({ id: id, word: name, type: keyType });
-                if (list.length > StringsData.MAX_KEYWORDS_HISTORY) list.pop();
+                if (list.length > StringsData.MAX_KEYWORDS_HISTORY) {
+                    list.pop();
+                }
             }
             historyKeySearchStore.remove();
             historyKeySearchStore.setAttr('list', list);
@@ -270,7 +286,9 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
         */
         getCurrentKeyWord: function () {
             var historyCityData = historyKeySearchStore.get();
-            if (!historyCityData) return false;
+            if (!historyCityData) {
+                return false;
+            }
             return historyCityData.key;
         },
         getGroupQueryParam: function () {
@@ -288,7 +306,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             var star = customdata && customdata.star;
             if (star && !$.isEmptyObject(star)) {
                 var arr = [], k;
-                for (var k in star) {arr.push(k)}
+                for (k in star) {arr.push(k);}
                 qparams.push({ type: 2, value: arr.join(',') });
             }
 
@@ -348,7 +366,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
 
             //位置区域查询条件
             positionData = positionData ? positionData : { type: '', val: '' };
-            if (positionData && positionData.type && +positionData.type > 0 && positionData.val && positionData.val != '') {
+            if (positionData && positionData.type && +positionData.type > 0 && positionData.val && positionData.val !== '') {
                 qparams.push({
                     type: positionData.type,
                     name: positionData.name,
@@ -411,15 +429,15 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                 this.clearAll();
                 //清除城市选择历史
                 historyCityListStore.remove();
-            };
+            }
             if (cityId) {
                 searchStore.setAttr('ctyId', cityId);
                 cityName = cityName || CityListData[cityId] || '';
                 searchStore.setAttr('ctyName', cityName);
-            };
+            }
 
             //我的附近
-            if (lat && +lat > 0 && lon && +lon > 0 && place && place != "") {
+            if (lat && +lat > 0 && lon && +lon > 0 && place && place !== "") {
                 geolocationStore.setAttr('gps', {
                     "address": place,
                     "location": lon + "," + lat,
@@ -442,34 +460,34 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                 }
                 qparams.push({type: 9, value: lat + '|' + lon + '|' + StringsData.SEARCH_DISTANCE });
                 searchStore.setAttr('qparams', qparams);
-            };
+            }
 
             //团购类型接收
             if (groupType) {
                 categoryfilterStore.remove();
                 searchStore.setAttr('ctype', StringsData.index2ctype[groupType]);
-            };
+            }
 
             //星级筛选(酒店客房时，传star才有效)
             if (star && groupType == 1) {
                 customFiltersStore.setAttr('star', star.replace(',', '|'));
-            };
+            }
             //价格筛选
             if (price) {
                 customFiltersStore.setAttr('price', price);
-            };
+            }
             //关键词 kwd={name}|{id}|{type}
             if (kwd) {
                 kwd = kwd.split('|');
                 this.addHistoryKeyWord(kwd[1], kwd[0], kwd[2]);
-            };
+            }
             //排序 sort={sortRule}|{sortType}
             if (sort) {
                 var spliter = sort.indexOf('/') > -1 ? '/' : '|'; //兼容"攻略"跳过来的分割线"/"
                 sort = sort.split(spliter);
                 searchStore.setAttr('sortRule', sort[0]);
                 searchStore.setAttr('sortType', sort[1] || 1);
-            };
+            }
 
             callback && callback();
         },
@@ -480,7 +498,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             var cityid;
             if (cityName) {
                 cityid = CityListData[cityName];
-            };
+            }
             return false;
         }
     };

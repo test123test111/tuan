@@ -68,7 +68,7 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
                     formattedData.push({
                         title: imgsData[i].title,
                         src: imgsData[i].large,
-                        href: 'javascript:void(0);',
+                        href: '#',
                         desc: imgsData[i].desc
                     });
                 }

@@ -19,7 +19,6 @@
             Payment: baseUrl +"widget/payment",
             ScrollObserver: baseUrl +"util/scrollobserver",
             MemCache: baseUrl +"util/memcache",
-            InvoiceStore: baseUrl +"thirdpart/invoicestore",
             AMapWidget: baseUrl +"widget/amap",
             POIWidget: baseUrl +"widget/poi",
             LazyLoad: baseUrl +"com/lazyload",

@@ -1,3 +1,4 @@
+/*jshint -W030 */
 /**
   * @since 20140217
   * @author: li.xx

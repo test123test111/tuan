@@ -1,9 +1,10 @@
-"use strict"; //test commit
-define(['PageHistory'], function (PageHistory) {
+/*jshint -W030 */
+define(['PageHistory'], function () {
     var RE_NATIVE_PAGE_URL = /^ctrip:\/\//i, //native页面url正则
         RE_H5_PAGE_URL = /(.*)\/webapp\/(\w+)\/(.*)/, //h5页面
         RE_H5_TUAN_PAGE = /^#\w/i;
-    window._log = {stash: [], log: function(s) {this.stash.push(s ? JSON.stringify(s) : s)}};
+
+    window._log = {stash: [], log: function(s) {this.stash.push(s ? JSON.stringify(s) : s);}};
     var TuanApp = {
         init: function () {
             //检查来源，并做保存来源数据
@@ -32,19 +33,19 @@ define(['PageHistory'], function (PageHistory) {
                     location.hash = referer.split('#')[1] || 'home';
                 } else {
                     location.replace(referer);
-                };
+                }
 
             } else {
                 if (url) {
                     if (url.indexOf('#') == -1) {
                         url = '#' + url;
-                    };
-                    this.app.curView.jump(url)
+                    }
+                    this.app.curView.jump(url);
                 } else {
                     window.history.go(-1);
                 }
                 this.app.history = [];
-            };
+            }
         },
         lastUrl: function () {
             var history = this.app.history,
@@ -57,7 +58,9 @@ define(['PageHistory'], function (PageHistory) {
         * 解析url, 返回页面相关环境参数
         */
         parsePageURL: function (url) {
-            if (!url) return false;
+            if (!url) {
+                return false;
+            }
 
             var urlObj = {
                 module: '',
@@ -72,19 +75,19 @@ define(['PageHistory'], function (PageHistory) {
                 urlObj.isInternal = true;
                 //urlObj.link = 'index.html'+ url;
                 return urlObj;
-            };
+            }
             if (url.match(RE_NATIVE_PAGE_URL)) {
                 urlObj.domain = 'ctrip';
                 urlObj.isNative = true;
                 return urlObj;
-            };
+            }
 
             parsed = RE_H5_PAGE_URL.exec(url);
             if (parsed) {
                 urlObj.module = parsed[2];
                 urlObj.link = parsed[3];
                 urlObj.isInternal = true;
-            };
+            }
             return urlObj;
         },
         gotoExternalPage: function (module, fromUrl) {
@@ -100,7 +103,9 @@ define(['PageHistory'], function (PageHistory) {
         * 跳到指定页
         */
         jumpToPage: function (url, curView) {
-            if (!url) return;
+            if (!url) {
+                return;
+            }
 
             var self = this,
                 urlParsed = self.parsePageURL(url);
@@ -115,7 +120,7 @@ define(['PageHistory'], function (PageHistory) {
                     location.href = url;
                     return;
                 }
-                ;
+
                 if (urlParsed.isInternal) {
                     if (urlParsed.module == 'tuan') {
                         curView.forwardJump(urlParsed.link.split('/')[0], '/webapp/tuan/' + urlParsed.link);
@@ -125,11 +130,11 @@ define(['PageHistory'], function (PageHistory) {
                             param: urlParsed.link
                         });
                     }
-                    ;
+
 
                     return;
                 }
-                ;
+
                 Guider.jump({
                     targetModel: urlParsed.isNative ? 'app' : 'h5',
                     url: urlParsed.link, //如果ctrip域下，会在当前webview打开，如果第三方链接，会自动启动浏览器打开
@@ -158,7 +163,9 @@ define(['PageHistory'], function (PageHistory) {
                 //检查来源，并做保存
                 if (!Source && !AllianceID) {
                     //启用失效原先的来源(只当来源跳转目标页为团购页面时 targetTuan==true)
-                    if (remove == true && (document.referrer != "" && document.referrer.indexOf("/html5") > 0) && uniondata && uniondata.targetTuan == true) unionStore.remove();
+                    if (remove === true && (document.referrer !== "" && document.referrer.indexOf("/html5") > 0) && uniondata && uniondata.targetTuan === true) {
+                        unionStore.remove();
+                    }
                 } else {
                     //当与上次来源不一样时才做存储。
                     if (!uniondata || uniondata.AllianceID != AllianceID || uniondata.SID != SID || uniondata.OUID != OUID || uniondata.Source != Source || uniondata.PartnerID != PartnerID) {
@@ -177,7 +184,7 @@ define(['PageHistory'], function (PageHistory) {
         initVoiceSearch: function (trigger) {
             require(['cWidgetFactory', 'VoiceSearch'], function (WidgetFactory) {
                 var VoiceSearch = WidgetFactory.create('VoiceSearch');
-                new VoiceSearch(trigger);
+                return new VoiceSearch(trigger);
             });
         },
         /**
@@ -224,7 +231,7 @@ define(['PageHistory'], function (PageHistory) {
                 //获取现在的网络状况
                 Guider.app_check_network_status({
                     callback: function (network) {
-                        TuanApp.environment = network['networkType'] === 'WIFI' ? 0 : 1;
+                        TuanApp.environment = network.networkType === 'WIFI' ? 0 : 1;
                     }
                 });
             }
@@ -232,7 +239,7 @@ define(['PageHistory'], function (PageHistory) {
             //监听APP网络状况
             Guider.register({
                 tagname: Facade.METHOD_APP_NETWORK_DID_CHANGED, callback: function (network) {
-                    TuanApp.environment = network['networkType'] === 'WIFI' ? 0 : 1;
+                    TuanApp.environment = network.networkType === 'WIFI' ? 0 : 1;
                 }
             });
         }
@@ -253,7 +260,7 @@ define(['PageHistory'], function (PageHistory) {
         (function() {
             var count = 0, timer, con;
 
-            !TuanApp.isProduction && $(document).on('click', function(e) {
+            !TuanApp.isProduction && $(document).on('click', function() {
                 count++;
                 timer && clearTimeout(timer);
                 timer = setTimeout(function() {

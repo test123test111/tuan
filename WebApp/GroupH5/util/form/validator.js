@@ -74,12 +74,14 @@ define(['libs'], function () {
 			if (l) {
 				for (; i < l; i++) {
 					result &= fields[i].check();
-					if (!result && !force) break;
-				};
-			};
+					if (!result && !force) {
+						break;
+					}
+				}
+			}
 
 			return !!result;
 		}
 	};
-	return Validator
+	return Validator;
 });

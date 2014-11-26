@@ -47,14 +47,14 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
         getViewName: function () {
             return this.config && this.config.viewName;
         },
-        __onLoad: function (lastViewName) {
+        __onLoad: function () {
             History.confirmForward(this.getViewName());
             History.addHistory(this.getViewName(), location.href, 2);
         },
         __onShow: function () {
 
         },
-        __onHide: function (viewname) {
+        __onHide: function (/*viewname*/) {
 
         },
         getHistory: function () {
@@ -69,7 +69,9 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
             this.setOneMessage('__lastViewName__', this.getViewName());
             var urlNode = History.back(this.getViewName(), args);
 
-            if (cache === undefined) cache = false;
+            if (cache === undefined) {
+                cache = false;
+            }
             if (urlNode.jump) {
                 location.href = urlNode.fullurl;
             } else {
@@ -145,7 +147,7 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
         fn: TuanBaseView
     });
 
-    var CommonListPage = CommonPageFactory.create('CommonListPage');
+    CommonListPage = CommonPageFactory.create('CommonListPage');
     var TuanBaseListView = CommonListPage.extend(options);
 
     CommonPageFactory.register({

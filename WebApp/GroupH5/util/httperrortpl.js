@@ -3,13 +3,13 @@ define([], function () {
         500:"服务器出错，请稍后再试！",
         404:"连接失败，网络不给力哦！",
         408:"网络不给力哦，请在更好的网络环境下使用！"
-    }
-    var getTpl=function(code,d){        
+    };
+    var getTpl=function(code){
         return _tpl[code];
-    }
+    };
     var Manage = {
         getMessage: function(httperr){
-            var status=httperr.status,msg=httperr.statusText,timeout=httperr.timeout;
+            var status=httperr.status,msg=httperr.statusText;
             if(status>=500){
                 switch(status){
                     case 500:

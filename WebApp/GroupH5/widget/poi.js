@@ -16,7 +16,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
      */
     function isObject(o){
         return o === Object(o);
-    };
+    }
 
     POIWidget = new cBase.Class({
         __propertys__: function(){
@@ -41,14 +41,14 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                  * @event poi查询失败
                  */
                 onError: NOOP
-            }
+            };
         },
         initialize: function(options){
             var opts;
 
             if(isObject(options)){
                 this.options = $.extend(this.options, options);
-            };
+            }
             opts = this.options;
             this.model = opts.model;
 
@@ -64,7 +64,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
 
             if(isObject(params)){
                 params = $.extend(defaultParams, params);
-            };
+            }
             this.model.param = params;
             this.model.excute(function(data){
                 (onSuccess||options.onSuccess).call(self, data);
