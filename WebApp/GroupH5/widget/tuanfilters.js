@@ -649,12 +649,22 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                             }
                         });
 
-                        if (ret.Zone.length || ret.Location.length || ret.College.length || ret.AirportStation.length || ret.SubwayLine.length || ret.Attraction.length) {
-                            positionTrigger.show();
-                            positionPanel.html(positionTpl(ret));
-                            callback && callback();
+                        if (tuanType != 7) {
+                            if (ret.Zone.length || ret.Location.length || ret.College.length || ret.AirportStation.length || ret.SubwayLine.length || ret.Attraction.length) {
+                                positionTrigger.show();
+                                positionPanel.html(positionTpl(ret));
+                                callback && callback();
+                            } else {
+                                positionTrigger.hide();
+                            }
                         } else {
-                            positionTrigger.hide();
+                            if (ret.Zone.length || ret.Location.length || ret.College.length) {
+                                positionTrigger.show();
+                                positionPanel.html(positionTpl(ret));
+                                callback && callback();
+                            } else {
+                                positionTrigger.hide();
+                            }
                         }
                     }
                 } else {
