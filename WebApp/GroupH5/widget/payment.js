@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * @author: xuweichen
  * @date: 14-2-13 下午1:13
@@ -20,17 +21,6 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
         Guider = WidgetFactory.create('Guider'),
         Payment;
 
-    /*
-    function toQueryString(obj, splitter) {
-        var key, value, ret = [], encode = encodeURIComponent;
-
-        for (key in obj) {
-            value = obj[key];
-            obj.hasOwnProperty(key) && ret.push(key + '=' + encode(value));
-        }
-        return ret.join(splitter || '&');
-    };
-    */
     /**
     * @param {Object} data 相关参数数据
     * @param {boolean} isInApp 是否hybrid链接
@@ -51,10 +41,9 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
             },
             bookingSuccessUrl = BOOKING_SUCCESS_URL.replace('{orderid}', onum);
 
-		if (others) {
-			extendToken.isRealTimePay = others.IsRealPay || 0;
-		}
-        //isInApp ? (sback = bookingSuccessUrl, rback = BOOKING_URL) : (sback = bookingSuccessUrl, rback = BOOKING_URL);
+        if (others) {
+            extendToken.isRealTimePay = others.IsRealPay || 0;
+        }
         sback = domain + bookingSuccessUrl;
         rback = domain + BOOKING_URL;
         from = domain + (data.from || BOOKING_URL);
@@ -65,7 +54,7 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
         data.rback = ''; //第三方支付，不回跳到订单填写页， modified at 2014/10/11 17:12  by melvin ren
         return baseUrl + '#index?' + 'bustype=' + data.bustype + '&extend=' + encodeURIComponent(Crypt.Base64.encode(JSON.stringify(extendToken))) + '&oid=' + data.oid + '&token=' + encodeURIComponent(Crypt.Base64.encode(JSON.stringify(data)));
 
-    };
+    }
     function getEnv() {
         var host = WIN.location.host.toLowerCase(),
             env = 'uat';
@@ -76,9 +65,9 @@ define(['cUtility', 'cWidgetGuider', 'cWidgetFactory', 'cHybridFacade', 'cUtilit
             env = 'uat';
         } else if (host.match(/^(m|w\-tuan\-m)\.fat/i) || host.match(/^(localhost|127\.0)/i)) {
             env = 'dev';
-        };
+        }
         return env.toUpperCase();
-    };
+    }
     //全部都跳转web上
     Payment = isInApp ? {
         submit: function (page, data, others) {

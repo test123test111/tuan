@@ -29,6 +29,12 @@ namespace Tuan.Controllers
             return View();
         }
 
+        // 彩票页面
+        public ActionResult Lottery()
+        {
+            return View();
+        }
+
         // 当地特色页面
         public ActionResult LocalFeature()
         {

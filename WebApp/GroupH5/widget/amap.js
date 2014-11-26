@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * @depends underscore
  */
@@ -17,7 +18,7 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
     */
     function isObject(o) {
         return o === Object(o);
-    };
+    }
 
     AMapWidget = new cBase.Class({
         __propertys__: function () {
@@ -90,7 +91,7 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
 
             if (isObject(options)) {
                 opts = $.extend(this.options, options);
-            };
+            }
             this.options = opts;
             //更新容器大小
             self._updateContainerSize(opts.width, opts.height);
@@ -113,13 +114,13 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
             if (!host) {
                 this.__stacks.push(markerOptions);
                 return;
-            };
+            }
             if (isArray(markerOptions)) {
                 markerOptions.forEach(function (item) {
                     marker.push(self.addMarker(item));
                 });
                 return marker;
-            };
+            }
             marker = new host.Marker(markerOptions);
             marker.setMap(this.map);
             return marker;
@@ -137,15 +138,14 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
         * @param handler
         */
         addEvent: function (target, type, handler, context) {
-            var key,
-            self = this;
+            var key, self = this;
 
             if (isObject(type)) {
                 for (key in type) {
-                    type.hasOwnProperty(key) && self.addEvent(target, type, type[item], context);
-                };
+                    type.hasOwnProperty(key) && self.addEvent(target, type, type[key], context);
+                }
                 return;
-            };
+            }
             self.host.event.addListener(target, type, handler, context);
         },
         /**
@@ -153,16 +153,16 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
         * @param type
         * @param handler
         */
-        removeEvent: function (target, type, handler, context) {
+        removeEvent: function (target, type, handler) {
             var key,
             self = this;
 
             if (isObject(type)) {
                 for (key in type) {
-                    type.hasOwnProperty(key) && self.addEvent(type, type[item]);
-                };
+                    type.hasOwnProperty(key) && self.addEvent(type, type[key]);
+                }
                 return;
-            };
+            }
             self.host.event.removeListener(target, type, handler);
         },
         setFitView: function () {
@@ -212,8 +212,8 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
                     longitude: gpsInfo.lng,
                     accuracy: 50
                 },
-                timestamp: +new Date
-            }
+                timestamp: +new Date()
+            };
         },
         _addCurrentLocationTool: function (onComplete, onError, onBegin) {
             var self = this,
@@ -221,7 +221,7 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
                 host = this.host;
 
             mapObj.plugin('AMap.Geolocation', function () {
-                geolocation = new host.Geolocation({
+                var geolocation = new host.Geolocation({
                     enableHighAccuracy: true, //是否使用高精度定位，默认:true
                     timeout: 10000,          //超过10秒后停止定位，默认：无穷大
                     maximumAge: 0,           //定位结果缓存0毫秒，默认：0
@@ -244,21 +244,20 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
                                 geolocation.onPositionComplete(self._formatGPSInfo(gpsInfo));
                             },
                             onError: function (error) {
-                                geolocation.onPositionError(error)
+                                geolocation.onPositionError(error);
                             },
-                            onPosComplete: function (lng, lat) {
+                            onPosComplete: function () {
                             },
                             onPosError: function (error) {
-                                geolocation.onPositionError(error)
+                                geolocation.onPositionError(error);
                             }
                         }, self, true);
                     };
-                };
+                }
                 mapObj.addControl(geolocation);
                 host.event.addListener(geolocation, 'complete', $.proxy(onComplete, self)); //返回定位信息
                 host.event.addListener(geolocation, 'error', $.proxy(onError, self));      //返回定位出错信息
                 self.geolocation = geolocation;
-
             });
         },
         _updateContainerSize: function (width, height) {
@@ -269,10 +268,10 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
 
             if (!width) {
                 width = offset.width || body.clientWidth;
-            };
+            }
             if (!height) {
-                height = offset.height || body.clientHeight
-            };
+                height = offset.height || body.clientHeight;
+            }
             container.css({
                 width: width,
                 height: height
@@ -292,7 +291,7 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
                 });
                 if (stacks.length) {
                     this.addMarker(stacks);
-                };
+                }
 
                 this._bindEvents();
                 options.locationButton && this._addCurrentLocationTool(options.onGeoComplete, options.onGeoError, options.onGeoBegin);
@@ -305,7 +304,7 @@ define(['cBase', 'cUICore', 'cUtility', 'cWidgetFactory', 'cGeoService', 'cWidge
             if (window.AMap) {
                 callback();
                 return;
-            };
+            }
 
             var script = document.createElement("script"),
             options = this.options,

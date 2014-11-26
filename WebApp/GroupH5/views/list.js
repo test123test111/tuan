@@ -1,4 +1,5 @@
-﻿/**
+﻿/*jshint -W030*/
+/**
  * 列表页面
  * @url: m.ctrip.com/webapp/tuan/list
  */
@@ -14,13 +15,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         sortStore = TuanStore.GroupSortStore.getInstance(), //团购排序
         getLocalCityInfoModel = TuanModels.TuanLocalCityInfo.getInstance(),
         searchStore = TuanStore.GroupSearchStore.getInstance(),
-        categoryfilterStore = TuanStore.GroupCategoryFilterStore.getInstance(),  //团购类型
         returnPageStore = TuanStore.OrderDetailReturnPage.getInstance(),
         tuanCityListModel = TuanModels.TuanCityListModel.getInstance(), //团购城市
         positionfilterStore = TuanStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
         customFiltersStore = TuanStore.GroupCustomFilters.getInstance(), //团购自定义筛选项
         conditionModel = TuanModels.TuanConditionModel.getInstance(), //团购筛选Model
-        conditionStore = TuanStore.GroupConditionStore.getInstance(), //团购筛选数据
         geolcationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
         positionStore = TuanStore.TuanPositionStore.getInstance(), //定位信息
         historyCityListStore = TuanStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
@@ -62,7 +61,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             'click .cui-btns-retry': 'reloadPage',
             'click .J_showMore': 'showMore',
             'click .J_phone': 'callPhone',
-            'click #J_deleteFilter li': 'deleteFilter'
+            'click #J_deleteFilter li': 'deleteFilter',
+            'click .J_filtersAndSortPanel': function () {
+                //为了不挡住公司的广告（z-index:2002），把filterWrap的z-index默认设置为2001，这里点击之后再设置为9999
+                this.filterWrap.css('z-index', '9999');
+            }
         },
         callPhone: function (e) {
             Guider.apply({
@@ -72,7 +75,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
 
                     if (!target.attr(PHONE_ATTR_STR)) {
                         target = target.find('[' + PHONE_ATTR_STR + ']');
-                    };
+                    }
 
                     e.preventDefault();
                     Guider.callPhone({ tel: target.attr(PHONE_ATTR_STR) });
@@ -143,7 +146,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             } else {
                 self.keywordPanel.removeClass('list_s_fixed');
                 self.keywordPanel.css('top', '0');
-            };
+            }
         },
         /**
         * 重新定位
@@ -180,7 +183,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     successFn(address);
                 },
                 onError: errorFn,
-                onPosComplete: function (lng, lat) {
+                onPosComplete: function () {
                 },
                 onPosError: errorFn
             }, this, true);
@@ -231,7 +234,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     isOverseas: gpsInfo.country != '中国'
                 };
                 this.getLocalCityInfo(geoInfo, callback);
-            };
+            }
         },
         initTuanFilters: function () {
             var wrap = this.$el;
@@ -319,18 +322,18 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         */
         getCurrentCity: function (searchData) {
             var city = {
-                id: searchData.ctyId,
-                name: searchData.ctyName
-            },
+                    id: searchData.ctyId,
+                    name: searchData.ctyName
+                },
                 cityId = this.getQuery('cityid'); //从QueryString中获取cityid
 
             if (cityId && +cityId > 0) {
                 //判断是否有搜过过的城市记录，有则不替换
                 city = StoreManage.findCityInfoById(cityId);
-            };
-            if (!(+city.id)) {
+            }
+            if (city.id) {
                 city = StringsData.defaultCity;
-            };
+            }
             return city;
         },
         /**
@@ -398,15 +401,16 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             if (this.isDataReady) {
                 //地图的widget只会实例化一次，这里需要使用缓存
                 this.forwardJump('listmap', '/webapp/tuan/listmap');
-            };
+            }
         },
         createPage: function () {
             var searchData = searchStore.get(),
                 ctype = searchData.ctype,
                 cityId = searchData.ctyId || StringsData.defaultCity.id,
                 isNearby = this.isNearBy(),
-                isOneYuan = this.isOneYuan();
-            var title = StringsData.groupType[ctype]['name'] || StringsData.groupType[0]['name'];
+                isOneYuan = this.isOneYuan(),
+                title = StringsData.groupType[ctype].name || StringsData.groupType[0].name;
+
             if (isOneYuan) {
                 title = '一元团购';
             }
@@ -460,9 +464,9 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             type |= 8192; //酒店特色 HotelFeature
             conditionModel.setParam('type', type);
             conditionModel.setParam('categroy', searchStore.getAttr('ctype'));
-            conditionModel.excute(function (data) {
+            conditionModel.excute(function () {
                 this.initTuanFilters();
-            }, function (err) {
+            }, function () {
             }, false, this);
         },
         renderPageByCity: function () {
@@ -542,10 +546,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                         reloadBtn.show();
                         text += (MSG.youAreHere + gps.address);
                         infoWrap.html(text);
-                    };
+                    }
 
                     //我的附近默认按距离最近排序
-                    if (sortStore.getAttr('sortTypeIndex') == null && self.isNearBy()) {
+                    if (sortStore.getAttr('sortTypeIndex') === null && self.isNearBy()) {
                         searchStore.setAttr('sortRule', 8);
                         sortStore.setAttr('sortTypeIndex', 1);
 
@@ -560,13 +564,13 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 });
             } else {
                 var ctype = searchStore.getAttr('ctype');
-                var title = StringsData.groupType[ctype]['name'] || StringsData.groupType[0]['name'];
+                var title = StringsData.groupType[ctype].name || StringsData.groupType[0].name;
                 if (this.isOneYuan()) {
                     title = '一元团购';
                 }
                 this.updateTitle(title);
                 this._restoreScrollPos();
-            };
+            }
 
             //图片延迟加载插件
             this.LazyLoad = new LazyLoad({ wrap: this.$el, animate: 'opacity-fade-in' });
@@ -580,7 +584,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
 
             if (param.pageIdx < this.totalPages && this.totalPages > 1) {
                 this.isComplete = false;
-            };
+            }
 
             var h = pos.pageHeight - (pos.top + pos.height);
             if (h <= 300 && !this.isComplete && !this.isLoading) {
@@ -588,11 +592,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 if (param.pageIdx >= this.totalPages) {
                     this.isComplete = true;
                     return;
-                };
+                }
                 param.pageIdx = ++pageNum;
                 searchStore.setAttr('pageIdx', param.pageIdx);
                 this.getGroupListData(true);
-            };
+            }
         },
         showBottomLoading: function () {
             if (!this.bottomLoading) {
@@ -628,8 +632,8 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             } else {
                 if (!this.totalPages || +this.totalPages < 1 || !searchData.pageIdx || +searchData.pageIdx <= 1) {
                     this.listWrap.html(item);
-                };
-            };
+                }
+            }
             if (data.count > 0 && data.pageIdx >= this.totalPages) {
                 this.listWrap.append('<p class="sec-waiting" style="display:block;">没有更多结果了</p>');
             }
@@ -686,7 +690,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             model.param = searchStore.get();
 
             //'附近团购'进入，不传cityID
-            if (isNearBy && searchStore.getAttr('ctype') == 0) {
+            if (isNearBy && searchStore.getAttr('ctype') === 0) {
                 model.param.ctyId = 0;
                 model.param.ctyName = '';
             }
@@ -702,7 +706,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     this.totalPages = Math.ceil(data.count / this.pageSize);
                     if (this.totalPages > 1) {
                         $(window).bind('scroll', this.onWindowScroll);
-                    };
+                    }
                     list.isNearBy = isNearBy;
                     !notClearAll && this.listWrap.empty();
                     this.renderList(list);
@@ -712,10 +716,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                         if (cityid && cityname) {
                             searchStore.setAttr('ctyId', cityid);
                             searchStore.setAttr('ctyName', cityname);
-                            //判断是否已经初始化过，底部筛选项， 如果没有初始化，执行初始化
-                            if (!this.tuanfilters) {
-                                this.getConditionData(cityid);
-                            }
+                        }
+                        //判断是否已经初始化过，底部筛选项， 如果没有初始化，执行初始化
+                        if (cityid && cityname && !this.tuanfilters) {
+                            this.getConditionData(cityid);
                         }
                     }
                     MemCache.setItem('hasListData', true);
@@ -734,7 +738,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     if (!isNearBy) {
                         self.displayGPSInfo(data.curpos || {}, isNearBy);
                     }
-                };
+                }
                 this.LazyLoad && this.LazyLoad.updateDom();
             }, function (err) {
                 this.hideLoading();
@@ -796,7 +800,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 setTimeout(function () {
                     window.scrollTo(pos.x, pos.y);
                 }, 0);
-            };
+            }
         },
         _saveScrollPos: function () {
             MemCache.setItem(PAGE_POSITION, { x: window.scrollX, y: window.scrollY });
@@ -840,13 +844,13 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     break;
                 case 'feature':
                     searchStore.removeAttr('from_feature');
-                    this.updateTitle(StringsData.groupType[0]['name']);
+                    this.updateTitle(StringsData.groupType[0].name);
                     break;
                 case 'price':
                     searchStore.setAttr('qparams', []);
                     label.find('li[data-tab="price"] i').hide();
                     customFiltersStore.removeAttr('price');
-                    this.updateTitle(StringsData.groupType[0]['name']);
+                    this.updateTitle(StringsData.groupType[0].name);
                     break;
                 default:
                     customFiltersStore.removeAttr(type);
@@ -875,7 +879,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         showCityPage: function () {
             this.forwardJump('citylist', '/webapp/tuan/citylist');
         },
-        showKeywordSearch: function (e) {
+        showKeywordSearch: function () {
             this.forwardJump('keywordsearch', '/webapp/tuan/keywordsearch');
         },
         showMore: function (e) {

@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * @author: xuweichen
  * @date: 2014-2-13
@@ -273,7 +274,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         'opacity': 1
                     });
                     self._categoryStatus = true;
-                    if (self._categoryInited == undefined) {
+                    if (self._categoryInited === undefined) {
                         self.initCategoryTab();
                         self._categoryInited = true;
                     }
@@ -334,7 +335,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
 
                     searchStore.setAttr('qparams', StoreManage.getGroupQueryParam());
                     searchStore.setAttr('ctype', tuanType);
-                    self.options.categoryTrigger.html(subName || StringsData.groupType[tuanType]['name']);
+                    self.options.categoryTrigger.html(subName || StringsData.groupType[tuanType].name);
                     self.resetPosition(tuanType);
                     self.getListData();
 
@@ -352,13 +353,13 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var categoryTrigger = this.options.categoryTrigger;
             ret.tuanTypeVal = categoryData.tuanType || searchStore.getAttr('ctype') || 0;
             categoryData.subVal && (ret.subVal = categoryData.subVal);
-            categoryTrigger.html(categoryData.subName || StringsData.groupType[ret.tuanTypeVal]['name']);
+            categoryTrigger.html(categoryData.subName || StringsData.groupType[ret.tuanTypeVal].name);
 
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var groupCondition = conditionData.categroy[0].groupCondition;
                 if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
-                    ret.tuanType = $.grep(groupCondition, function (v, j) { return v.type == 16; });
-                    ret.subTuanType = $.grep(groupCondition, function (v, j) { return v.type == 32; });
+                    ret.tuanType = $.grep(groupCondition, function (v) { return v.type == 16; });
+                    ret.subTuanType = $.grep(groupCondition, function (v) { return v.type == 32; });
                     this.options.categoryPanel.html(tuanTypeTpl(ret));
                 }
             }
@@ -373,7 +374,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                 //团购分类Tab未初始化，重现渲染分类
                 this.renderCategory();
             }
-            this.options.categoryTrigger.html(StringsData.groupType[ctype]['name']);
+            this.options.categoryTrigger.html(StringsData.groupType[ctype].name);
         },
         /**
         * 初始化位置区域
@@ -386,7 +387,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             this.renderPosition();
 
             trigger.on('click', function () {
-                if (isLoadingCondition) return;//正在加载数据时，位置区域不能点 TODO(提示用户)
+                if (isLoadingCondition){ return; }//正在加载数据时，位置区域不能点 TODO(提示用户)
                 if (!self._positionStatus) {
                     self.options.categoryPanel.hide();
                     self.options.filterPanel.hide();
@@ -403,7 +404,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         '-webkit-transform': 'translate(0, -8px) translateZ(0)',
                         'opacity': 1
                     });
-                    if (self._positionInited == undefined) {
+                    if (self._positionInited === undefined) {
                         self.initPositionTab();
                         self._positionInited = true;
                     }
@@ -449,7 +450,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                 resetSubwayLine();
             }
 
-            var positionTab = new Tab({
+            this.positionTab = new Tab({
                 label: label,
                 panel: panel,
                 isScroll: true,
@@ -461,6 +462,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     subwayStationWrap.hide();
                 },
                 onSelect: function (item) {
+                    var line, currLine;
                     var type = item.data('type');
                     var name = item.data('text');
                     var searchData = searchStore.get();
@@ -519,8 +521,8 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                 break;
                             case 19: //选择地铁全线
                                 resetAll(item);
-                                var line = item.data('line');
-                                var currLine = subwayLineWrap.find('li[data-value="' + line + '"]');
+                                line = item.data('line');
+                                currLine = subwayLineWrap.find('li[data-value="' + line + '"]');
                                 positionfilterStore.set({
                                     'type': 19,
                                     'name': name,
@@ -535,7 +537,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                 currLine.addClass('backwards').siblings().removeClass('backwards');
                                 break;
                             case -5: //地铁线，进入地铁站列表
-                                var line = item.data('value');
+                                line = item.data('value');
                                 if (line == subwayStationWrap.data('line')) {
                                     subwayLineWrap.hide();
                                     subwayStationWrap.show();
@@ -562,8 +564,8 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                     obj.val = val;
                                 }
                                 if (type == -3) {//选择地铁站
-                                    var line = item.data('line');
-                                    var currLine = subwayLineWrap.find('li[data-value="' + line + '"]');
+                                    line = item.data('line');
+                                    currLine = subwayLineWrap.find('li[data-value="' + line + '"]');
                                     obj.line = line;
                                     //返回到地铁线列
                                     subwayLineWrap.show();
@@ -598,10 +600,10 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     //地铁站、机场车站、景点、大学周边按经纬度查询， 默认1公里，故放出"距离"筛选条件
                     var ctype = searchStore.getAttr('ctype');
                     if (type < 0) {
-                        self.renderFilter(StringsData.groupType[ctype]['category'], true);
+                        self.renderFilter(StringsData.groupType[ctype].category, true);
                     } else {
                         customFiltersStore.removeAttr('distance');
-                        self.renderFilter(StringsData.groupType[ctype]['category'], false);
+                        self.renderFilter(StringsData.groupType[ctype].category, false);
                     }
                     self.updateCustomFilterIcon();
 
@@ -631,11 +633,11 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var conditionData = conditionStore.get();
             ret.curr = positionfilterStore.get() || {};
             this.updatePositionName();
-            tuanType = tuanType || searchStore.getAttr('ctype');
+            tuanType = tuanType || searchStore.getAttr('ctype') || 0;
             ret.tuanType = tuanType;
 
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
-                var categroy = $.grep(conditionData.categroy, function (v, j) { return v.ctype == tuanType; });
+                var categroy = $.grep(conditionData.categroy, function (v) { return v.ctype == tuanType; });
                 if (categroy && $.isArray(categroy) && categroy.length > 0) {
                     var groupCondition = conditionData.categroy[0].groupCondition;
                     if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
@@ -650,17 +652,27 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                                 case 4096: ret.Attraction.push(v); break;
                             }
                         });
-
-                        if (ret.Zone.length || ret.Location.length || ret.College.length) {
-                            positionTrigger.show();
-                            positionPanel.html(positionTpl(ret));
-                            callback && callback();
-                        } else {
-                            positionTrigger.hide();
-                        }
                     }
                 } else {
                     positionTrigger.hide();
+                }
+
+                if (+tuanType === 7) { //旅游度假分类不需要显示景点、机场车站、地铁
+                    if (ret.Zone.length || ret.Location.length || ret.College.length) {
+                        positionTrigger.show();
+                        positionPanel.html(positionTpl(ret));
+                        callback && callback();
+                    } else {
+                        positionTrigger.hide();
+                    }
+                } else {
+                    if (ret.Zone.length || ret.Location.length || ret.College.length || ret.AirportStation.length || ret.SubwayLine.length || ret.Attraction.length) {
+                        positionTrigger.show();
+                        positionPanel.html(positionTpl(ret));
+                        callback && callback();
+                    } else {
+                        positionTrigger.hide();
+                    }
                 }
             }
         },
@@ -694,7 +706,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     //把_positionInited设为undefined，以便重新初始化positionTab
                     self._positionInited = undefined;
                 });
-            }, function (err) {
+            }, function () {
             }, false, this);
         },
         updatePositionName: function(name) {
@@ -718,7 +730,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var customFilter = self.options.customFilter;
             var viewWrap = this.page.$el;
             var panel = viewWrap.find('#J_filterPanel');
-            var pricePanel = viewWrap.find('#J_pricePanel');
+            // var pricePanel = viewWrap.find('#J_pricePanel');
             var checkboxWrap = viewWrap.find('#J_checkboxWrap');
             var cancelBtn = viewWrap.find('.pop_filter_cancel');
             var sureBtn = viewWrap.find('.pop_filter_sure');
@@ -744,7 +756,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         '-webkit-transform': 'translate(0, -8px) translateZ(0)',
                         'opacity': 1
                     });
-                    if (self._customFilterInited == undefined) {
+                    if (self._customFilterInited === undefined) {
                         self.initFilterTab();
                         self._customFilterInited = true;
                     }
@@ -771,12 +783,12 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                 self._customFilterStatus = false;
             });
             checkboxWrap.on('click', 'div[data-type]', function (e) {
-                if (e.target.tagName == 'LABEL') return;
+                if (e.target.tagName == 'LABEL') { return; }
                 var currentTarget = $(e.currentTarget);
                 var type = currentTarget.data('type');
                 var isChecked = currentTarget.find('input:checked').length;
                 if (type == 'weekendsAvailable') {
-                    searchStore.setAttr('weekendsAvailable', isChecked ? 1 : 0)
+                    searchStore.setAttr('weekendsAvailable', isChecked ? 1 : 0);
                 } else {
                     customFiltersStore.setAttr(type, isChecked ? 1 : 0);
                 }
@@ -796,7 +808,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
 
             label.on('click', 'li', function (e) {
                 var currentTarget = $(e.currentTarget);
-                if (currentTarget.hasClass('choosed')) return;
+                if (currentTarget.hasClass('choosed')) { return; }
                 var tab = currentTarget.data('tab');
                 label.find('.choosed').removeClass('choosed');
                 currentTarget.addClass('choosed');
@@ -825,7 +837,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         customFiltersStore.removeAttr('star');
                         label.find('li[data-tab="star"]>i').hide();
                     } else {
-                        var val = val.toString();
+                        val = val.toString();
                         var star = customFiltersStore.getAttr('star') || {};
                         if (item.parent().find('input:checked').length) {
                             stars[0].checked = false;
@@ -850,6 +862,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         * param {Boolean} isShowPanel
         */
         renderTabWrap: function (tab, panel, isShowPanel) {
+            var brandSroll, traitScroll, distanceSroll;
             var customdata = customFiltersStore.get();
             var wrap = panel.find('div[data-tab="' + tab + '"]');
             isShowPanel && wrap.show();
@@ -891,28 +904,32 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     }
                     break;
                 case 'brand':
-                    var brandWrap = wrap.find('#J_brand');
-                    var wrapper = brandWrap.parent();
-                    wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
-                    brandWrap.html(brandTpl(this.getDataFromCondition('brand', 1)));
-                    new Scroll({
-                        wrapper: wrapper,
-                        scroller: brandWrap
-                    });
+                    var brandSroller = wrap.find('#J_brand');
+                    if (brandSroller.length) {
+                        var brandWrapper = brandSroller.parent();
+                        brandWrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
+                        brandSroller.html(brandTpl(this.getDataFromCondition('brand', 1)));
+                        brandSroll = new Scroll({
+                            wrapper: brandWrapper,
+                            scroller: brandSroller
+                        });
+                    }
                     break;
                 case 'trait':
-                    var traitWrap = wrap.find('#J_trait');
-                    var wrapper = traitWrap.parent();
-                    wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
-                    traitWrap.html(traitTpl(this.getDataFromCondition('trait', 8192)));
-                    new Scroll({
-                        wrapper: wrapper,
-                        scroller: traitWrap
-                    });
+                    var traitScroller = wrap.find('#J_trait');
+                    if (traitScroller.length) {
+                        var traitWrapper = traitScroller.parent();
+                        traitWrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
+                        traitScroller.html(traitTpl(this.getDataFromCondition('trait', 8192)));
+                        traitScroll = new Scroll({
+                            traitWrapper: traitWrapper,
+                            scroller: traitScroller
+                        });
+                    }
                     break;
                 case 'distance':
                     if (!wrap.data('scrolled')) {
-                        new Scroll({
+                        distanceSroll = new Scroll({
                             wrapper: wrap,
                             scroller: wrap.find('ul')
                         });
@@ -970,7 +987,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var groupCondition = conditionData.categroy[0].groupCondition;
                 if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
-                    ret.arr = $.grep(groupCondition, function (v, j) { return (v.type == typeVal); });
+                    ret.arr = $.grep(groupCondition, function (v) { return (v.type == typeVal); });
                 }
             }
             return ret;
@@ -987,7 +1004,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var groupCondition = conditionData.categroy[0].groupCondition;
                 if (groupCondition && $.isArray(groupCondition) && groupCondition.length > 0) {
-                    ret.arr = $.grep(groupCondition, function (v, j) { return (v.parentType == lineId); });
+                    ret.arr = $.grep(groupCondition, function (v) { return (v.parentType == lineId); });
                 }
             }
             return ret;
@@ -1001,10 +1018,10 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var isNearBy = StoreManage.isNearBy();
             var viewWrap = this.page.$el;
             var clearBtn = viewWrap.find('.pop_filter_clear');
-            if (clearBtn.hasClass('sta-disabled')) return;
+            if (clearBtn.hasClass('sta-disabled')) { return; }
             var label = viewWrap.find('#J_filterTabLabel');
             var panel = viewWrap.find('#J_filterTabPanel');
-            searchStore.removeAttr('weekendsAvailable')
+            searchStore.removeAttr('weekendsAvailable');
             customFiltersStore.removeAttr('multiShop');
             customFiltersStore.removeAttr('voucher');
             var arr = RADIO_ITEM.concat(['star']);
@@ -1012,7 +1029,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                 arr.splice(arr.indexOf('distance'), 1);
             }
 
-            _.each(arr, function (v, i) {
+            _.each(arr, function (v) {
                 customFiltersStore.removeAttr(v);
                 self.renderTabWrap(v, panel, false);
             });

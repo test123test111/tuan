@@ -308,9 +308,8 @@ function (TuanApp, c, cUIAlert, TuanBaseView, CommonPageFactory, StoreManage, St
                 this.geoCallback.cancelNearby = 0;
                 this.showLoading();
                 this.locateInterface();
-            } else if (category == 'redenvelope') {
-                var domain = 'http://' + (TuanApp.isProduction ? 'pages.ctrip.com' : 'pages.dev.sh.ctriptravel.com');
-                TuanApp.jumpToPage(domain + '/commerce/promote/201411/hotel/hbh5/packet.html?t=' + +new Date(), self);
+            } else if (category == 'lottery') {
+                this.forwardJump('lottery', '/webapp/tuan/lottery');
             } else {
                 this.goList(category);
             }

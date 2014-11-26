@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * @depends underscore
  */
@@ -27,12 +28,12 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
      */
     function isObject(o){
         return o === Object(o);
-    };
+    }
 
     // 如果WidgetFactory已经注册了ListView，就无需重复注册
     if (WidgetFactory.hasWidget(WIDGET_NAME)) {
         return;
-    };
+    }
 
     TabSlide = new cBase.Class({
         __propertys__: function(){
@@ -110,14 +111,14 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                  * @event 初始化完
                  */
                 onInit: NOOP
-            }
+            };
         },
         initialize: function(options){
             var opts;
 
             if(isObject(options)){
                 this.options = $.extend(this.options, options);
-            };
+            }
             opts = this.options;
             this.container = opts.container;
             this.tpl = opts.tpl;
@@ -129,7 +130,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 this._isInteractive() && this._bindEvents();
             }else{
                 console.error('no container!');
-            };
+            }
         },
         /**
          * 是否可交互，轮播，滑动等
@@ -176,7 +177,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         destroy: function () {
             var self = this;
             self.container.innerHTML = '';
-            window.removeEventListener('resize', self._resize);            
+            window.removeEventListener('resize', self._resize);
         },
         /**
          * 当前播放索引
@@ -196,7 +197,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
          * @param currentIndex
          * @returns {TabSlide}
          */
-        render: function(source, currentIndex){            
+        render: function(source, currentIndex){
             var opts = this.options;
 
             this.source = source;
@@ -206,7 +207,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
             this.items.css('width', this._runtime.width);
             this._runtime.root.css('width', (this._runtime.width * this._runtime.count) + 'px');
             this._showCurrent(this._runtime.root, currentIndex);
-            
+
             return this;
         },
         /**
@@ -232,13 +233,12 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
             clearTimeout(this.__autoplayTimer);
             this.goto(0);
         },
-        goto: function (index, swipeDirection, isAutoplay) {
-            var self = this,
-                env = this._runtime,
+        goto: function (index) {
+            var env = this._runtime,
                 options = this.options,
-                direction = options.direction,                
+                direction = options.direction,
                 max = env.count,
-                width = env.width;            
+                width = env.width;
             //边界判断
             if (index >= 0 && index < max) {
                 TabSlide.animate(env.root, direction * width * this._current, direction * width * index, this.options.animationDuration);
@@ -252,7 +252,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 });
             }
         },
-        _resize: function () {            
+        _resize: function () {
             this._runtime = this._getRuntimeEnv();
             this.items.css('width', this._runtime.width);
             this._runtime.root.css('width', (this._runtime.width * this._runtime.count) + 'px');
@@ -261,8 +261,8 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         _showCurrent: function(root, index){
             var env = this._runtime;
             TabSlide.translate(env.root, this.options.direction * env.width * index, 0);
-            this._current = index;            
-        },        
+            this._current = index;
+        },
         _getSwipeDirection: function(start, end){
             var offset = end - start,
                 offsetABS = Math.abs(offset),
@@ -270,7 +270,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
 
             if(offsetABS>0 && offsetABS >this.options.minSwipe){
                 direction = offset/offsetABS;
-            };
+            }
             return direction;
         },
         _getRuntimeEnv: function(){
@@ -287,11 +287,9 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 root: root,
                 stage: stage,
                 count: itemsCount
-            }
-
+            };
         },
         __touchStartHandler: function(event){
-
             var touches = event.touches[0],
                 root = this._getRuntimeEnv().root,//不能直接用zepto的offset()，有偏移
                 translateX = root.css(CSS3ExpandoPrefix+'transform').match(RE_CSS_VAL);
@@ -301,7 +299,7 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                 left: Number(translateX),
                 x   : touches.pageX,
                 y   : touches.pageY,
-                t   : +new Date //时间戳
+                t   : +new Date() //时间戳
             };
         },
         __touchEndHandler: function(event){
@@ -313,12 +311,10 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                     swipeDirection === TabSlide.RIGHT? 'prev'  :
                                                             'goto'
                 ]();
-
-
         },
-        __transitionEndHandler: function(event){
-            var current = this._current,
-                self = this;
+        __transitionEndHandler: function(){
+            //var current = this._current,
+                //self = this;
 
             //setTimeout(function(){
                 //self.options.onSwitchEnd.call(self, event, current, self.source[current]);
@@ -327,13 +323,13 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         __moveHandler: function(event){
             event.preventDefault();//必须禁止默认行为，否则拖动卡
             //判断多指触摸，缩放
-            if ( event.touches.length > 1 || event.scale && event.scale !== 1) return
+            if ( event.touches.length > 1 || event.scale && event.scale !== 1) { return; }
 
-            var touches = event.touches[0],
-                env = this._getRuntimeEnv(),
-                root = env.root,
-                start = this.__lastTouchStartPos,
-                offsetX = start.left + touches.pageX - start.x;
+            //var touches = event.touches[0],
+                //env = this._getRuntimeEnv(),
+                //root = env.root,
+                //start = this.__lastTouchStartPos;
+                //offsetX = start.left + touches.pageX - start.x;
         }
     });
     /**
@@ -354,11 +350,12 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
      * @param dist
      * @param duration
      */
-    TabSlide.translate = function(dom, dist, duration){
+    //TabSlide.translate = function(dom, dist, duration){
+    TabSlide.translate = function(dom, dist){
         var slide = dom[0],
             style = slide && slide.style;
 
-        if (!style) return;
+        if (!style) { return; }
 
         //dom.css(CSS3ExpandoPrefix+'transition', duration + 'ms ease-out');//不要用translateX，在chrome下卡
         //dom.css(CSS3ExpandoPrefix + 'transform', 'translate(' + dist + 'px,0) translateZ(0)');
@@ -381,5 +378,4 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
         name: WIDGET_NAME,
         fn: TabSlide
     });
-
 });

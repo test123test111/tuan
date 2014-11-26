@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * @author: xuweichen
  * @date: 2014/7/25 16:18
@@ -11,7 +12,7 @@ define(['cBase', 'cWidgetFactory','cWidgetGuider', 'libs'], function(cBase, Widg
     // 如果WidgetFactory已经注册了VoiceSearch，就无需重复注册
     if (WidgetFactory.hasWidget(WIDGET_NAME)) {
         return;
-    };
+    }
     VoiceSearch = new cBase.Class({
         __propertys__: function(){
             this.trigger = null;
@@ -21,7 +22,7 @@ define(['cBase', 'cWidgetFactory','cWidgetGuider', 'libs'], function(cBase, Widg
             this.trigger = trigger;
             if(trigger && trigger.length){
                 this._bindEvents();
-            };
+            }
         },
 
         _bindEvents: function(){
