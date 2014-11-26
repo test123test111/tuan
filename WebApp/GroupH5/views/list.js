@@ -62,7 +62,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             'click .cui-btns-retry': 'reloadPage',
             'click .J_showMore': 'showMore',
             'click .J_phone': 'callPhone',
-            'click #J_deleteFilter li': 'deleteFilter'
+            'click #J_deleteFilter li': 'deleteFilter',
+            'click .J_filtersAndSortPanel': function () {
+                //为了不挡住公司的广告（z-index:2002），把filterWrap的z-index默认设置为2001，这里点击之后再设置为9999
+                this.filterWrap.css('z-index', '9999');
+            }
         },
         callPhone: function (e) {
             Guider.apply({
