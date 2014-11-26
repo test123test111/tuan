@@ -649,7 +649,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                             }
                         });
 
-                        if (ret.Zone.length || ret.Location.length || ret.College.length) {
+                        if (ret.Zone.length || ret.Location.length || ret.College.length || ret.AirportStation.length || ret.SubwayLine.length || ret.Attraction.length) {
                             positionTrigger.show();
                             positionPanel.html(positionTpl(ret));
                             callback && callback();
