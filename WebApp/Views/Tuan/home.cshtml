@@ -13,9 +13,6 @@
             url: '@ConfigurationManager.AppSettings["restfullApi"]/json/BannerSearch',
             postdata: {
                 cid: 2
-            },
-            suspend: function() {
-                return Lizard.runAt == 'client';
             }
         }, {
             name: 'HotCitySearch',
@@ -25,9 +22,6 @@
                 isseo: 1,
                 ctyId: 0, //默认全国
                 environment: 1
-            },
-            suspend: function() {
-                return Lizard.runAt == 'client';
             }
         }],
         "filter": function(datas) {
