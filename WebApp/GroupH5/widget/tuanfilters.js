@@ -900,23 +900,27 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     break;
                 case 'brand':
                     var brandWrap = wrap.find('#J_brand');
-                    var wrapper = brandWrap.parent();
-                    wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
-                    brandWrap.html(brandTpl(this.getDataFromCondition('brand', 1)));
-                    new Scroll({
-                        wrapper: wrapper,
-                        scroller: brandWrap
-                    });
+                    if (brandWrap.length) {
+                        var wrapper = brandWrap.parent();
+                        wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
+                        brandWrap.html(brandTpl(this.getDataFromCondition('brand', 1)));
+                        new Scroll({
+                            wrapper: wrapper,
+                            scroller: brandWrap
+                        });
+                    }
                     break;
                 case 'trait':
                     var traitWrap = wrap.find('#J_trait');
-                    var wrapper = traitWrap.parent();
-                    wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
-                    traitWrap.html(traitTpl(this.getDataFromCondition('trait', 8192)));
-                    new Scroll({
-                        wrapper: wrapper,
-                        scroller: traitWrap
-                    });
+                    if (traitWrap.length) {
+                        var wrapper = traitWrap.parent();
+                        wrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
+                        traitWrap.html(traitTpl(this.getDataFromCondition('trait', 8192)));
+                        new Scroll({
+                            wrapper: wrapper,
+                            scroller: traitWrap
+                        });
+                    }
                     break;
                 case 'distance':
                     if (!wrap.data('scrolled')) {
