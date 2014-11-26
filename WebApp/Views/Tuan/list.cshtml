@@ -59,7 +59,7 @@
                 cityabc: Lizard.P('pinyin')
             },
             suspend: function() {
-                return Lizard.runAt == 'client';
+                return Lizard.runAt != 'client';
             }
         }, {
             name: 'ListSearch',
@@ -183,7 +183,7 @@
                 return postData;
             })(),
             suspend: function() {
-                return Lizard.runAt == 'client';
+                return Lizard.runAt != 'client';
             }
         }],
         "filter": function(datas) {

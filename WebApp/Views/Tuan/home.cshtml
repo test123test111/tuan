@@ -15,7 +15,7 @@
                 cid: 2
             },
             suspend: function() {
-                return Lizard.runAt == 'client';
+                return Lizard.runAt != 'client';
             }
         }, {
             name: 'HotCitySearch',
@@ -27,7 +27,7 @@
                 environment: 1
             },
             suspend: function() {
-                return Lizard.runAt == 'client';
+                return Lizard.runAt != 'client';
             }
         }],
         "filter": function(datas) {
