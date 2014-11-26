@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * 优惠券页面
  * @url: m.ctrip.com/webapp/tuan/invoice
@@ -25,8 +26,9 @@ define(['TuanApp', 'libs', 'c', 'cUIScrollRadio', 'cUIScrollRadioList', 'TuanSto
             {key: '平信(免费)', tip: '发票在您的团购券使用后10个工作日内以平信方式送达。'},
             {key: '快递(￥10)', tip: '发票在您的团购券使用后5个工作日内以快递方式送达。'}
         ];
-    var PageView = CommonPageFactory.create("TuanBaseView");
-    var View = PageView.extend({
+    var PageView = CommonPageFactory.create("TuanBaseView"),
+        View;
+    View = PageView.extend({
         tpl: html,
         events: {
             'click #J_region': 'showRegion',
@@ -89,7 +91,7 @@ define(['TuanApp', 'libs', 'c', 'cUIScrollRadio', 'cUIScrollRadioList', 'TuanSto
         onHide: function () { },
         invoiceSwitch: function (isTurnOn) {
             var self = this;
-            new Switch({
+            return new Switch({
                 cursor: this.els.needInvoice,
                 isTurnOn: isTurnOn,
                 onChange: function (rs) {
@@ -169,7 +171,7 @@ define(['TuanApp', 'libs', 'c', 'cUIScrollRadio', 'cUIScrollRadioList', 'TuanSto
                     return false;
                 }
                 //邮编
-                if (invoice.zip.length == 0) {
+                if (invoice.zip.length === 0) {
                     this.showMessage(MSG.zipLessTip);
                     return false;
                 } else {
@@ -187,7 +189,7 @@ define(['TuanApp', 'libs', 'c', 'cUIScrollRadio', 'cUIScrollRadioList', 'TuanSto
         //得到汉字字符串的长度
         _length: function (s) {
             var reg = s.match(/[^ -~]/g);
-            return reg == null ? s.length : s.length + reg.length;
+            return reg === null ? s.length : s.length + reg.length;
         },
         //加载省市县数据
         getRegionInfo: function(callback) {
@@ -196,7 +198,7 @@ define(['TuanApp', 'libs', 'c', 'cUIScrollRadio', 'cUIScrollRadioList', 'TuanSto
             });
             regionInfoModel.excute(function(data) {
                 callback && callback(data);
-            }, function (err) {
+            }, function () {
                 this.showMessage('抱歉，数据加载失败，请重试!');
             }, false, this);
         },
@@ -215,36 +217,38 @@ define(['TuanApp', 'libs', 'c', 'cUIScrollRadio', 'cUIScrollRadioList', 'TuanSto
                 region = $('#J_region'),
                 regionText = $('#J_regionText'),
                 index = region.data('regionIndex').split(',');
-            _.each(d.cities, function(v, i) {
+            _.each(d.cities, function(v) {
                 if (v.pid == d1[index[0]].pid) {
                     d2.push(v);
                 }
             });
-            _.each(d.zones, function(v, i) {
+            _.each(d.zones, function(v) {
                 if (v.cid == d2[index[1]].cid) {
                     d3.push(v);
                 }
             });
-            function c1(item) {
-                var n = 0, arr = [];
-                _.each(d.cities, function(v, i) {
+
+            var c2 = function(item) {
+                var  arr = [];
+                _.each(d.zones, function(v) {
+                    if (v.cid == item.cid) {
+                        arr.push(v);
+                    }
+                });
+                this.scroll[2].reload(arr);
+            };
+            var c1 = function(item) {
+                var arr = [];
+                _.each(d.cities, function(v) {
                     if (v.pid == item.pid) {
                         arr.push(v);
                     }
                 });
                 this.scroll[1].reload(arr);
                 c2.call(this, arr[this.scroll[1].selectedIndex]);
-            }
-            function c2(item) {
-                var n = 0, arr = [];
-                _.each(d.zones, function(v, i) {
-                    if (v.cid == item.cid) {
-                        arr.push(v);
-                    }
-                });
-                this.scroll[2].reload(arr);
-            }
-            function c3(item) {}
+            };
+
+            function c3() {}
             var scrollRadio = new ScrollRadio({
                 title: '选择所在地区',
                 data: [d1, d2, d3],

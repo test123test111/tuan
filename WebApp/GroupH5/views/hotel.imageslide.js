@@ -14,8 +14,8 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
         pageid: '260003',
         hpageid: '261003',
         events: {
-            'click #J_prev': 'prevImg',
-            'click #J_next': 'nextImg'
+            //'click #J_prev': 'prevImg',
+            //'click #J_next': 'nextImg'
         },
         onCreate: function() {},
         onLoad: function() {
@@ -47,7 +47,7 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
         backAction: function() {
             this.back();
         },
-        backHome: function(e) {
+        backHome: function() {
             TuanApp.tHome();
         },
         createSlide: function(imgsData) {
@@ -66,13 +66,13 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
             if (len) {
                 for (var i = 0; i < len; i++) {
                     formattedData.push({
-                        title: imgsData[i]['title'],
-                        src: imgsData[i]['large'],
-                        href: 'javascript:void(0)',
-                        desc: imgsData[i]['desc']
+                        title: imgsData[i].title,
+                        src: imgsData[i].large,
+                        href: 'javascript:void(0);',
+                        desc: imgsData[i].desc
                     });
                 }
-            };
+            }
 
             if (formattedData.length) {
                 //修复子页面容器撑不开问题
@@ -97,8 +97,9 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
                     }
                 });
                 this.slider = imageSlide;
-            };
-        },
+            }
+        }
+        /*
         prevImg: function() {
             if (window.imgIndex > 1) {
                 this.slider.pre();
@@ -108,7 +109,7 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
             if (window.imgIndex < images.length) {
                 this.slider.next();
             }
-        }
+        }*/
     });
     return View;
 });

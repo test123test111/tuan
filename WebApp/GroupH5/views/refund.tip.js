@@ -38,7 +38,7 @@ define(['TuanApp', 'libs', 'c', 'cWidgetFactory', 'cWidgetGuider', 'TuanBaseView
 
                                 if (!target.attr(PHONE_ATTR_STR)) {
                                     target = target.find('[' + PHONE_ATTR_STR + ']');
-                                };
+                                }
                                 e.preventDefault();
                                 Guider.callPhone({ tel: target.attr(PHONE_ATTR_STR) });
                                 return false;

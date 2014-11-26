@@ -1,9 +1,10 @@
-﻿/**
+﻿/*jshint -W030*/
+/**
  * 订单详情页
  * @url: m.ctrip.com/webapp/tuan/keywordsearch
  */
 define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFactory', 'cUtility', 'TuanModel', 'cDataSource', 'TuanStore', 'StoreManage', 'StringsData', 'FilterXss', 'text!KeywordSearchTpl', 'HttpErrorHelper', 'TabSlide'],
- function (TuanApp, libs, c, TuanBaseView, cWidgetFactory, CommonPageFactory, Util, TuanModel, cDataSource, TuanStore, StoreManage, StringsData, FilterXss, html, HttpErrorHelper) {
+ function (TuanApp, libs, c, TuanBaseView, cWidgetFactory, CommonPageFactory, Util, TuanModel, CDataSource, TuanStore, StoreManage, StringsData, FilterXss, html, HttpErrorHelper) {
      var cui = c.ui,
         tuanSearchStore = TuanStore.GroupSearchStore.getInstance(),
         historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance(),
@@ -20,7 +21,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          hpageid: '215001',
          tuankeyWordList: TuanModel.TuanKeyWordListModel.getInstance(),
          tuanHotKeywords: TuanModel.TuanHotKeywordsModel.getInstance(),
-         dateSource: new cDataSource(),
+         dateSource: new CDataSource(),
          selectItem: null,
          isComplete: false, //是否完成
          isLoading: false,
@@ -40,7 +41,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              this.cityListTplfun = _.template(this.els.keywordSuggestTpl.html());
              this.hotKeywordsTplfun = _.template(this.els.hotKeywordsTpl.html());
 
-             if (Util.isInApp() && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
+             if (Util.isInApp() && TuanApp.isOverOS7()) {
                  this.els.keywordSearch.css('border-top', '20px solid #b3b3b3');
                  this.els.keywordSearch.css('padding-top', '10px');
                  this.els.keywordSuggestBox.css('padding-top', '20px');
@@ -54,12 +55,12 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              'click .J_clearhistory': 'onClearHistory',
              'click #js_hotkeyword .sw_con>li': 'goHotSearch'
          },
-         onCancelInput: function (e) {
+         onCancelInput: function () {
              StoreManage.clearSpecified(true);
              StoreManage.setCurrentKeyWord(false);
              this.back();
          },
-         onClearHistory: function (e) {
+         onClearHistory: function () {
              historyKeySearchtore.remove();
              this.createPage({});
              this.els.keywordInput.val('');
@@ -87,7 +88,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          },
          onSubmitSearch: function () {
              var keywordValue = FilterXss.filterXSS(this.els.keywordInput.val());
-             if (typeof keywordValue == "undefined" || keywordValue == "" || keywordValue == null) return false;
+             if (typeof keywordValue === "undefined" || keywordValue === "" || keywordValue === null) {return false;}
              this.els.keywordInput[0].blur();
              StoreManage.clearSpecified(true);
              StoreManage.addHistoryKeyWord(keywordValue, keywordValue, 7);
@@ -131,7 +132,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          },
          doQueryData: function (keyword) {
              try {
-                 if (typeof keyword == "undefined" || keyword == "" || keyword == null) return;
+                 if (typeof keyword == "undefined" || keyword === "" || keyword === null) {return;}
                  var searchData = tuanSearchStore.get();
 
                  this.lastinputkey = keyword;
@@ -164,15 +165,13 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              try {
                  var keyId,
                     html,
-                    hcitylist = StoreManage.getHistoryKeyWord(),
-                    searchData = tuanSearchStore.get(),
-                    self = this;
+                    hcitylist = StoreManage.getHistoryKeyWord();
 
                  if (hcitylist.length > 0) {
                      keyId = hcitylist[0].id;
-                     if (!data.history) data.history = [];
+                     (!data.history) && (data.history = []);
                      data.history = data.history.concat.apply(data.history, hcitylist);
-                 };
+                 }
                  html = this.cityListTplfun({ data: data, keyid: keyId });
 
                  this.els.keywordSuggestWrap.html(html);
@@ -180,7 +179,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                  if (data.Results) {
                      this.els.keywordSuggestWrap.find('.J_historykeysearch').hide();
                      this.els.keywordSuggestWrap.find('.J_clearhistory').hide();
-                 };
+                 }
              } catch (ex) { }
          },
          //首次记载view，创建view
@@ -197,7 +196,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              this.els.keywordInput[0].focus();
              setTimeout(_.bind(function () {
                  this.els.keywordInput[0].focus();
-             }, this), 1000)
+             }, this), 1000);
              this.renderHotkeyword();
              this.createPage({});
              if (this.header && this.header.rootBox) {
@@ -215,7 +214,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                  this.header.show();
                  /** 必须设置事件，否则会回退到全站首页 */
                  this.header.rootBox.hide();
-             };
+             }
              this.hideLoading();
              this.$el.bind('focus', this.onBodyChange);
              this.$el.bind('touchstart', this.onBodyChange);
@@ -251,9 +250,9 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              var cur = $(e.currentTarget);
              var data = decodeURIComponent(cur.attr('data-json'));
              data = JSON.parse(data);
+             var searchData = searchStore.get(),
+                 qparams;
              if (data) {
-                 var searchData = searchStore.get(),
-                     qparams;
                  StoreManage.clearAll();
                  historyCityListStore.removeAttr('nearby');
 
@@ -274,20 +273,20 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                  }
 
                  if (data.price) {
-                     if (StringsData.priceText[data.price])
+                     if (StringsData.priceText[data.price]) {
                          customFiltersStore.setAttr('price', { val: data.price, txt: StringsData.priceText[data.price] });
+                     }
                  }
                  if (data.trait) {
-                     if (StringsData.traitText[data.trait])
+                     if (StringsData.traitText[data.trait]) {
                          customFiltersStore.setAttr('trait', { val: data.trait, txt: StringsData.traitText[data.trait] });
+                     }
                  }
                  if (data.star) {
                      var stars = data.star.split(','), tmpstar = {};
                      for (var s in stars) {
                          s = stars[s];
-                         if (StringsData.starText[s]) {
-                             tmpstar[s] = StringsData.starText[s];
-                         }
+                         (StringsData.starText[s]) && (tmpstar[s] = StringsData.starText[s]);
                      }
                      if (tmpstar) {
                          customFiltersStore.setAttr('star', tmpstar);

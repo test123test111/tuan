@@ -2,12 +2,13 @@
  * 周边团购页面
  * @url: m.ctrip.com/webapp/tuan/nearlist
  */
+/*jshint -W030*/
 define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore', 'TuanModel', 'text!NearListTpl'], function (TuanApp, TuanBaseView, CommonPageFactory, LazyLoad, TuanStore, TuanModel, html) {
-    var tuanOrderDetailStore = TuanStore.TuanDetailsStore.getInstance();
     var tuanNearListModel = TuanModel.TuanNearListModel.getInstance();
     var pageTitle = '周边团购';
     var PageView = CommonPageFactory.create("TuanBaseView");
-    var View = PageView.extend({
+    var View;
+    View = PageView.extend({
         pageid: '214008',
         hpageid: '215008',
         setHeader: function(title) {
@@ -38,7 +39,7 @@ define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore'
             //如果没有产品ID则回退回去
             if (!pid) {
                 this.back();
-            };
+            }
             this.setHeader(title);
             this.getNearList(pid);
         },
@@ -65,7 +66,7 @@ define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore'
                 data.showTags = false; //关闭图片左上角Tag
                 this.renderList(data);
             },
-            function(err) {
+            function() {
                 var self = this;
 
                 self.showWarning404(function() {
@@ -82,7 +83,7 @@ define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore'
         detailHandler: function(e) {
             var id = $(e.currentTarget).attr('data-id'),
                 cityId = Lizard.P('cityid');
-            this.forwardJump('detail', '/webapp/tuan/detail/' + id + '.html' + (cityId ? '?cityid=' + cityId : ''))
+            this.forwardJump('detail', '/webapp/tuan/detail/' + id + '.html' + (cityId ? '?cityid=' + cityId : ''));
         }
     });
     return View;

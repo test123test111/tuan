@@ -1,4 +1,5 @@
-﻿/**
+﻿/*jshint -W030 */
+/**
  * 商户列表
  * @url: m.ctrip.com/webapp/tuan/hotelsubbranch
  */
@@ -7,15 +8,12 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
     var MSG = {
             pageTitle: "商户列表"
         },
-        cui = c.ui,
-        cBase = c.base,
         isInApp = Util.isInApp(),
         REFRESH_GPS_LOADING_CLS = 'ani_rotation',
         geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
         tuanDetailsStore = TuanStore.TuanDetailsStore.getInstance(),
         tuanBranchOfficeModel = TuanModel.TuanBranchOfficeModel.getInstance(),
         Geolocation = cGeoService.GeoLocation,
-        Guider = WidgetFactory.create('Guider'),
         ICON = {up: 'arrow_skin01_up', down: 'arrow_skin01_down'};
 
     /**
@@ -27,10 +25,10 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
         return date.toISOString().substring(0, 10).replace(/-/g, '');
     }
 
-    var PageView = CommonPageFactory.create("TuanBaseView");
-    var View = PageView.extend({
+    var PageView = CommonPageFactory.create("TuanBaseView"),
+        View;
+    View = PageView.extend({
         events: {
-//            'click .J_phone': 'showPhone',
             'click .J_showMap': 'showMap',
             'click .J_jumpHotel': 'jumpHotel',
             'click .J_busiCity': 'showHotel',
@@ -41,7 +39,7 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
         },
         onLoad: function () {
             this.cityId = Lizard.P('cityid');
-            if (tuanDetailsStore.get() != null) {
+            if (tuanDetailsStore.get() !== null) {
                 this.showBranch();
             } else {
                 this.backAction();
@@ -105,49 +103,6 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
                 self.hideLoading();
             }, true, this);
         },
-        showPhone: function (e) {
-            var phone = new Array(), telphone;
-            var phoneTxt = $(e.currentTarget).data("tel").toString();
-            phoneTxt = phoneTxt.replace(/，/g, ",");
-            _.each(phoneTxt.split(','), function (data) {
-                phone.push(" <a href='tel:" + data + "'>" + data + "</a>");
-                if (!telphone || telphone == "") telphone = data;
-            });
-            //初始化alert
-            this.alert = new cui.Alert({
-                title: '拨打电话',
-                message: " <div id=\"tuan_tel\">" + phone.join("") + "</div>",
-                buttons: [{
-                    text: '取消',
-                    click: function () {
-                        this.hide();
-                    }
-                }, {
-                    text: '<a href="tel:' + telphone + '" data-phone="'+telphone+'">拨打</a>',
-                    click: function (e) {
-                        this.hide();
-                        Guider.apply({
-                            hybridCallback: function () {
-                                var PHONE_ATTR_STR = 'data-phone',
-                                    target = $(e.target);
-
-                                if (!target.attr(PHONE_ATTR_STR)) {
-                                    target = target.find('[' + PHONE_ATTR_STR + ']');
-                                };
-
-                                e.preventDefault();
-                                Guider.callPhone({ tel: target.attr(PHONE_ATTR_STR) });
-                                return false;
-                            },
-                            callback: function () {
-                                return true;
-                            }
-                        })
-                    }
-                }]
-            });
-            this.alert.show();
-        },
         onShow: function () { },
         onHide: function () {
             Geolocation.UnSubscribe('tuan/subbranch');
@@ -174,21 +129,20 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
                 hotelName: hotelName
             };
 
-            this.forwardJump('hotelmap', '/webapp/tuan/hotelmap?lon=' + coords[0] + '&lat=' + coords[1] + '&hotelName=' + hotelName)
+            this.forwardJump('hotelmap', '/webapp/tuan/hotelmap?lon=' + coords[0] + '&lat=' + coords[1] + '&hotelName=' + hotelName);
 
         },
         /**
          * 点击跳转跳转到国内酒店详情页
-         * @param {int} 国内酒店ID
          */
         jumpHotel: function(e){
             var hotelId = $(e.currentTarget).data('id');
-            if (!hotelId) return;
+            if (!hotelId) {return;}
             var today = new Date();
             var tomorrow = new Date(today.setDate(today.getDate()+1));
             var fromUrl = encodeURIComponent(location.href);
             var url = isInApp ?
-                'ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate='+formatDate(new Date)+'&checkOutDate='+formatDate(tomorrow)+'&hotelId='+hotelId+'&from='+fromUrl :
+                'ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate='+formatDate(new Date())+'&checkOutDate='+formatDate(tomorrow)+'&hotelId='+hotelId+'&from='+fromUrl :
                 'http://m.ctrip.com/webapp/hotel/hoteldetail/' + hotelId + '.html?from=' + fromUrl;
             var history = this.getHistory();
             history.stack.pop();
@@ -219,7 +173,7 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
         },
         onScroll: function () {
             var scroll = document.querySelector('.J_sticky');
-            if (!scroll) return;
+            if (!scroll) {return;}
             if (window.scrollY >= scroll.parentNode.offsetTop) {
                 scroll.classList.add('busi_fixed');
                 scroll.parentNode.style.paddingTop = '45px';
@@ -248,8 +202,7 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
                     gpsAddr.html('暂无定位信息');
                     self.showToast('抱歉，获取不到当前位置，请打开GPS后重试!');
                 },
-                onPosComplete: function (lng, lat) {
-                },
+                onPosComplete: function () {},
                 onPosError: function () {
                     target.removeClass(REFRESH_GPS_LOADING_CLS);
                     gpsAddr.html('暂无定位信息');

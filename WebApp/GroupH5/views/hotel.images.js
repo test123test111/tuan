@@ -6,8 +6,8 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
     var tuanDetailsStore = TStore.TuanDetailsStore.getInstance();
     var imagesListModel = TModel.TuanImagesListModel.getInstance();
     var PageView = CommonPageFactory.create("TuanBaseView");
-    var PageView = CommonPageFactory.create("TuanBaseView");
-    var View = PageView.extend({
+    var View;
+    View = PageView.extend({
         pageid: '260001',
         hpageid: '261001',
         events: {
@@ -29,10 +29,10 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
                 imagesListModel.excute(function(data){
                     data = data && data.images;
                     self.hideLoading();
-                    if(!data||!data.length) return;
+                    if(!data||!data.length) {return;}
 
                     self.renderImagesList(data);
-                }, function(err){
+                }, function(){
                     self.hideLoading();
                     self.showToast('图片数据获取失败！');
                 });
@@ -45,7 +45,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
             this.setHeader(data.length || 0);
         },
         gotoImageSlider: function(e) {
-            var id = $(e.currentTarget).attr('data-index')
+            var id = $(e.currentTarget).attr('data-index');
             this.forwardJump('hotelimageslide','/webapp/tuan/hotelimageslide?index=' + id, { viewName: 'hotelimageslide' });
         },
         isFromSlidePage: function (refer) {
@@ -60,7 +60,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
             }else{
                 //获取图片列表
                 this.getImagesList();
-            };
+            }
         },
         setHeader: function (num) {
             var self = this;
@@ -85,7 +85,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
         backAction: function () {
             this.back();
         },
-        backHome:function(e){
+        backHome:function(){
             TuanApp.tHome();
         }
     });

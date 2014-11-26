@@ -1,6 +1,7 @@
 ﻿define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory'], function (TuanApp, c, TuanBaseView, CommonPageFactory) {
-    var PageView = CommonPageFactory.create("TuanBaseView");
-    var View = PageView.extend({
+    var PageView = CommonPageFactory.create("TuanBaseView"),
+        View;
+    View = PageView.extend({
         onCreate: function () {
 
         },

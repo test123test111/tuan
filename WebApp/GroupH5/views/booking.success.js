@@ -14,7 +14,7 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
             EXT = encodeURIComponent('source=groupon'),
             resultStore = TStore.OrderDetailReturnPage.getInstance(),
             submitOrderModel = TModel.TuanSubmitOrder.getInstance(),
-            applyOrderModel = TModel.TuanApplyOrder.getInstance(),
+            //applyOrderModel = TModel.TuanApplyOrder.getInstance(),
             listStore = TStore.TuanOrderListStore.getInstance(),
             detailModel = TModel.TuanOrderDetailModel.getInstance(),
             searchStore = TStore.GroupSearchStore.getInstance(),
@@ -143,7 +143,6 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
             * 获取交叉推荐
             */
             getCrossRecommend: function (pid) {
-                var self = this;
                 var tmpl = _.template(recommendTpl);
                 var wrap = this.$el.find('#J_recommendWrap');
 
@@ -168,7 +167,7 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
             recommendSwitch: function (e) {
                 var currentTarget = $(e.currentTarget);
                 var index = currentTarget.data('index');
-                if (currentTarget.hasClass('sta-on')) return;
+                if (currentTarget.hasClass('sta-on')) {return;}
                 currentTarget.addClass('sta-on').siblings().removeClass('sta-on');
                 this.$el.find('#J_tabCon .ui-item').hide().eq(index).show();
             },
@@ -211,7 +210,7 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
                         },
                         {
                             text: '<a href="tel:4008216666" data-phone="4008216666">拨打</a>',
-                            click: function (e) {
+                            click: function () {
                                 this.hide();
                                 Guider.callService();
                             }
@@ -236,7 +235,7 @@ define(['TuanApp', 'libs', 'cUtility', 'TuanStore', 'c', 'cWidgetGuider', 'cWidg
 
                 this.showLoading();
                 submitOrderModel.setParam(param);
-                submitOrderModel.execute(function (data) {
+                submitOrderModel.execute(function () {
                     this.hideLoading();
                     callback.call(this);
                 }, function () {

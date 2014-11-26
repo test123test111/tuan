@@ -11,7 +11,6 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
     var tuanDetailStore = TStore.TuanDetailsStore.getInstance(); //产品相关信息
     var validateCouponModel = TModel.TuanValidateCouponModel.getInstance(); //验证优惠券
     var couponListModel = TModel.TuanCouponListModel.getInstance(); //获取优惠券列表
-    var couponListStore = TStore.TuanCouponListStore.getInstance(); //存储的优惠券列表
     var selectedCouponStore = TStore.TuanSelectedCouponStore.getInstance(); //选择的优惠券
     var userStore = CStore.UserStore.getInstance(); //用户信息
     var isInApp = Util.isInApp();
@@ -23,11 +22,10 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
         errorTry: '发生错误，请重试'
     };
 
-    function dateFormat(date) {
-        return new c.base.Date(date).format('Y-m-d');
-    }
-    var PageView = CommonPageFactory.create("TuanBaseView");
-    var View = PageView.extend({
+    function dateFormat(date) {return new c.base.Date(date).format('Y-m-d');}
+    var PageView = CommonPageFactory.create("TuanBaseView"),
+        View;
+    View = PageView.extend({
         tpl: html,
         events: {
             'click #J_useCouponToggle': 'useCouponToggle',
@@ -120,7 +118,7 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
                 document.body.scrollTop = document.body.scrollTop - 48;
             }
         },
-        getCouponList: function (cb) {
+        getCouponList: function () {
             var self = this;
             this.showLoading();
             couponListModel.setParam({
@@ -130,7 +128,7 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
             couponListModel.execute(function (data) {
                 self.render(data.coupons);
                 self.hideLoading();
-            }, function (err) {
+            }, function () {
                 self.render();
                 self.hideLoading();
             }, false, this);
@@ -176,7 +174,7 @@ function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseVie
                 } else {
                     self.showToast(data.msg || MSG.invaildCoupon);
                 }
-            }, function (err) {
+            }, function () {
                 self.showToast(MSG.errorTry);
             }, false, this);
         },

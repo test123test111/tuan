@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * 订单填写页面
  * @url: m.ctrip.com/webapp/tuan/booking
@@ -5,7 +6,7 @@
  * @date: 2014-02-12
  */
 define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', 'cUIScrollRadioList', 'cWidgetGuider', 'cWidgetMember', 'cUserModel', 'cUtility', 'cWidgetFactory', 'CommonStore', 'TuanStore', 'TuanModel', 'text!BookingTpl', 'NumberStep', 'cHolidayPriceCalendar', 'ValidatorUtil', 'FieldUtil', 'Payment'],
-    function (TuanApp, c, InputClear, TuanBaseView, CommonPageFactory, ScrollRadioList, WidgetGuider, WidgetMember, UserModel, Util, WidgetFactory, CStore, TStore, TModel, html, NumberStep, HolidayPriceCalendar, Validator, Field) {
+    function (TuanApp, c, inputClear, TuanBaseView, CommonPageFactory, ScrollRadioList, WidgetGuider, WidgetMember, UserModel, Util, WidgetFactory, CStore, TStore, TModel, html, NumberStep, HolidayPriceCalendar, Validator, Field) {
         'use strict';
         var orderInfo = TStore.TuanOrderInfoStore.getInstance(), //订单信息
             invoiceStore = TStore.TuanInvoiceStore.getInstance(), //发票信息,
@@ -215,8 +216,46 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
              * 初始化表单验证
              */
             initValidator: function() {
-                var self = this;
+                var self = this,checks;
                 this.validator.removeAllFields();
+
+                checks = {
+                    date: function(rs, d) {
+                        if (!rs) {
+                            self.showToast(MSG.dateNone, 3,function() {
+                                self._addOrRemoveHighLight(d.dom, true);
+                                d.dom.focus();
+                            });
+                        } else {
+                            self._addOrRemoveHighLight(d.dom, false);
+                        }
+                    },
+                    user: function(rs, d) {
+                        var msg = '';
+                        if (!rs) {
+                            msg = (d.rule === 0) ? MSG.nameNone : MSG.nameError;
+                            self.showToast(msg, 3, function() {
+                                self._addOrRemoveHighLight(d.dom, true);
+                                d.dom.focus();
+                            });
+                        } else {
+                            self._addOrRemoveHighLight(d.dom, false);
+                        }
+                    },
+                    tel: function(rs, d) {
+                        var msg = '';
+                        if (!rs) {
+                            msg = (d.rule === 0) ? MSG.telNone : MSG.telError;
+                            self.showToast(msg, 3, function() {
+                                self._addOrRemoveHighLight(d.dom, true);
+                                d.dom.focus();
+                            });
+                        } else {
+                            self._addOrRemoveHighLight(d.dom, false);
+                        }
+                    }
+
+                };
 
                 this.els.selectDate.length && (this.validator.addField(new Field({
                     dom: self.els.selectDate,
@@ -235,36 +274,14 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
                 this.els.ticketUserDom.length && (this.validator.addField(new Field({
                     dom: self.els.ticketUserDom,
-                    rules: [isNotEmpty, function(v) {return v.length <= 10}],
-                    onCheck: function(rs, d) {
-                        var msg = '';
-                        if (!rs) {
-                            msg = (d.rule == 0) ? MSG.nameNone : MSG.nameError;
-                            self.showToast(msg, 3, function() {
-                                self._addOrRemoveHighLight(d.dom, true);
-                                d.dom.focus();
-                            });
-                        } else {
-                            self._addOrRemoveHighLight(d.dom, false);
-                        }
-                    }
+                    rules: [isNotEmpty, function(v) {return v.length <= 10;}],
+                    onCheck: checks.user
                 })));
 
                 this.validator.addField(new Field({
                     dom: self.els.telDom,
                     rules: [isNotEmpty, c.utility.validate.isMobile],
-                    onCheck: function(rs, d) {
-                        var msg = '';
-                        if (!rs) {
-                            msg = (d.rule == 0) ? MSG.telNone : MSG.telError;
-                            self.showToast(msg, 3, function() {
-                                self._addOrRemoveHighLight(d.dom, true);
-                                d.dom.focus();
-                            });
-                        } else {
-                            self._addOrRemoveHighLight(d.dom, false);
-                        }
-                    }
+                    onCheck: checks.tel
                 }));
             },
             /**
@@ -282,11 +299,11 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             },
             getTuanDetail: function (detailId, callback) {
                 var self = this;
-                var callback = $.type(callback) === "function" ? callback.bind(this) : function () { };
+                callback = $.type(callback) === "function" ? callback.bind(this) : function () {};
 
                 tuanDetailModel.setParam({ id: detailId, environment: TuanApp.environment });
                 this.showLoading();
-                tuanDetailModel.excute(function (data) {
+                tuanDetailModel.excute(function () {
                     callback();
                     self.hideLoading();
                 }, function (err) {
@@ -306,13 +323,13 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 if (this.isFreeProduct()) {
                     this.numberStep.disable();
                     this.$el.find('#J_invoice').hide();
-                };
+                }
                 if (this.store && this.store.id) {
                     //android also has this problem
                     //this.isIOS7() &&
                     this._fixIOS7Bug();
-                    InputClear(this.els.telDom);
-                };
+                    inputClear(this.els.telDom);
+                }
             },
 
             onLoad: function (refer) {
@@ -329,34 +346,35 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.getTuanDetail(detailId, this.loadTuan);
                 } else {
                     this.loadTuan();
-                };
+                }
             },
             selectContactNew: function() {
                 var self = this;
                 Guider.chooseContactFromAddressbook({
                     callback: function (info) {
-                        var phones;
                         if (!!info && !_.isEmpty(info)) {
                             if (info.name === undefined && info.phoneList && !info.phoneList.length) {
                                 self.showToast("无法访问通讯录，导入失败");
                             } else {
                                 if (info.phoneList && info.phoneList.length) {
-                                    phones = self._formatPhoneList(info.phoneList);
-                                    if (phones.length === 1) {
-                                        self.selectPhoneItem(phones[0]);
-                                    } else {
-                                        new ScrollRadioList({
-                                            data: phones,
-                                            title: MSG.phoneListTitle,
-                                            itemClick: $.proxy(self.selectPhoneItem, self),
-                                            key: phones[0].key
-                                        }).show();
-                                    }
+                                    self.operateContacts(self._formatPhoneList(info.phoneList));
                                 }
                             }
                         }
                     }
                 });
+            },
+            operateContacts: function(phones) {
+                if (phones.length === 1) {
+                    this.selectPhoneItem(phones[0]);
+                } else {
+                    new ScrollRadioList({
+                        data: phones,
+                        title: MSG.phoneListTitle,
+                        itemClick: $.proxy(this.selectPhoneItem, this),
+                        key: phones[0].key
+                    }).show();
+                }
             },
             /**
              * 门票选择日期 日历功能
@@ -383,12 +401,11 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 var val = data.val;
                 if (val) {
                     this.els.telDom.val(val);
-                    this.changeBtnState();
+                    orderInfo.setAttr('tel', val);
                 }
             },
             isIOS7: function () {
                 var ua = $.os;
-
                 return ua.ios && Math.floor(ua.version) === 7;
             },
             /**
@@ -407,7 +424,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         position: 'fixed',
                         bottom: '0px'
                     });
-                })
+                });
             },
             _setPageView: function () {
                 var self = this;
@@ -434,7 +451,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 //如果app里显示通讯录选择按钮
                 if (isInApp) {
                     this.$el.find('#J_selectContact').show();
-                };
+                }
             },
 
             onHide: function () {
@@ -466,8 +483,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         }, {
                             text: MSG.sure,
                             click: function () {
-                                var store = tuanDetailStore.get();
-
                                 this.hide();
                                 self.showLoading();
                                 if (tStore && tStore.id) {
@@ -483,18 +498,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
                 if (!self.isCanceling) {
                     returnAlert.show();
-                };
-            },
-
-            changeBtnState: function () {
-                return false;
-                var tel = this.els.telDom.val();
-                if ('' === tel) {
-                    this.els.submitBtn.addClass('disabled').attr('disabled', 'disabled');
-                } else {
-                    this.els.submitBtn.removeClass('disabled').removeAttr('disabled');
                 }
-                orderInfo.setAttr('tel', tel);
             },
             showLoadingLayer: function(fun, msg) {
                 !this.loadingLayer && (this.loadingLayer = new c.ui.LoadingLayer(function() {
@@ -546,17 +550,13 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.hide();
                     return;
                 }
-                if (tStore.activities && tStore.activities.length > 0) {
-                    for (var j in tStore.activities) {
-                        var a = tStore.activities[j];
-                        if (a && a.type && +a.type > 0) {
-                            if (+a.type == 1) {
-                                // 立减
-                                param.OInfo.IsMarketPrice = true;
-                            }
-                        }
+
+                tStore.activities && (_.each(tStore.activities, function(t) {
+                    if (t && t.type && +t.type > 0) {
+                        (parseInt(t.type) === 1) && (param.OInfo.IsMarketPrice = true);
                     }
-                }
+                }));
+
                 if (iStore && iStore.needed) {
                     param.OInfo.IsInvoice = iStore.needed;
                     param.OInfo.Invoice.InvoiceHead = iStore.title;
@@ -594,7 +594,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         SID: unionData.SID
                     };
                     param.OInfo.PartnerID = unionData.PartnerID;
-                };
+                }
                 //订单来源链接
                 if (externalRefer) {
                     param.url = externalRefer;
@@ -624,14 +624,14 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         phone = 'iphone';
                     } else if (os.ipad) {
                         phone = 'ipad';
-                    };
+                    }
                 } else if (os.android) {
                     if (os.tablet) {
                         phone = 'android';
                     } else {
                         phone = 'androidpad';
-                    };
-                };
+                    }
+                }
                 return 'client\/' + phone + '\/' + clientType;
             },
             _createNumberStep: function () {
@@ -703,7 +703,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         bustype = 11, //类型，11代表团购
                         auth = headStore.getAttr('auth'),
                         totalPrice,
-	                    tmpPrice,
+	                    //tmpPrice,
                         invoice = invoiceStore.get(),
                         token = {},
                         isLogin;
@@ -712,7 +712,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
                     if (data.Status.toLowerCase() === 'success') {
                         oid = data.GOrder.OID;
-                        tmpPrice = data.GOrder.Price;
+                        //tmpPrice = data.GOrder.Price;
                         totalPrice = data.GOrder.Price.TotalAmount.Price;
                         token = {
                             oid: oid,
@@ -735,17 +735,17 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         totalPrice > 0 ? Payment.submit(self, token, {IsRealPay: data.IsRealPay}) : self.forwardJump('bookingsuccess', '/webapp/tuan/bookingsuccess/' + oid + '.html');
 
                     } else if (data.ResponseStatus.Ack.toLowerCase() == 'failure' && data.ResponseStatus.Errors && data.ResponseStatus.Errors.length > 0) {//0元团已购买过一次
-                        self.showToast(self.getMsgByCode(data.ResponseStatus.Errors[0].ErrorCode))//'您已购买过此0元团产品，一个用户只能购买一次');
+                        self.showToast(self.getMsgByCode(data.ResponseStatus.Errors[0].ErrorCode));//'您已购买过此0元团产品，一个用户只能购买一次');
                     } else {
                         self.showToast('订单提交失败请重试!');
-                    };
+                    }
                     self.hideLoadingLayer();
                     self.hideLoading();
 
                     if (self.isCouponUsed()) {
                         //订单创建成功后，该优惠券不可再使用，故清理之
                         self._clearUsedCoupon();
-                    };
+                    }
                 }, function (err) {
                     self.hideLoading();
                     self.hideLoadingLayer();
@@ -775,7 +775,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             },
             h5NoMemberLogin: function (callback) {
                 var self = this;
-                notUserLoginModel.excute(function (data) {
+                notUserLoginModel.excute(function () {
                     callback && callback.call(self);
                 }, function () {
 //                    self.hideLoading();
@@ -805,7 +805,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 return co && typeof co === 'object' && !co.isNotUse;
             },
             getCouponList: function (cb) {
-                var self = this;
                 couponListModel.setParam({
                     pid: this.pid,
                     head: couponListModel.getHead().get()
@@ -815,8 +814,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     if (len && cb) {
                         cb(len);
                     }
-                }, function (err) {
-                }, false, this);
+                }, function () {}, false, this);
             }
         });
 

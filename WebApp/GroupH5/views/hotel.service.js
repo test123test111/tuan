@@ -42,7 +42,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'text!Hote
         backAction: function () {
             this.back();
         },
-        backHome:function(e){
+        backHome:function(){
             TuanApp.tHome();
         }
     });

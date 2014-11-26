@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * 订单详情页
  * @url: m.ctrip.com/webapp/tuan/tuanorderdetail/{orderid}.html
@@ -23,11 +24,11 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         isInApp = Util.isInApp(),
         EXT = encodeURIComponent('source=groupon'),
         BasePage = CommonPageFactory.create("TuanBaseView"),
-        Payment = WidgetFactory.create('Payment'),
         Guider = WidgetFactory.create('Guider');
 
-    cancelOrderModel = TModel.TuanCancelOrderModel.getInstance(),
-    deleteOrderModel = TModel.TuanDeleteOrderModel.getInstance(),
+    Payment = WidgetFactory.create('Payment');
+    cancelOrderModel = TModel.TuanCancelOrderModel.getInstance();
+    deleteOrderModel = TModel.TuanDeleteOrderModel.getInstance();
     resultStore = TStore.OrderDetailReturnPage.getInstance();
     userStore = CStore.UserStore.getInstance();
     detailStore = TStore.TuanOrderDetailStore.getInstance();
@@ -52,13 +53,9 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         'cancel': '取消'
     };
     //保留两位有效数字
-    //TODO: 与原方法不一致.
     function retainTwoDecimal(str) {
         var num = parseFloat(str);
-        if (isNaN(num)) {
-            return str;
-        }
-
+        if (isNaN(num)) {return str;}
         return Math.round(num * 100) / 100;
     }
     
@@ -118,7 +115,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                     if (hasCoupons) {
                         var maxCoupons = 0;
                         _.each(store.coupons, function (item) {
-                            if (item.isc == true) {
+                            if (item.isc === true) {
                                 maxCoupons++;
                             }
                         });
@@ -126,8 +123,9 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                             canRefund = true;
                         }
                         //如果是门票订单，不显示券
-                        if (product && product.category && product.category.ctgoryid === 6
-                            && product.category.subctgory === 2) {
+                        if (product && product.category &&
+                            product.category.ctgoryid === 6 &&
+                            product.category.subctgory === 2) {
                             store.coupons = [];
                         }
                     }
@@ -146,7 +144,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                 }
                 if (!appNonsupport) {
                     self.showMessage('订单仅供查看，需要进行相关操作请使用电脑登录携程。');
-                };
+                }
                 self.couponsWrap = self.$el.find('#J_couponsWrap');
 
                 if (data.mooncakeStatus != 4) {//当mooncakeStatus==4，是秋季大促销，不需要显示券信息
@@ -180,7 +178,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                     temp && (newCoupons = newCoupons.concat(temp));
                 });
                 return newCoupons;
-            };
+            }
         },
         gotoListPage: function () {
             var self = this;
@@ -211,8 +209,8 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         onCreate: function () {
         },
         onLoad: function () {
-            var self = this,
-                ftype = this.getQuery('ftype') || '';
+            var self = this;
+                //ftype = this.getQuery('ftype') || '';
 
             this.from = decodeURIComponent(Lizard.P('from') || '');
             this.setTitle(MSG.pageTitle);
@@ -249,7 +247,6 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         * 获取交叉推荐
         */
         getCrossRecommend: function (pid) {
-            var self = this;
             var tmpl = _.template(recommendTpl);
             var wrap = this.$el.find('#J_recommendWrap');
 
@@ -274,7 +271,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         recommendSwitch: function (e) {
             var currentTarget = $(e.currentTarget);
             var index = currentTarget.data('index');
-            if (currentTarget.hasClass('sta-on')) return;
+            if (currentTarget.hasClass('sta-on')) {return;}
             currentTarget.addClass('sta-on').siblings().removeClass('sta-on');
             this.$el.find('#J_tabCon .ui-item').hide().eq(index).show();
         },
@@ -290,7 +287,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                 if (!isCorrectChannel) {//隐藏: 发送券号密码到手机
                     wrap.find('.J_sendToPhone').hide();
                 }
-            };
+            }
         },
         _sendMsg: function (obj) {
             var self = this,
@@ -300,7 +297,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
             if (coupons.length === 0) {
                 this.showMessage(MSG.needOrderID);
                 return;
-            };
+            }
             //发送信息到手机
             msgModel.setParam({
                 head: CStore.HeadStore.getInstance().get(),
@@ -324,7 +321,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                 if (data.res) {
                     self.cooling = true;
                     self.coolingSec = 60;
-                };
+                }
                 self.showMessage(MSG.alreadySend);
             }, function () {
                 loadingBox.hide();
@@ -383,7 +380,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
             //如果最后一条记录不是当前URL，则任务没有添加到history中
             if (history[len - 1] !== curUrl) {
                 history.push(curUrl);
-            };
+            }
             TuanApp.app.history = history;
         },
         goToRefundPage: function () {
@@ -401,7 +398,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                 hotelName: hotelName
             };
 
-            this.forwardJump('hotelmap', '/webapp/tuan/hotelmap?lon=' + coords[0] + '&lat=' + coords[1] + '&hotelName=' + hotelName)
+            this.forwardJump('hotelmap', '/webapp/tuan/hotelmap?lon=' + coords[0] + '&lat=' + coords[1] + '&hotelName=' + hotelName);
         },
         getAppUrl: function () {
             return "ctrip://wireless/GrouponHotelOrder?orderId=" + this.orderId;
@@ -411,7 +408,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         */
         retryPayment: function (e) {
             var self = this;
-            if ($(e.currentTarget).hasClass('btm_tuan_btn_dis')) return;
+            if ($(e.currentTarget).hasClass('btm_tuan_btn_dis')) {return;}
             retryModel.setParam({
                 oids: this.orderId + "",
                 head: detailModel.getHead().get()
@@ -432,7 +429,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                 } else {
                     self.showToast('此订单不支持继续支付！');
                 }
-            }, function (err) {
+            }, function () {
                 self.showToast('继续支付失败！');
                 self.hideLoading();
             }, true, self);
@@ -447,7 +444,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                     }
                 }, {
                     text: '是',
-                    click: function (e) {
+                    click: function () {
                         onConfirm();
                         this.hide();
                     }
@@ -506,7 +503,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
                     }
                 } else {
                     self.showToast(title + '失败！');
-                };
+                }
             }, function () {
                 self.hideLoading();
                 self.showToast(title + '失败！');

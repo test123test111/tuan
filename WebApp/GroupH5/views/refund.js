@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * 申请退款
  * @url: m.ctrip.com/webapp/tuan/refund/{orderid}.html
@@ -12,7 +13,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             confirmYesLabel: '继续退款',
             timeoutTip: '加载超时，请重试'
         },
-        NUM_INVALID_CLS = 'num_invalid',
+        //NUM_INVALID_CLS = 'num_invalid',
         isInApp = Util.isInApp(),
         detailModel = TuanModels.TuanOrderDetailModel.getInstance(),
         //订单详情信息
@@ -26,6 +27,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
         Guider = WidgetFactory.create('Guider'),
         chooseCls = 'choosed',
         errorCls = 'errorli',
+        View;
 
         View = PageView.extend({
             pageid: '260004',
@@ -109,7 +111,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 this.els.refundCouponWrap.show();
                 this.els.refundCouponAmount.text(price);
             },
-            showInvoiceLabel: function(invoice) {
+            showInvoiceLabel: function() {
                 this.els.refundInvoiceWrap.show();
                 this.els.refundInvoiceAmount.text(this.invoiceAmt);
             },
@@ -154,7 +156,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                             self.onLoad();
                         }
                     });
-                };
+                }
                 return isLogin;
             },
             createPage: function (data) {
@@ -172,7 +174,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
 
                 if (data.coupons && data.coupons.length > 0) {
                     for (var i = 0; i < data.coupons.length; i++) {
-                        if (data.coupons[i].isc == true) {
+                        if (data.coupons[i].isc === true) {
                             this.maxCoupons++;
                             this.tuanCouponPrice = data.coupons[i].amt;
                             this.tuanCouponList.push(data.coupons[i].val);
@@ -185,8 +187,9 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 }
 
                 //如果是门票对接产品
-                if (data.product && data.product.category
-                    && data.product.category.ctgoryid === 6 && data.product.category.subctgory === 2) {
+                if (data.product && data.product.category &&
+                    data.product.category.ctgoryid === 6 &&
+                    data.product.category.subctgory === 2) {
                     this.$el.find('.J_needHideInTicket').remove();
                 }
 
@@ -306,9 +309,9 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     reasonText = reason.text();
                     if (reasonText == "其他") {
                         var reasonother = this.$el.find(".reason_other_text>textarea");
-                        if (reasonother && reasonother.val() != "") reasonText = reasonother.val();
+                        if (reasonother && reasonother.val() !== '') {reasonText = reasonother.val();}
                     }
-                };
+                }
                 for (var i = 0; i < +num; i++) {
                     ticket = {
                         TicketNO: this.tuanCouponList[i],
@@ -319,7 +322,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                         ticket.PayBackType = parseInt(refundType, 10);
                     }
                     ticketlist.push(ticket);
-                };
+                }
                 refundTicketModel.setParam({
                     head: CStore.HeadStore.getInstance().get(),
                     AllianceInfo: null,
@@ -343,7 +346,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     }
                 }, function () {
                     this.showToast("申请退款失败！");
-                }, this, true)
+                }, this, true);
             },
             onShow: function () { },
             onHide: function () { }

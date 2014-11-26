@@ -7,9 +7,10 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
         tuanDetailsStore = TStore.TuanDetailsStore.getInstance(),
         tuanDetailModel = TModel.TuanDetailModel.getInstance();
     var PageView = CommonPageFactory.create("TuanBaseView");
-    var View = PageView.extend({
+    var View;
+    View = PageView.extend({
         events: {
-            'click #J_submit': 'submit',
+            'click #J_submit': 'submit'
         },
         getGroupContent: function () {
             var self = this;
@@ -42,7 +43,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
                             self.render(data);
                         }                  
                     }
-                }, function (err) {
+                }, function () {
                     self.hideLoading();
                     self.showToast("获取图文详情失败!");
                 });
@@ -62,21 +63,19 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
             //渠道不可售
              if (!( data.channelInfo && data.channelInfo.isCorrectChannel)) {
                 btnSubmit.attr('class', disabledCls);
-            };
+            }
         },
         onCreate: function () {
         },
         onLoad: function () {
             //获取图文详情内容
-             this.parseDetailUrl();
+            this.parseDetailUrl();
             this.getGroupContent();
         },
         parseDetailUrl:function(){
-            var productId = Lizard.P('pid'),
-                externalReferURL = Lizard.P('url');
-
-            this.productId = productId;
-            this.externalReferURL = externalReferURL;
+            //var externalReferURL = Lizard.P('url');
+            this.productId = Lizard.P('pid');
+            this.externalReferURL = Lizard.P('url');
         },
         setHeader: function (title) {
             var self = this;
@@ -101,7 +100,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
             if (!this.$el.find("#J_submit").hasClass(disabledCls)) {
                 this.forwardJump('booking','/webapp/tuan/booking' + (this.externalReferURL ? ('?from=' + this.externalReferURL) : ''));
             }
-        },
+        }
     });
     return View;
 });

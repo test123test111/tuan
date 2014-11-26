@@ -193,7 +193,7 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
             <%if(hotelData.phoneList && hotelData.phoneList.length){
                 var phones = _.map(hotelData.phoneList, function(p) {return p.phone;});
             %>
-            <li class="J_phone" data-phone="<%=phones.join(',')%>">
+            <li class="arr_r wrap_phone J_phone" data-phone="<%=phones.join(',')%>">
                 <span class="subb_phone i_bef"><%_.each(phones, function(t) {%><span><%=t %></span><%}); %></span>
                 <i class="icon_txt"><a <%if (phones.length === 1) {%>href="tel:<%=phones[0] %>"<%} else {%>href="javascript:void(0);"<%}%>>预约/咨询</a></i>
             </li>

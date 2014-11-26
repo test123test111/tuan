@@ -1,12 +1,11 @@
-﻿/**
+﻿/*jshint -W030*/
+/**
  * 酒店地图页面
  * @url: m.ctrip.com/webapp/tuan/hotelmap
  */
 define(['TuanApp', 'libs', 'c', 'TuanStore', 'AMapWidget', 'TuanBaseView', 'cCommonPageFactory', 'cUtility', 'cWidgetFactory', 'cWidgetGeolocation', 'TuanModel', 'CommonStore', 'text!HotelMapTpl'],
 function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFactory, Util, WidgetFactory, Geolocation, TuanModel, CommonStore, html) {
     var View,
-        tuanDetailsStore = TuanStore.TuanDetailsStore.getInstance(),
-        searchStore = TuanStore.GroupSearchStore.getInstance(),
         Map = WidgetFactory.create('AMapWidget'),
         geolocation = WidgetFactory.create('Geolocation');
     var PageView = CommonPageFactory.create("TuanBaseView");
@@ -43,7 +42,7 @@ function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFacto
             }
 
             // ios7 显示电信信息
-            if (Util.isInApp() && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
+            if (Util.isInApp() && TuanApp.isOverOS7()) {
                 this.$el.find('#J_hotelmapWrap').css({
                     'padding-top': '20px',
                     'background-color': '#b3b3b3'
@@ -73,7 +72,7 @@ function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFacto
         onShow: function () {
             if (this.header) {
                 this.header.hide();
-            };
+            }
         },
         onHide: function () {
             if (!Util.isInApp() && this.header && this.header.rootBox) {
@@ -110,7 +109,7 @@ function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFacto
                 compass,
                 mapdata = self.mapdata;
 
-            if (!mapdata || !mapdata.Longitude || mapdata.Longitude == 1000 || mapdata.Longitude == -1) return;
+            if (!mapdata || !mapdata.Longitude || mapdata.Longitude == 1000 || mapdata.Longitude == -1) {return;}
 
             if (!this.map) {
                 this.map = new Map({
@@ -120,8 +119,7 @@ function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFacto
                     locationButton: '<div class="map_curpos_btn" style="opacity: 0.8"></div>',
                     onReady: function () {
                     },
-                    onZoom: function (e, zoom) {
-                    },
+                    onZoom: function () {},
                     onClick: function () {
                         var centerMarker = self.centerMarker;
 
@@ -133,7 +131,7 @@ function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFacto
                         wrap.css('background-color', '#1491c5');
                         compass = wrap;
                     },
-                    onGeoComplete: function (e) {
+                    onGeoComplete: function () {
                         compass && compass.css('background-color', 'rgba(0,0,0,.8)');
                         //当前位置点自适应
                         this.setFitView();
@@ -151,12 +149,10 @@ function (TuanApp, libs, c, TuanStore, AMapWidget, TuanBaseView, CommonPageFacto
             this.addCenterMarker(mapdata.shortName || mapdata.hotelName);
         },
         setMapHeight: function () {
-            var self = this,
-                mapContainer = this.els.mapContainer,
-                onResize = function () {
+            var onResize = function () {
                     var ws = window.innerHeight || $('html').offset().height;
                     var nH = ws - ($('header').height());
-                    if (Util.isInApp() && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
+                    if (Util.isInApp() && TuanApp.isOverOS7()) {
                         nH -= 20;
                     }
                 };

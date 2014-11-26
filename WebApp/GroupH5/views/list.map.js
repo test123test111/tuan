@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * 列表地图页面
  * @url: m.ctrip.com/webapp/tuan/listmap
@@ -10,9 +11,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
             GRAY_CLS = 'gray',
             SHOW_DETAIL_ZOOM_LEVEL = 15,
             MARKER_SHOW_ANI = 'map_pshow', //detail marker显示动画
-            ROTATION_ANI_CLS = 'ani_rotation', //旋转动画
+            //ROTATION_ANI_CLS = 'ani_rotation', //旋转动画
             View,
-            AMapWidget = WidgetFactory.create('AMapWidget'),
+
             POI = WidgetFactory.create('POIWidget'),
             searchStore = TuanStore.GroupSearchStore.getInstance(),
             geolcationStore = TuanStore.GroupGeolocation.getInstance(),
@@ -50,7 +51,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 '<img class="fx-drop" src="http://pic.c-ctrip.com/h5/tuan/hotel-map-locate2.png" style="width:14px;height:36px;">',
                 '<div class="ico_map2 J_centerMarkerTip" style="-webkit-transform:translate(-50%,-45px) !important;left:50%;max-width:none;display:none;"><p><%=obj.name%></p></div>'
             ].join(''));
-
+        AMapWidget = WidgetFactory.create('AMapWidget');
         var PageView = CommonPageFactory.create("TuanBaseView");
         View = PageView.extend({
             pageid: '260002',
@@ -64,7 +65,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 this.categoryWrap = this.$el.find('#J_category');
 
                 //ios7, 显示头部电信网络信息
-                if (Util.isInApp() && $.os && $.os.ios && parseInt($.os.version, 10) >= 7) {
+                if (Util.isInApp() && TuanApp.isOverOS7()) {
                     this.$el.find('#J_listmapWrap').css({
                         'padding-top': '20px',
                         'background-color': '#b3b3b3'
@@ -126,7 +127,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 });
             },
             onPoiSuccess: function (data) {
-                var self = this;
                 var btnSearch = this.btnSearch;
                 if (!data.count || !data.products.length) {
                     btnSearch.hide();
@@ -184,7 +184,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 if (geo) {
                     geo._marker && geo._marker.setMap(null);
                     geo._circle && geo._circle.setMap(null);
-                };
+                }
             },
             clearPOIMarkers: function () {
                 var mapWidget = this.mapWidget,
@@ -216,7 +216,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     mapWidget.addEvent(marker, 'click', (function(marker) {
                         return function(e) {
                             self.markerClickHandler(e, marker);
-                        }
+                        };
                     })(marker), self);
                     poiMarkers.push(marker);
                 });
@@ -244,7 +244,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 }
             },
             gotoDetailPage: function (pid) {
-                this.forwardJump('detail', '/webapp/tuan/detail/' + pid + '.html')
+                this.forwardJump('detail', '/webapp/tuan/detail/' + pid + '.html');
             },
             formatPOIData: function (data) {
                 var host = this.mapWidget.host;
@@ -253,13 +253,13 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     return {
                         position: new host.LngLat(item.lon, item.lat),
                         content: item.shortName || item.name
-                    }
+                    };
                 });
             },
             categorySelectHandler: function (e) {
                 var target = $(e.target);
 
-                if (this.isTooLarge) return; //屏幕范围过大时，不查询POI
+                if (this.isTooLarge) {return;} //屏幕范围过大时，不查询POI
                 this.clearPOIMarkers();
                 this.category = target.attr('data-type');
                 searchStore.setAttr('ctype', this.category);
@@ -274,12 +274,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     type = this.category,
                     selectedCategoryItem = categoryWrap.find('li[data-type="' + (type) + '"]');
 
-                if (type != 0) {
+                if (parseInt(type, 10) !== 0) {
                     categoryWrap.find('li').addClass(GRAY_CLS);
                     selectedCategoryItem.removeClass(GRAY_CLS);
                 } else {
                     categoryWrap.find('li').removeClass(GRAY_CLS);
-                };
+                }
                 //取消正在发送的请求
                 this.poi && this.poi.abort();
                 this.centerMarker && this.centerMarker.setMap(null);
@@ -297,6 +297,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 var searchData = searchStore.get();
                 var positionData = positionfilterStore.get();
                 var cityId = searchData.ctyId;
+                var cityInfo, gps;
                 if (positionData && positionData.name) {//选择了位置区域
                     if (positionData.ctyId == cityId && searchData.sortRule != 8) {
                         var t = positionData && positionData.type;
@@ -304,8 +305,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                             searchData.pos = positionData.pos;
                         }
                         if (t == 4 || t == 19) {
-                            var cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
-                            var gps = cityInfo && cityInfo.pos || {};
+                            cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
+                            gps = cityInfo && cityInfo.pos || {};
                             searchData.pos = {
                                 posty: StringsData.MAP_SOURCE_ID,
                                 lon: gps.lon || 0,
@@ -315,8 +316,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                         }
                     }
                 } else {//没有选择位置区域，则传市中心的经纬度
-                    var cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
-                    var gps = cityInfo && cityInfo.pos || {};
+                    cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
+                    gps = cityInfo && cityInfo.pos || {};
                     searchData.pos = {
                         posty: StringsData.MAP_SOURCE_ID,
                         lon: gps.lon || 0,
@@ -331,7 +332,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     cityInfo,
                     cityId,
                     center,
-                    cityCenterPos,
                     gpsInfo = geolcationStore.getAttr('gps'),
                     pos = positionfilterStore.getAttr('pos'),
                     posType = positionfilterStore.getAttr('type'),
@@ -368,7 +368,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
 
                 if (info && !info.lon) {
                     info.lon = info.lng || 0;
-                };
+                }
                 return info || {};
             },
             needShowMarkerDetail: function (zoom) {
@@ -404,7 +404,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                             self.changeMarkerView(true);
                         } else {
                             self.changeMarkerView(false);
-                        };
+                        }
                         if (zoom < 10) {
                             infoWrap.show();
                             infoWrap.addClass('map_tips02');
@@ -444,7 +444,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                         compass = wrap;
                         layer = new c.ui.LoadingLayer(function () { this.hide(); }, '定位中...');
                     },
-                    onGeoComplete: function (e) {
+                    onGeoComplete: function () {
                         layer && layer.hide();
                         compass && compass.css('background-color', 'rgba(0,0,0,.8)');
                         //当前位置点自适应
@@ -471,8 +471,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     target[showDetail ? 'addClass' : 'removeClass'](MARKER_SHOW_ANI);
                 } else {
                     this.isDetailView = !!showDetail;
-                };
-                if (isDetailView === showDetail) return;
+                }
+                if (isDetailView === showDetail) {return;}
                 container.find('.J_detailMarker')[showDetail ? 'show' : 'hide']();
                 container.find('.J_simpleMarker')[showDetail ? 'hide' : 'show']();
                 //点状marker
@@ -481,8 +481,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 container.find('.J_popMarker')[showDetail ? 'show' : 'hide']();
             },
             addCenterMarker: function (data) {
-                var self = this,
-                    mapWidget = this.mapWidget,
+                var mapWidget = this.mapWidget,
                     lng = Number(data.lon),
                     lat = Number(data.lat),
                     marker;
@@ -527,7 +526,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 this.isScreenQuery = false;
             },
             onHide: function () {
-                if (!Util.isInApp() && this.header && this.header.rootBox) this.header.rootBox.show();
+                if (!Util.isInApp() && this.header && this.header.rootBox) {this.header.rootBox.show();}
                 this.clearPOIMarkers();
                 // this.centerMarker && this.centerMarker.hide();
                 //隐藏页面移除当前位置定位点
@@ -557,12 +556,13 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                         self.getCityInfo(center, msg.regeocode, callback);
                     });
                     MGeocoder.getAddress(lnglat);
-                })
+                });
             },
             /**
             * 反查城市
             * @param {JSON} lnglat  经纬度
             * @param {JSON} regeocode 省市县
+             *@param callback
             */
             getCityInfo: function (lnglat, regeocode, callback) {
                 var self = this;
@@ -575,9 +575,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                     isOverseas: !regeocode.formattedAddress //高德对海外的经纬度，返回的formattedAddress为空，故把formattedAddress为空认为是海外
                 });
                 getLocalCityInfoModel.excute(function (data) {
-                    var cityData;
                     if (data && data.CityID && data.CityID > 0) { //有效的城市ID
-                        StoreManage.setCurrentCity(data)
+                        StoreManage.setCurrentCity(data);
                         searchStore.setAttr('ctyId', data.CityID);
                         searchStore.setAttr('ctyName', data.CityName);
                         var pos = {
@@ -605,7 +604,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                         searchStore.setAttr('qparams', qparams);
                     }
                     typeof callback === 'function' && callback.call(self, regeocode.formattedAddress);
-                }, function (err) {
+                }, function () {
                     //TODO
                 }, false, this);
             }
