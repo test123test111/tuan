@@ -13,6 +13,10 @@
             url: '@ConfigurationManager.AppSettings["restfullApi"]/json/BannerSearch',
             postdata: {
                 cid: 2
+            },
+            suspend: function () {
+                //true: 浏览器端不请求接口
+                return Lizard.runAt == 'client';
             }
         }, {
             name: 'HotCitySearch',
@@ -22,6 +26,10 @@
                 isseo: 1,
                 ctyId: 0, //默认全国
                 environment: 1
+            },
+            suspend: function () {
+                //true: 浏览器端不请求接口
+                return Lizard.runAt == 'client';
             }
         }],
         "filter": function(datas) {
@@ -83,8 +91,8 @@
                     <li data-id="" data-type="106" data-category='onepaygroup' data-name='1元团购'><i></i>1元团购</li>
                     <li data-id="" data-type="0" data-category='feature' data-name='当地特色'><i></i>当地特色</li>
                     <li data-id="3" data-type="7" data-category='vacation' data-name='旅游度假'><i></i>旅游度假</li>
-                    <!--<li data-id="" data-type="" data-category='redenvelope' data-name='红包'><i></i>红&ensp;包</li>-->
-                    <li data-id="" data-type="" data-category='lottery' data-name='彩票'><i></i>彩&ensp;票</li>
+                    <li data-id="" data-type="" data-category='redenvelope' data-name='红包'><i></i>红&ensp;包</li>
+                    <!--<li data-id="" data-type="" data-category='lottery' data-name='彩票'><i></i>彩&ensp;票</li>-->
                     <li data-id=""  data-type=""  data-category="nearby"><i></i>附近团购</li>
                 </ul>
             </div>

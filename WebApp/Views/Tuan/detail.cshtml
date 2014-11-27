@@ -22,13 +22,17 @@
                 isseo: 1,
                 id: Lizard.P('pid'),
                 environment: 1
+            },
+            suspend: function () {
+                //true: 浏览器端不请求接口
+                return Lizard.runAt == 'client';
             }
         }],
         "filter": function(datas) {
             return {data: datas[0]};
         },
         "setTDK": function(datas) {
-            var tdk = datas[0].seo || {};
+            var tdk = (datas && datas[0] && datas[0].seo) || {};
             return {
                 title: tdk.title || '',
                 description: tdk.desc || '',

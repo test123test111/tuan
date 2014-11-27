@@ -57,6 +57,10 @@
             url: '@ConfigurationManager.AppSettings["restfullApi"]/json/CityABCToCityID',
             postdata: {
                 cityabc: Lizard.P('pinyin')
+            },
+            suspend: function () {
+                //true: 浏览器端不请求接口
+                return Lizard.runAt == 'client';
             }
         }, {
             name: 'ListSearch',
@@ -178,9 +182,16 @@
                 }
                 Lizard.__postData = JSON.stringify(postData);
                 return postData;
-            })()
+            })(),
+            suspend: function () {
+                //true: 浏览器端不请求接口
+                return Lizard.runAt == 'client';
+            }
         }],
         "filter": function(datas) {
+            /**
+             * 虽然不请求接口，但这里的代码仍然会执行，所以防止报错
+             */
             //copy from strings.js
             var groupType = {
                     '0':    { 'index': 0, 'name': '全部', 'category': 'all' },
@@ -193,15 +204,15 @@
                     '108':  { 'index': 7, 'name': '当地特色', 'category': 'feature' }
                 },
                 ctype = Lizard.P('ctype'),
-                renderData = datas[1],
+                renderData = (datas && datas[1]) || {},
                 groupTypeItem = groupType[ctype];
 
-            renderData.categoryName = groupTypeItem && groupTypeItem.name|| '全部团购';
-            renderData.h1text = renderData.seo.nowwalk;
+            renderData.categoryName = (groupTypeItem && groupTypeItem.name) || '全部团购';
+            renderData.h1text = (renderData.seo && renderData.seo.nowwalk) || '';
             return renderData;
         },
         "setTDK": function(datas) {
-            var tdk = datas && datas[1] && datas[1].seo || {};
+            var tdk = (datas && datas[1] && datas[1].seo) || {};
             return {
                 title: tdk.title || '',
                 description: tdk.desc || '',
