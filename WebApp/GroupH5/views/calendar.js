@@ -34,7 +34,7 @@ define(['TuanApp', 'libs', 'TuanBaseView', 'cCommonPageFactory', 'cUtility', 'Tu
 
                 //daterange: {sdate: '', edate: ''}
                 this.showLoading();
-                ticketBookingModel.setParam({pid:self.pid, daterange: {sdate: '', edate:''}});
+                ticketBookingModel.setParam({pid:tuanDetailStore.getAttr('id'), daterange: {sdate: '', edate:''}});
                 ticketBookingModel.excute(function(data) {
                     self.hideLoading();
                     var priceDate = data.plist[0].PDList;
@@ -52,6 +52,7 @@ define(['TuanApp', 'libs', 'TuanBaseView', 'cCommonPageFactory', 'cUtility', 'Tu
                         onShow: function() {
                             //(如果在当前view打开的话)隐藏上一个view， 否则会有bug：日历可以左右滑动且滑到最下面的时候会露出上一个view的内容
                             Util.isInApp() && (this.$el.find('.cui_cldweek').css('top', '0px'));
+                            !Util.isInApp() && (this.$el.css('zIndex', '0'));
                             date && this.$el.find('[data-date="' + date + '"]').addClass(selectCls);
                         },
                         onHide: function() {

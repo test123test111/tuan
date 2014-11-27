@@ -131,7 +131,6 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
         <%}%>
     <%if(hotelTel && hotelTel.length){
         var phones = _.map(hotelTel, function(p) {return p.phone;});
-
     %>
         <li class="arr_r wrap_phone J_phone" data-phone='<%=phones.join(",") %>'>
             <span class="subb_phone i_bef"><%_.each(phones, function(t) {%><span><%=t %></span><%}); %></span>
@@ -207,7 +206,7 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
     <%}%>
 
     <!--判断非拉手产品 -->
-    <%if(!lashouProject){%>
+    <%if(!lashouProject || isOnlineBookingTicket){%>
     <div class="neg_mb10">
         <div class="hot_tit">团购包含</div>
     </div>

@@ -344,7 +344,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
                 this.els.searchBox.css({zIndex: 4000});
                 this.els.$allCityBox.css({position: 'relative', zIndex: 4000});
                 !this.els.eltuancitykeyword.val() && (this.els.$allCityBox.hide());
-                this.els.eltuancitykeyword.focus();
+                this.els.eltuancitykeyword[0].focus();
             } else {
                 this.els.searchBox.css({zIndex: 'auto'});
                 this.els.$allCityBox.css({position: 'static', zIndex: 'auto'}).show();

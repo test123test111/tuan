@@ -111,6 +111,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 share: true, //分享，图片-native预置
                 events: {
                     returnHandler: function () {
+                        self.$el.html('');
                         self.backAction();
                     }
                 }
