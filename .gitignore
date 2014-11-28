@@ -6,8 +6,11 @@ vim.exe.stackdump
 obj
 __ConfigTemp
 bin
-build
 Tuan.v12.suo
 Tuan.csproj.user
 Web.config
 AppSetting.config
+WebApp/Tuan.csproj.FileListAbsolute.txt
+WebApp/Tuan.csprojResolveAssemblyReference.cache
+WebApp/Tuan.dll
+WebApp/Tuan.pdb
