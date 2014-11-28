@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
 var path = require('path');
-var exec = require('child_process').exec;
-
 var rootDir = process.cwd();
 var projDir = path.join(rootDir, 'WebApp');
 var tuanCsproj = path.join(projDir, 'Tuan.csproj');
@@ -12,5 +10,15 @@ if (/release|r/i.test(mode)) {
 } else {
     mode = 'Debug';
 }
-
-exec('msbuild /v:q /t:Rebuild /p:Configuration=' + mode + ';IntermediateOutputPath=' + projDir + '\\ ' + tuanCsproj);
+/**
+ * 使用msbuild编译，需在Windows环境变量加入如下路径：
+ * C:\Windows\Microsoft.NET\Framework\v4.0.30319
+ */
+var command = 'msbuild /v:q /t:Rebuild /p:Configuration=' + mode + ';IntermediateOutputPath=' + projDir + '\\ ' + tuanCsproj;
+require('child_process').exec(command, function (err) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(mode + ' mode build success')
+    }
+});
