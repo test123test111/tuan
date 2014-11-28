@@ -3,8 +3,8 @@
  * 首页
  * @url: m.ctrip.com/webapp/tuan 或 m.ctrip.com/webapp/taun/home
  */
-define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'StringsData', 'cHybridFacade','cHybridShell', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation','bridge'],
-    function (TuanApp, c, UIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, HybridShell, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
+define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'StringsData', 'cHybridFacade','cHybridShell', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation','bridge'],
+    function (TuanApp, c, Crypt, UIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, HybridShell, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
         'use strict';
         var isInApp = Util.isInApp(),
             listModel = TuanModels.TuanHotListModel.getInstance(),
@@ -311,14 +311,22 @@ define(['TuanApp', 'c', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'Store
                 if (category == 'hotel' || category == 'catering' || category == 'ticket' || category == 'entertainment' || category == 'nearby') {
                     this.geoCallback.type = category;
                     this.geoCallback.cancelNearby = 0;
-                    this.showLoading();
+                    //this.showLoading();
                     this.locateInterface();
                 } else if (category == 'redenvelope') {
-                    var domain = 'http://' + (TuanApp.isProduction ? 'pages.ctrip.com' : 'pages.dev.sh.ctriptravel.com');
-                    TuanApp.jumpToPage(domain + '/commerce/promote/201411/hotel/hbh5/packet.html?t=' + (+new Date()), self);
+                    this.goRedEnvelope();
                 } else {
                     this.goList(category);
                 }
+            },
+            goRedEnvelope: function () {
+                var domain = 'http://' + (TuanApp.isProduction ? 'pages.ctrip.com' : 'pages.dev.sh.ctriptravel.com');
+                var url = domain + '/commerce/promote/201411/hotel/hbh5/packet.html?t=' + new Date().getTime();
+                var userInfo = JSON.parse(localStorage.getItem('USERINFO'));
+                if (userInfo && userInfo.data && userInfo.data.Auth) {
+                    url += '&token=' + encodeURIComponent(Crypt.Base64.encode(JSON.stringify({auth: userInfo.data.Auth})));
+                }
+                TuanApp.jumpToPage(url, self);
             },
             showCityPage: function () {
                 this.forwardJump('citylist', '/webapp/tuan/citylist');

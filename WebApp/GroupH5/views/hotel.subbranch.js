@@ -72,7 +72,7 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
                 gpsInfo = gps || geolocationStore.getAttr('gps') || {};
             this.showLoading();
             param = {
-                id: tuanDetailsStore.get().id,
+                id: tuanDetailsStore.getAttr('id'),
                 pos: {
                     lon: gpsInfo.lng,
                     lat: gpsInfo.lat,
@@ -92,7 +92,8 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
                 var cityInfo = StoreManage.getCurrentCity();
                 cityInfo.CityName && (gpsInfo.CityName = cityInfo.CityName);
                 self.$el.html($.trim(self.htmlfun({ data: data.groups, gps: gpsInfo, cityId: cityId })));
-                self.onScroll();
+                // self.onScroll();
+                document.addEventListener('scroll', self.onScroll);
                 self.CallPhone = new CallPhone({view: this});
             }, function (err) {
                 var msg = err.msg ? err.msg : '啊哦,数据加载出错了!';
@@ -130,7 +131,6 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
             };
 
             this.forwardJump('hotelmap', '/webapp/tuan/hotelmap?lon=' + coords[0] + '&lat=' + coords[1] + '&hotelName=' + hotelName);
-
         },
         /**
          * 点击跳转跳转到国内酒店详情页
@@ -150,10 +150,11 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
         },
         showHotel: function (e) {
             var target = $(e.currentTarget),
-                unflod,
-                arrow = target.find('.J_arrow');
+                unflod, unflodWrap,
+                arrow = target.find('.J_arrow'),
+                upDown = ICON.up + ' ' + ICON.down,
+                hasLocation = document.querySelector('#J_gpsAddr');
 
-            var upDown = ICON.up + ' ' + ICON.down;
             if (arrow.hasClass(ICON.up)) {
                 arrow.toggleClass(upDown);
                 target.removeClass('J_sticky').removeClass('busi_fixed').css('top', '0').next().hide();
@@ -162,28 +163,46 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
             } else {
                 unflod = this.$el.find('.' + ICON.up);
                 unflod.toggleClass(upDown);
-                unflod.parent().removeClass('J_sticky').removeClass('busi_fixed').css('top', '0').next().hide();
-                unflod.parent().parent().css('padding-top', '0');
+                unflodWrap = unflod.parent().parent();
+                unflodWrap.removeClass('J_sticky').removeClass('busi_fixed').css('top', '0').next().hide();
+                unflodWrap.parent().css('padding-top', '0');
 
                 arrow.toggleClass(upDown);
                 target.addClass('J_sticky').next().show();
+                if (isInApp) {
+                    document.body.scrollTop = target.offset().top - (hasLocation ? 30 : 0);
+                } else {
+                    document.body.scrollTop = target.offset().top - (hasLocation ? 78 : 0);
+                }
                 document.addEventListener('scroll', this.onScroll);
             }
             this.onScroll();
         },
         onScroll: function () {
             var scroll = document.querySelector('.J_sticky');
-            if (!scroll) {return;}
-            if (window.scrollY >= scroll.parentNode.offsetTop) {
-                scroll.classList.add('busi_fixed');
-                scroll.parentNode.style.paddingTop = '45px';
-                !isInApp && (scroll.style.top = '48px');
+            if (!scroll) { return; }
+            var hasLocation = document.querySelector('#J_gpsAddr');
+            var wrap = scroll.parentNode;
+            var offsetTop = wrap.offsetTop;
+            if (window.scrollY >= offsetTop) {
+                if (window.scrollY <= offsetTop + wrap.getBoundingClientRect().height - 40) {
+                    scroll.classList.add('busi_fixed');
+                    scroll.parentNode.style.paddingTop = '45px';//设置45px占据fixed后留下的空间
+                    if (isInApp) {
+                        scroll.style.top = hasLocation ? '30px' : '0';
+                    } else {
+                        scroll.style.top = hasLocation ? '78px' : '48px';
+                    }
+                } else {
+                    scroll.classList.remove('busi_fixed');
+                    scroll.parentNode.style.paddingTop = '0';
+                    !isInApp && (scroll.style.top = '0');
+                }
             } else {
                 scroll.classList.remove('busi_fixed');
                 scroll.parentNode.style.paddingTop = '0';
                 !isInApp && (scroll.style.top = '0');
             }
-
         },
         //重新定位
         relocation: function (e) {
