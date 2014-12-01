@@ -12,7 +12,7 @@
             <div class="pro_thumb">
                 <img data-img="<%=n++ %>" onerror="javascript:noPic(this);" data-lazy="<%=product.imgUrl?product.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" width="96" height="96" alt="<%=product.name%>" />
             </div>
-            <h2><%=product.name.replace(/-/g, '')%><% if(product.hotdescription){ %>，<%=product.hotdescription %><% } %></h2>
+            <h2><%=product.name%><% if(product.hotdescription){ %>，<%=product.hotdescription %><% } %></h2>
             <p class="sold_out_num">已售<%=product.cSold%></p>
             <%if(product.labelTxt){ %>
             <div class="pro_list_txt">
