@@ -734,7 +734,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         totalPrice > 0 ? Payment.submit(self, token, {IsRealPay: data.IsRealPay}) : self.forwardJump('bookingsuccess', '/webapp/tuan/bookingsuccess/' + oid + '.html');
 
                     } else if (data.ResponseStatus.Ack.toLowerCase() == 'failure' && data.ResponseStatus.Errors && data.ResponseStatus.Errors.length > 0) {//0元团已购买过一次
-                        self.showToast(self.getMsgByCode(data.ResponseStatus.Errors[0].ErrorCode));//'您已购买过此0元团产品，一个用户只能购买一次');
+                        self.showToast(this.getErrorMessage(data.ResponseStatus.Errors[0]));//'您已购买过此0元团产品，一个用户只能购买一次');
                     } else {
                         self.showToast('订单提交失败请重试!');
                     }
@@ -750,13 +750,10 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     self.hideLoadingLayer();
                     var errorMsg = (err.statusText === 'timeout') ? MSG.timeoutTips : MSG.failTips;
                     if (err.ResponseStatus && err.ResponseStatus.Ack.toLowerCase() == 'failure' && err.ResponseStatus.Errors && err.ResponseStatus.Errors.length > 0) {//0元团已购买过一次
-                        errorMsg = self.getMsgByCode(err.ResponseStatus.Errors[0].ErrorCode); //'您已购买过此0元团产品，一个用户只能购买一次';
-                        if (!errorMsg) {
-                            errorMsg = err.ResponseStatus.Errors[0].Message;
-                        }
+                        errorMsg = this.getErrorMessage(err.ResponseStatus.Errors[0]); //'您已购买过此0元团产品，一个用户只能购买一次';
                     }
                     self.showToast(errorMsg);
-                }, this, true);
+                });
             },
 
             loginAction: function () {
@@ -791,9 +788,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     param: '?t=1&from=' + encodeURIComponent(location.href),
                     callback: callback
                 }) : this.h5NoMemberLogin(callback);
-            },
-            getMsgByCode: function (code) {
-                return ERROR_MSGS[code] || '';
             },
             _clearUsedCoupon: function () {
                 delete this.store.coupon;

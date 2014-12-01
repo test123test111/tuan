@@ -299,7 +299,6 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 this.forwardJump('list', '/webapp/tuan/list');
             },
             goListByType: function (e) {
-                var self = this;
                 var item = $(e.currentTarget);
 
                 if (!item.attr('data-category')) {
@@ -311,7 +310,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 if (category == 'hotel' || category == 'catering' || category == 'ticket' || category == 'entertainment' || category == 'nearby') {
                     this.geoCallback.type = category;
                     this.geoCallback.cancelNearby = 0;
-                    //this.showLoading();
+                    this.showLoading();
                     this.locateInterface();
                 } else if (category == 'redenvelope') {
                     this.goRedEnvelope();

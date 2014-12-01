@@ -50,7 +50,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          events: {
              'input #J_keywordInput': 'tuanKeyWordInput',
              'submit .search_wrap>form': 'onSubmitSearch',
-             'click .city_item': 'onKeywordItemClick',
+             'click .J_resultItem': 'onKeywordItemClick',
              'click #J_cancel': 'onCancelInput',
              'click .J_clearhistory': 'onClearHistory',
              'click #js_hotkeyword .sw_con>li': 'goHotSearch'
@@ -84,15 +84,24 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              //历史搜索 处理start----------
              StoreManage.addHistoryKeyWord(id, name, keytype);
              //历史搜索 处理end-------------
+             //团购6.1新增， 根据地标查询时， 产品列表按照距离最近排序
+             (keytype === 'markland') && (searchStore.setAttr('sortRule', 8));
              this.doSubmit();
          },
          onSubmitSearch: function () {
-             var keywordValue = FilterXss.filterXSS(this.els.keywordInput.val());
+             var keywordValue = FilterXss.filterXSS(this.els.keywordInput.val()), item;
              if (typeof keywordValue === "undefined" || keywordValue === "" || keywordValue === null) {return false;}
              this.els.keywordInput[0].blur();
              StoreManage.clearSpecified(true);
-             StoreManage.addHistoryKeyWord(keywordValue, keywordValue, 7);
-             this.doSubmit();
+             //团购6.1 新增，关键字若完全匹配为地标，按距离最近排序
+             item = this.els.keywordSuggestWrap.find('[data-name="'+keywordValue+'"]');
+             if (item.length && item.attr('data-type') === 'markland') {
+                 item[0].click();
+             } else {
+                 StoreManage.addHistoryKeyWord(keywordValue, keywordValue, 7);
+                 this.doSubmit();
+             }
+
              return false;
          },
          tuanKeyWordInput: function (e) {
@@ -172,6 +181,19 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                      (!data.history) && (data.history = []);
                      data.history = data.history.concat.apply(data.history, hcitylist);
                  }
+
+                 //团购6.1新增关键字高亮
+                 var inpuKey = this.lastinputkey;
+                 if (data.Results && data.Results.length) {
+                     _.each(data.Results, function(t) {
+                         if (t.word) {
+                             t.wordNew = t.word.replace(new RegExp(inpuKey.toLocaleLowerCase(), 'g'), '<em>' + inpuKey.toLocaleLowerCase() + '</em>')
+                                .replace(new RegExp(inpuKey.toLocaleUpperCase(), 'g'), '<em>' + inpuKey.toLocaleUpperCase() + '</em>');
+                         }
+                         t.typeNew = StringsData.typeToName[t.type] || '';
+                     });
+                 }
+
                  html = this.cityListTplfun({ data: data, keyid: keyId });
 
                  this.els.keywordSuggestWrap.html(html);
@@ -358,3 +380,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
      });
      return View;
  });
+
+/*
+changelog:  @date: 20141128   1. 团购6.1新增关键字高亮 2. 地标查询按距离最近展示；
+ */

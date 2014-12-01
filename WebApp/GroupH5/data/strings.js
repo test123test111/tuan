@@ -55,6 +55,35 @@ define(function () {
             '3': '7', //旅游度假
             '4': '6', //门票
             '5': '9'  //娱乐
+        },
+        traType: {
+            'hotelid': 18,
+            'zone': 5,  //商业区
+            'hotelgroupid': 3,
+            'location': 4,  //行政区
+            'activity': 11, //活动
+            'district': 16, //景区
+            'markland': 17  //地标
+        },
+        /*
+         商业区 位置
+         行政区 位置
+         机场   机场
+         火车站 火车站
+         地铁站  地铁站
+         品牌   名称
+         产品名称  名称
+         地标 位置
+         主题   名称
+         景点  位置
+         */
+        typeToName: {
+            'zone': '位置',
+            'location': '位置',
+            'district': '位置',
+            'markland': '位置',
+            'hotelid': '名称',
+            'hotelgroupid': '名称'
         }
     };
 });

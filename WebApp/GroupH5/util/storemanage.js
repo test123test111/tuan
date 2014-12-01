@@ -379,15 +379,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             if (keywordData) {
                 var keyType = (keywordData.type || '').toString().toLowerCase();
                 var keyValue = keywordData.id || keywordData.word;
-                var traType = {
-                    'hotelid': 18,
-                    'zone': 5,  //商业区
-                    'hotelgroupid': 3,
-                    'location': 4,  //行政区
-                    'activity': 11, //活动
-                    'district': 16, //景区
-                    'markland': 17  //地标
-                };
+                var traType = StringsData.traType;
                 if (keyType) {
                     if (/\D/.test(keyType)) { //keyType不是数字，才需要转换
                         if (traType[keyType]) {
