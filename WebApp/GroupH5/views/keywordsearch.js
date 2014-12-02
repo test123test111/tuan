@@ -221,6 +221,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          },
          onShow: function () {
              this.header.hide();
+             this.els.keywordInput && this.els.keywordInput[0].focus();
          },
          onHide: function () {
              this.header.show();

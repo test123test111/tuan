@@ -394,7 +394,6 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             }
         },
         onShow: function () {
-            this.els.eltuancitykeyword && this.els.eltuancitykeyword[0].focus();
         },
         onHide: function () {
             //查询视图是否未hide.
