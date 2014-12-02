@@ -35,7 +35,7 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
                         stash = this.stash;
                     //$text.html($text.html() ? $text.html() + '\n' + JSON.stringify(s) : JSON.stringify(s));
                     stash.push(typeof s !== 'undefined' ? JSON.stringify(s) : '');
-                    $text.html(stash.join('\n'));
+                    $text.text(stash.join('\n'));
                 }});
             }
             this.renderHtml();
