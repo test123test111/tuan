@@ -1,4 +1,4 @@
-﻿/*jshint -W030 */
+﻿﻿/*jshint -W030 */
 /**
  * 商户列表
  * @url: m.ctrip.com/webapp/tuan/hotelsubbranch
@@ -107,6 +107,7 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
         onShow: function () { },
         onHide: function () {
             Geolocation.UnSubscribe('tuan/subbranch');
+            this.CallPhone && this.CallPhone.hideMask();
         },
         backAction: function () {
             var o = {};

@@ -1,4 +1,4 @@
-﻿/*jshint -W030 */
+﻿﻿/*jshint -W030 */
 /**
  * 详情页
  * @url m.ctrip.com/webapp/tuan/detail/{pid}.html
@@ -313,6 +313,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             this.hideLoading();
             this.hideWarning404();
             this.mask && this.mask.hide();
+            this.CallPhone && this.CallPhone.hideMask();
         },
         /**
          * 判断是否从hybrid的公共收藏列表页过来

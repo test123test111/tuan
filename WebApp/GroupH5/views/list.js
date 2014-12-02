@@ -1,4 +1,4 @@
-﻿/*jshint -W030*/
+﻿﻿/*jshint -W030*/
 /**
  * 列表页面
  * @url: m.ctrip.com/webapp/tuan/list
@@ -523,7 +523,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 return;
             }
 
-            //如果从详情页后退不请求数据
+            //如果从详情页后退不请求数据,否则重新请求
             if (!this.isFromDetail(this.referUrl) || !MemCache.getItem('hasListData')) {
                 //显示loading
                 this.showLoading();

@@ -242,6 +242,7 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         onHide: function () {
             this.hideLoading();
             this._confirm && this._confirm.hide();
+            this.CallPhone && this.CallPhone.hideMask();
         },
         /**
         * 获取交叉推荐
