@@ -300,17 +300,47 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             //检查来源，并做保存来源数据
             TuanApp.saveUnion(true);
 
-            this.gpsInfoWrap.css('top', isInApp ? '0px' : '48px');
+            //旅游度假隐藏列表顶部距离信息
+            if (+searchStore.getAttr('ctype') !== 7) {
+                this.gpsInfoWrap.show();
+                this.gpsSpace.show();
+                this.gpsInfoWrap.css('top', isInApp ? '0px' : '48px');
+                this.quickOpBar.css('top', isInApp ? '30px' : '78px');
+            } else {
+                this.gpsInfoWrap.hide();
+                this.gpsSpace.hide();
+                this.quickOpBar.css('top', isInApp ? '0px' : '48px');
+            }
+            /*
             if (isInApp) {
                 wrap.find('#J_searchBoxWrap').addClass('hybrid');
                 //如果是hybrid初始化语音功能
                 TuanApp.initVoiceSearch && TuanApp.initVoiceSearch(wrap.find('#J_voiceTrigger'));
             }
+            */
         },
-        isFromDetail: function (refer) {
+        setQuickScroll: function () {
+            var wrapper = this.$el.find('#J_quickWrapper');
+            var scroller = wrapper.find('ul');
+            var width = 20; //20 is padding left and right
+            var items = scroller.find('li');
+            _.each(items, function(item) {
+                width += $(item).width() + 3; //3 is margin right
+            });
+            scroller.css('width', width);
+            var uiScroll = new Scroll({
+                wrapper: wrapper,
+                scrollbars: false,
+                scrollX: true, //横向滚动
+                scrollY: false //竖直滚动
+            });
+        },
+        isFromDetail: function () {
+            var refer = this.referUrl;
             return refer && refer.match(/detail/i);
         },
-        isFromListMap: function (refer) {
+        isFromListMap: function () {
+            var refer = this.referUrl;
             return refer && refer.match(/listmap/i);
         },
         controlGPSInfoWrap: function (visible) {
@@ -752,11 +782,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 $(window).unbind('scroll', this.onWindowScroll);
             }, !!fromServer, self);
         },
-        emptyPage: function (title, cityName) {
-            this.updateTitle(title);
-            this.renderNoResult('', 'hotels', {'feature': {val: '', txt: title}});
-            this.gpsInfoWrap.text('距离：' + cityName + StringsData.CITY_CENTER);
-        },
         renderNoResult: function (msg, key, customdata) {
             var lst = {
                 count: 0,
@@ -844,13 +869,15 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     break;
                 case 'feature':
                     searchStore.removeAttr('from_feature');
-                    this.updateTitle(StringsData.groupType[0].name);
+                    this.updateTitle(searchStore.getAttr('ctyName'), true);
+                    //this.updateTitle(StringsData.groupType[0].name);
                     break;
                 case 'price':
                     searchStore.setAttr('qparams', []);
                     label.find('li[data-tab="price"] i').hide();
                     customFiltersStore.removeAttr('price');
-                    this.updateTitle(StringsData.groupType[0].name);
+                    this.updateTitle(searchStore.getAttr('ctyName'), true);
+                    //this.updateTitle(StringsData.groupType[0].name);
                     break;
                 default:
                     customFiltersStore.removeAttr(type);

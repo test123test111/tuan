@@ -37,8 +37,7 @@
             }
         },
         "lizardEnv": "pro",
-        "isSimplifyHtml": true,
-        "weinre": true
+        "isSimplifyHtml": true
     }
 
 }

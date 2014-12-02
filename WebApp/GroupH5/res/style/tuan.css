@@ -126,8 +126,9 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .list_hd_button .i_tri,.list_hd_button2 .i_tri{top: 1px;}
 .i_landmarks{position:relative;bottom:-2px;display:inline-block;overflow:hidden;width:13px;height:18px;margin-right:8px;background-position:-142px -87px;line-height:1;}
 .returnico{background:none;}
-.icon_map_w{width:42px;height:100%;top:0;position:relative;z-index:9;float:right;}
+.icon_map_w{width:42px;height:48px;top:0;position:relative;z-index:9;float:right;}
 .icon_map_w:before{background-position:-190px -60px;width:22px;height:24px;right:10px;top:12px;}
+.icon_search_w{height:48px;}
 .icon_search_w:before{background-position:-220px -60px; width: 22px; height: 22px; right: 10px; top: 13px;}
 /* 列表页搜索 */
 .list_s{position:relative;z-index:1;padding:8px;width:100%;-webkit-box-sizing:border-box;box-sizing:border-box;background-color:#e6f0f7;}
@@ -1239,3 +1240,7 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-ms-animation:op
 .layer_list_search .icon_search_w,.layer_list_search .icon_search_w:after{width: 48px; height: 48px;}
 .layer_list_search .icon_search_w:after{content: ''; position: absolute; left: 0; top: 0; -webkit-border-radius: 50%; border-radius: 50%; background: -webkit-radial-gradient(rgba(9,159,222,1) 0%,rgba(10,73,99,1) 100%); z-index: 1; -webkit-filter:blur(6px);}
 .layer_list_search .icon_search_w:before{z-index: 2;}
+
+/* 把列表页头部的ICON放入CSS，方便Hybrid打包(junyizhang@ctrip.com) */
+.list_header_map_icon {background: url(http://pic.c-ctrip.com/h5/tuan/icon_map_w.png) no-repeat 0 0;}
+.list_header_search_icon {background: url(http://pic.c-ctrip.com/h5/tuan/icon_search_w.png) no-repeat 0 0;}

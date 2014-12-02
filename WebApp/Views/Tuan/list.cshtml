@@ -228,23 +228,43 @@
 }
 </script>
 <script type="text/lizard-template" id="J_listHeader">
-    <i id="J_gotoMapPage" class="rightblue">地图</i>
-    <h2><%=categoryName%>团购</h2>
-    <i id="c-ui-header-return" class="returnico i_bef"></i>
+    <h2><div class="list_hd_button2"><em class="header_mutrow"><%=categoryName%></em><i class="i_tri"></i></div></h2>
+    <i id="js_return" class="returnico"></i>
+    <b class="i_bef icon_search_w"></b>
+    <b id="J_gotoMapPage" class="i_bef icon_map_w"></b>
 </script>
 <script type="text/lizard-template" id="J_listViewer">
-    <div class="cur_pos cur_pos_has" id="J_gpsInfoWrap">
-        <%if(Lizard.runAt!='client'){%>
-        <%=h1text%>
-        <%}else{%>
-        <a href="javascript:;" class="cur_reload" id="J_reloadGPS"></a><span id="J_gpsInfo">定位中</span>
-        <%}%>
+    <div id="J_toolbar">
+        <div id="J_gpsInfoWrap" class="cur_pos cur_pos_has">
+            <%if(Lizard.runAt!='client'){%>
+            <%=h1text%>
+            <%}else{%>
+            <a href="javascript:;" class="cur_reload" id="J_reloadGPS"></a><span id="J_gpsInfo">定位中</span>
+            <%}%>
+        </div>
+        <div id="J_gpsSpace" style="height:30px"></div>
+        <div id="J_quickOpBar" class="quickOpBar">
+            <div id="J_quickWrapper">
+                <ul class="m_BorderRadiusWrap">
+                    <li class="current">全部</li>
+                    <li>可用红包</li>
+                    <li>周末可用</li>
+                    <li>免预约</li>
+                    <li>可用红</li>
+                    <li>周末可用</li>
+                    <li>免预约</li>
+                </ul>
+            </div>
+        </div>
+        <div id="J_quickSpace" style="height:55px"></div>
     </div>
-    <section class="cont_wrap" style="padding-top: 30px;" id="J_searchBoxWrap">
+    <section class="cont_wrap" id="J_searchBoxWrap">
+        <!--
         <div class="list_s clear-input-box" id="J_keywordSearchPanel">
             <input type="text" placeholder="位置/品牌/名称" readonly="readonly" class="list_s_input" id="J_keywordSearch">
             <div id="J_voiceTrigger" class="btn_voice_s"></div>
         </div>
+        -->
         <div id="J_listWrap" class="pro_list_wrap">
             <%if(typeof products!='undefined' && products && products.length>0 && count && +count > 0) {%>
                 <ul class="pro_list">
