@@ -1,4 +1,4 @@
-﻿﻿/*jshint -W030 */
+﻿/*jshint -W030 */
 /**
  * 详情页
  * @url m.ctrip.com/webapp/tuan/detail/{pid}.html

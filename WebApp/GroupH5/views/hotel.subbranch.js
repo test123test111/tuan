@@ -1,4 +1,4 @@
-﻿﻿/*jshint -W030 */
+﻿/*jshint -W030 */
 /**
  * 商户列表
  * @url: m.ctrip.com/webapp/tuan/hotelsubbranch

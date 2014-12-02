@@ -36,7 +36,7 @@
         </div>
         <!--地址电话-->
         <%if(hasAddrOrPhone){%>
-        <ul class="box_list box_listT2">
+        <ul class="subblist">
             <%if(ContactInfo.hotelAddr){%>
             <li class="arr_r" id="J_hotelMap" data-coords="<%=ContactInfo.hotelLnglat[0].longitude + ',' + ContactInfo.hotelLnglat[0].latitude%>" data-hotel-name="<%=ContactInfo.hotelName%>">
                 <span class="subb_address i_bef"><%=ContactInfo.hotelAddr%></span>

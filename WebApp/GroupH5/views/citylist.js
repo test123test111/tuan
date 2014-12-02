@@ -131,6 +131,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             cui.InputClear(this.els.eltuancitykeyword);
             this.onBodyChange = $.proxy(function () {
                 this.els.eltuancitykeyword[0].blur();
+                this.els.eltuancitylistbox.focus();
                 this.$el.find(".history_close").hide();
             }, this);
         },
@@ -393,6 +394,7 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             }
         },
         onShow: function () {
+            this.els.eltuancitykeyword && this.els.eltuancitykeyword[0].focus();
         },
         onHide: function () {
             //查询视图是否未hide.

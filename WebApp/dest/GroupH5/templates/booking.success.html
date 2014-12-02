@@ -1,4 +1,4 @@
-﻿<section class="cont_wrap">
+﻿﻿<section class="cont_wrap">
     <!-- 需要增加零元团的判断以及文案,模板：您的订单已成功提交！我们会尽快处理-->
     <div class="suc_txt">
         <%if(status==3){%>
@@ -21,9 +21,9 @@
         <div id="J_codeAndPwd">
             <% _.each(coupons, function(v, i){ %>
                 <% if(!_.isEmpty(v.pwd)) { %>
-                <ul class="box_list box_listCoupon">
-                    <li><span class="items">券号<%=i + 1%></span><span class="items"><%=v.code%></span></li>
-                    <li><span class="items">密码</span><span class="items"><%=v.pwd%></span></li>
+                <ul class="coupon_list m_BorderRadius">
+                    <li><span class="title">券号<%=i + 1%></span><span class="num"><%=v.code%></span></li>
+                    <li><span class="title">密码</span><span class="<%= v.pwd === '此团购无需密码'?'desc':'num'%>"><%=v.pwd%></span></li>
                 </ul>
                 <% } %>
             <% }) %>

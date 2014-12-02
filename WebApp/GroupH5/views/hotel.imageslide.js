@@ -86,7 +86,7 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
                     currentIndex: currentIndex,
                     width: $('body').offset().width,
                     tpl: html,
-                    onSwitchEnd: function() {
+                    onSwitchEnd: function(a, b) {
                     },
                     onSwitch: function(index, data) {
                         updateTitleAndDesc(index, this.count(), data.title);
