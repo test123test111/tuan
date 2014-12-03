@@ -73,7 +73,6 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
                     });
                 }
             }
-
             if (formattedData.length) {
                 //修复子页面容器撑不开问题
                 container.parent().parent().css('height', '100%');
@@ -86,8 +85,7 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
                     currentIndex: currentIndex,
                     width: $('body').offset().width,
                     tpl: html,
-                    onSwitchEnd: function() {
-                    },
+                    onSwitchEnd: function() {},
                     onSwitch: function(index, data) {
                         updateTitleAndDesc(index, this.count(), data.title);
                     },

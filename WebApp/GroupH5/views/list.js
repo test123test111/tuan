@@ -1,4 +1,4 @@
-﻿﻿/*jshint -W030*/
+﻿/*jshint -W030*/
 /**
  * 列表页面
  * @url: m.ctrip.com/webapp/tuan/list
