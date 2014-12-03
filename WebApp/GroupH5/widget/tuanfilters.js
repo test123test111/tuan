@@ -311,7 +311,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     item.addClass('choosed');
 
                     self.page.updateTitle(currType.name);
-                    self.page.searchKeywordInput.val('');
+                    // self.page.searchKeywordInput.val('');
 
                     if (tuanType == 7) { //“旅游度假”分类不按“附近团购”查询
                         historyCityListStore.removeAttr('nearby');

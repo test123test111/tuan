@@ -321,13 +321,13 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 space = this.toolbarSpace,
                 direction = data.direction;
             if (direction.toLowerCase() == 'down') {
-                console.log('down ' + data.y)
+                //console.log('down ' + data.y)
                 if (data.y > 75) {
                     toolbar.removeClass('list_s_fixed');
                     space.hide();
                 }
             } else {
-                console.log('up ' + data.y)
+                //console.log('up ' + data.y)
                 toolbar.addClass('list_s_fixed');
                 toolbar.css('top', isInApp ? '0px' : '48px');
                 space.show();
@@ -877,6 +877,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             lst.customFilter = customdata;
             this.renderList(lst);
         },
+        /*
         initKeywordSearch: function () {
             var searchBox = this.$el.find('#J_keywordSearch'),
                 lastSearchKeyword = StoreManage.getCurrentKeyWord();
@@ -885,6 +886,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             CUI.InputClear(searchBox);
             searchBox.val(lastSearchKeyword && lastSearchKeyword.word || ''); //关键词字段，TODO：转存到另一个localstorage
         },
+        */
         detailHandler: function (e) {
             var id = $(e.currentTarget).attr('data-id'),
                 cid = searchStore.getAttr('ctyId');
