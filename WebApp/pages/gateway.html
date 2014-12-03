@@ -157,17 +157,42 @@
     (function () {
         var EMPTY = '',
             RE_H5_URL = /.*(\/webapp\/(\w+)\/.*)/i,
-            HYBRID_URL = '/index.html?from_native_page=1#',
-            APP_SCHEMA_TPL = 'ctrip://wireless/h5?type=1&url=';
-
-        function hybridUrl(h5url){
+            HYBRID_URL = 'index.html?from_native_page=1#',
+            APP_SCHEMA_TPL = 'ctrip://wireless/h5?type=1&url=',
+            APP_SCHEMA_TPL_OLD = 'ctrip://wireless/h5?path=tuan&page=',
+            locationUrl = decodeURIComponent(location.href);
+        /**
+         * 根据H5完整URL生成hybrid包相对路径
+         * @param h5url {String} 对应H5页面完整URL
+         * @returns {String} hybrid包相对路径，例如tuan/index.html#webapp/xxx/xx.html
+         */
+        function hybridUrl(h5url, nochannel){
             var parsedUrl = parseUrl(h5url);
 
-            return parsedUrl.channel + HYBRID_URL + encodeURIComponent(parsedUrl.relative);
+            return (nochannel ? EMPTY : parsedUrl.channel+'/') + HYBRID_URL + encodeURIComponent(parsedUrl.relative);
         };
+        /**
+         * app<5.10时的hybrid URL
+         * @deprecated
+         * @param url {String} 对应H5页面完整URL
+         * @returns {String} 完整app schema
+         */
+        function generateAppUrlForEarlierVersion (h5url){
+            return APP_SCHEMA_TPL_OLD + hybridUrl(h5url, true);
+        };
+        /**
+         * 根据H5完整URL生成APP对应的schema
+         * @param url {String} 对应H5页面完整URL
+         * @returns {String} 完整app schema
+         */
         function generateAppUrl (h5url) {
-            return APP_SCHEMA_TPL + __Crypt.encode(hybridUrl(h5url));
+            return APP_SCHEMA_TPL + __Crypt.encode(hybridUrl(h5url));//app>5.10
         };
+        /**
+         * 解析完整URL
+         * @param url {String} 被解析的URL
+         * @returns {Object} 解析出channel和relative字段
+         */
         function parseUrl(url){
             var rs = RE_H5_URL.exec(url);
             return {
@@ -175,8 +200,12 @@
                 relative: rs[1] || EMPTY
             }
         };
-        function openUrl (url) {
-            var appUrl = generateAppUrl(url),
+        /**
+         * 唤起APP主函数
+         * @param url {String} 需要打开页面的H5 url
+         */
+        function openUrl (url, isNewest) {
+            var appUrl = !isNewest ? generateAppUrlForEarlierVersion(url) : generateAppUrl(url),
                 iframe;
 
             /** 尝试唤起app **/
@@ -191,12 +220,18 @@
             },10);
 
         };
+        /**
+         * 获取URL中query参数
+         * @param url {String} 需要解析的URL
+         * @param key {String} 需要解析querystring key
+         * @returns {Array|{index: number, input: string}|*}
+         */
         function getQuery (url, key) {
             var rs = new RegExp('.*(?:[\?|&])' + key + '=([^&]*)(?:&|$)', 'i').exec(url);
 
-            return rs && rs[1];
+            return rs && rs[1] || EMPTY;
         };
-        openUrl(getQuery(decodeURIComponent(location.href), 'openurl'));
+        openUrl(getQuery(locationUrl, 'openurl'), !!getQuery(locationUrl, 'newest'));
     })();
 </script>
 </body>
