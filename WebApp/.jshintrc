@@ -15,6 +15,7 @@
         //浏览器全局变量
         "window",
         "location",
+        "localStorage",
         "sessionStorage",
         "top",
         "self",
