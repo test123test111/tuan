@@ -52,8 +52,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.businessListTpl = _.template(listBusiness);
             //当前位置容器
             this.gpsInfoWrap = wrap.find('#J_gpsInfoWrap');
-            this.gpsSpace = wrap.find('#J_gpsSpace');
+            // this.gpsSpace = wrap.find('#J_gpsSpace');
             this.quickOpBar = wrap.find('#J_quickOpBar');
+
+            this.toolbar = wrap.find('#J_toolbar');
+            this.toolbarSpace = wrap.find('#J_toolbarSpace');
         },
         events: {
             'click li[data-id]': 'detailHandler', //详情页
@@ -136,19 +139,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 cityId = currentCity.CityId;
 
             return cityId && cityId != searchStore.getAttr('ctyId');
-        },
-        toolbarObserver: function (evt, data) {
-            var toolbar = this.toolbar,
-                isNearBy = this.isNearBy(),
-                direction = data.direction;
-            //向上传，出现关键词浮层，当滚动下于50，则不浮动
-            if (direction.toLowerCase() == 'up' && data.y > 30) {
-                toolbar.addClass('list_s_fixed');
-                toolbar.css('top', !isInApp && isNearBy ? '78px' : isInApp ? '0' : '48px'); //如果在app中head被native头取代
-            } else {
-                toolbar.removeClass('list_s_fixed');
-                toolbar.css('top', '0');
-            }
         },
         /**
         * 重新定位
@@ -302,17 +292,22 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             //检查来源，并做保存来源数据
             TuanApp.saveUnion(true);
 
-            //旅游度假隐藏列表顶部距离信息
-            if (+searchStore.getAttr('ctype') !== 7) {
-                this.gpsInfoWrap.show();
-                this.gpsSpace.show();
-                this.gpsInfoWrap.css('top', isInApp ? '0px' : '48px');
-                this.quickOpBar.css('top', isInApp ? '30px' : '78px');
-            } else {
-                this.gpsInfoWrap.hide();
-                this.gpsSpace.hide();
-                this.quickOpBar.css('top', isInApp ? '0px' : '48px');
-            }
+            var isVacation = +searchStore.getAttr('ctype') === 7;
+            this.controlGPSInfoWrap(!isVacation); //旅游度假隐藏列表顶部距离信息
+            var spaceHeight = isVacation ? 0 : 30;//定位信息栏的高度
+            spaceHeight += 45; //快捷操作栏的高度
+            this.toolbar.css('top', isInApp ? '0px' : '48px');
+            this.toolbarSpace.css('height', spaceHeight);
+            //if (isVacation) {
+                // this.gpsInfoWrap.show();
+                // this.gpsSpace.show();
+                // this.gpsInfoWrap.css('top', isInApp ? '0px' : '48px');
+                // this.quickOpBar.css('top', isInApp ? '30px' : '78px');
+            //} else {
+                // this.gpsInfoWrap.hide();
+                // this.gpsSpace.hide();
+                // this.quickOpBar.css('top', isInApp ? '0px' : '48px');
+            //}
             /*
             if (isInApp) {
                 wrap.find('#J_searchBoxWrap').addClass('hybrid');
@@ -321,10 +316,28 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             }
             */
         },
+        toolbarObserver: function (evt, data) {
+            var toolbar = this.toolbar,
+                space = this.toolbarSpace,
+                direction = data.direction;
+            if (direction.toLowerCase() == 'down') {
+                console.log('down ' + data.y)
+                if (data.y > 75) {
+                    toolbar.removeClass('list_s_fixed');
+                    space.hide();
+                }
+            } else {
+                console.log('up ' + data.y)
+                toolbar.addClass('list_s_fixed');
+                toolbar.css('top', isInApp ? '0px' : '48px');
+                space.show();
+            }
+        },
+        //快捷操作栏
         setQuickScroll: function () {
             var wrapper = this.$el.find('#J_quickWrapper');
             var scroller = wrapper.find('ul');
-            var width = 20; //20 is padding left and right
+            var width = 0;
             var items = scroller.find('li');
             _.each(items, function(item) {
                 width += $(item).width() + 3; //3 is margin right
@@ -345,8 +358,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             var refer = this.referUrl;
             return refer && refer.match(/listmap/i);
         },
+        isFromKeywordSearch: function () {
+            var refer = this.referUrl;
+            return refer && refer.match(/keywordsearch/i);
+        },
         controlGPSInfoWrap: function (visible) {
-            this.gpsInfoWrap.css('display', visible ? '' : 'none');
+            this.gpsInfoWrap[visible ? 'show' : 'hide']();
         },
         /**
         * @param {Object} searchData 所有查询条件键值对
@@ -397,24 +414,9 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         updateTitle: function (title, isCity) {
             var self = this;
             var header = this.header;
-            var ctype = searchStore.getAttr('ctype');
-            var ICON = {
-                map: '<b id="J_gotoMapPage" class="i_bef icon_map_w"></b>',
-                search: '<b id="J_gotoSearch" class="i_bef icon_search_w"></b>',
-                down: '<i class="i_tri"></i>'
-            };
             var headerData = {
                 back: true,
                 view: this,
-                moreRightMenus: [{
-                    tagname: "tuan_keyword_search",  //点击之后callback给H5的事件名字,
-                    //value:"搜索", //按钮上的文字
-                    imagePath: "tuan/pic/h5/tuan/icon_search_w.png",  //按钮上的图片， v5.8开始支持
-                    pressedImagePath: "tuan/pic/h5/tuan/icon_search_w.png", //按钮上的图片选中的效果图，v5.8开始支持
-                    callback: function () {
-                        self.showKeywordSearch();
-                    }
-                }],
                 events: {
                     returnHandler: function () {
                         if (self.isNearBy()) {
@@ -437,16 +439,32 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     }
                 }
             };
+            var ctype = searchStore.getAttr('ctype');
+            var ICON = {
+                map: '<b id="J_gotoMapPage" class="i_bef icon_map_w"></b>',
+                search: '<b id="J_gotoSearch" class="i_bef icon_search_w"></b>',
+                down: '<i class="i_tri"></i>'
+            };
+            var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
+            if (!hasKeyword) {
+                headerData.moreRightMenus = [{
+                    tagname: 'tuan_keyword_search',  //点击之后callback给H5的事件名字,
+                    imagePath: 'tuan/pic/h5/tuan/icon_search_w.png',  //按钮上的图片， v5.8开始支持
+                    pressedImagePath: 'tuan/pic/h5/tuan/icon_search_w.png', //按钮上的图片选中的效果图，v5.8开始支持
+                    callback: function () {
+                        self.showKeywordSearch();
+                    }
+                }];
+            }
             var customtitle = '<h2><div id="J_cityBtn" class="list_hd_button2"><em class="header_mutrow">' + title + '</em>' + (isCity ? ICON.down : '') + '</div></h2><i id="js_return" class="returnico"></i>';
             if (+ctype === 7) {//旅游度假隐藏标题栏右侧地图按钮
-                headerData.customtitle = customtitle + ICON.search;
+                headerData.customtitle = customtitle + (hasKeyword ? '' : ICON.search);
             } else {
-                headerData.customtitle = customtitle + ICON.search + ICON.map;
-                headerData.moreRightMenus.unshift({
-                    tagname: "tuan_list_map",  //点击之后callback给H5的事件名字,
-                    //value:"地图", //按钮上的文字
-                    imagePath: "tuan/pic/h5/tuan/icon_map_w.png",  //按钮上的图片， v5.8开始支持
-                    pressedImagePath: "tuan/pic/h5/tuan/icon_map_w.png", //按钮上的图片选中的效果图，v5.8开始支持
+                headerData.customtitle = customtitle + (hasKeyword ? '' : ICON.search) + ICON.map;
+                (headerData.moreRightMenus || (headerData.moreRightMenus = [])).unshift({
+                    tagname: 'tuan_list_map',  //点击之后callback给H5的事件名字,
+                    imagePath: 'tuan/pic/h5/tuan/icon_map_w.png',  //按钮上的图片， v5.8开始支持
+                    pressedImagePath: 'tuan/pic/h5/tuan/icon_map_w.png', //按钮上的图片选中的效果图，v5.8开始支持
                     callback: function () {
                         self.gotoMapPage();
                     }
@@ -479,17 +497,21 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 ctype = searchData.ctype,
                 cityId = searchData.ctyId || StringsData.defaultCity.id,
                 isNearby = this.isNearBy(),
-                isOneYuan = this.isOneYuan();
+                isOneYuan = this.isOneYuan(),
+                keywordData = StoreManage.getCurrentKeyWord();
 
-            if (isOneYuan) {
-                this.updateTitle('一元团购', false);
+            if (!(this.isFromKeywordSearch() && keywordData)) {
+                if (isOneYuan) {
+                    this.updateTitle('一元团购', false);
+                } else {
+                    this.updateTitle(searchData.ctyName, true);
+                }
             } else {
-                this.updateTitle(searchData.ctyName, true);
+                this.updateTitle(keywordData.word, false);
             }
             //this.initKeywordSearch(); //初始化关键词搜索框
             this.hideForbiddens(!isNearby, '.J_forbidden');
             //this.keywordPanel = this.$el.find('#J_keywordSearchPanel');
-            this.toolbar = this.$el.find('#J_toolbar');
 
             if (isNearby) { //'我的附近'进入
                 this.getGroupListData();
@@ -580,7 +602,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.referUrl = refer || this.getLastViewName();
             this.parseSEOPostData();
             //定位提示容
-            this.gpsInfoWrap = this.$el.find('#J_gpsInfo');
+            this.infoWrap = this.$el.find('#J_gpsInfo');
             this.gpsReloadBtn = this.$el.find('#J_reloadGPS');
             this.setQuickScroll();
 
@@ -612,7 +634,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     //调整代码执行，原先位置会导致从攻略过来，一直显示定位中
                     var gpsInfo = geolcationStore.getAttr('gps');
                     if (isNearBy && gpsInfo) {
-                        var infoWrap = self.gpsInfoWrap,
+                        var infoWrap = self.infoWrap,
                             reloadBtn = self.gpsReloadBtn,
                             gps = geolocationStore.getAttr('gps'),
                             text = '距离: ';
@@ -633,7 +655,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                             self.tuanfilters.sort.select(item, true);
                         }
                     }
-                    //获取当前城市切请求数据
+                    //获取当前城市且请求数据
                     self.renderPageByCity();
                 });
             } else {
@@ -778,6 +800,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 self.hideLoading();
                 notClearAll && self.hideBottomLoading();
                 if (data && data[key] && data[key].length && data.count && +data.count > 0) {
+                    var keywordData = StoreManage.getCurrentKeyWord();
+                    if (self.isFromKeywordSearch() && keywordData) {
+                        self.updateTitle(keywordData.word + '(' +  data.count + ')', false);
+                    }
                     this.isDataReady = true;
                     this.totalPages = Math.ceil(data.count / this.pageSize);
                     if (this.totalPages > 1) {
@@ -829,11 +855,15 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             }, !!fromServer, self);
         },
         renderNoResult: function (msg, key, customdata) {
+            var keywordData = StoreManage.getCurrentKeyWord();
+            if (this.isFromKeywordSearch() && keywordData) {
+                this.updateTitle(keywordData.word + '(0)', false);
+            }
             var lst = {
                 count: 0,
                 positionFilter: positionfilterStore.get() || {},
                 weekendsAvailable: searchStore.getAttr('weekendsAvailable'),
-                keywordData: StoreManage.getCurrentKeyWord()
+                keywordData: keywordData
             };
             customdata = customdata || customFiltersStore.get() || {};
             var distance = customdata && customdata.distance && customdata.distance.val;
@@ -912,6 +942,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 case 'keyword':
                     StoreManage.removeCurrentKeyWord();
                     this.$el.find('#J_keywordSearch').val('');
+                    this.updateTitle(searchStore.getAttr('ctyName'), true);
                     break;
                 case 'feature':
                     searchStore.removeAttr('from_feature');

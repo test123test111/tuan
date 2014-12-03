@@ -291,7 +291,6 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                          'name': name,
                          'pos': { type: 3, lat: lat, lon: lon, name: name }
                      });
-
                  }
 
                  if (data.price) {
@@ -321,19 +320,19 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                      }
                  }
                  if (data.markland) {
-                     historyKeySearchtore.setAttr("key", { id: data.markland.id, word: data.markland.name, type: 'markland' });
+                     StoreManage.setCurrentKeyWord({ id: data.markland.id, word: data.markland.name, type: 'markland' });
                  }
                  if (data.hotel) {
-                     historyKeySearchtore.setAttr("key", { id: data.hotel.id, word: data.hotel.name, type: 'hotelid' });
+                     StoreManage.setCurrentKeyWord({ id: data.hotel.id, word: data.hotel.name, type: 'hotelid' });
                  }
                  if (data.keyword) {
-                     historyKeySearchtore.setAttr("key", { word: data.keyword });
+                     StoreManage.setCurrentKeyWord({ word: data.word });
                  }
                  if (data.activity) {
-                     historyKeySearchtore.setAttr("key", { id: data.activity.id, word: data.activity.name, type: 'activity' });
+                     StoreManage.setCurrentKeyWord({ id: data.activity.id, word: data.activity.name, type: 'activity' });
                  }
                  if (data.district) {
-                     historyKeySearchtore.setAttr("key", { id: data.district.id, word: data.district.name, type: 'district' });
+                     StoreManage.setCurrentKeyWord({ id: data.district.id, word: data.district.name, type: 'district' });
                  }
                  if (data.isweekend) {
                      searchStore.setAttr('weekendsAvailable', data.isweekend);

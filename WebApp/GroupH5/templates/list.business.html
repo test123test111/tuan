@@ -2,7 +2,7 @@
 <%var n = 0;
     _.each(hotels, function(hotel) {%>
 <section class="list_title">
-    <h2><%if(hotel.headDesc){%>[<span class="ui-landmark"><%=hotel.headDesc%></span>]<%}%><%=hotel.name%></h2>
+    <h2><%=hotel.name%></h2>
     <%if(+ctype!==7){%><span class="list_distance"><%=hotel.distance > 1 ? (hotel.distance.toFixed(1) + '公里') : (Math.round(hotel.distance * 1000) + '米')%></span><%}%>
 </section>
 <ul class="pro_list pro_list2">

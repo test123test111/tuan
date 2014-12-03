@@ -234,31 +234,24 @@
     <b id="J_gotoMapPage" class="i_bef icon_map_w"></b>
 </script>
 <script type="text/lizard-template" id="J_listViewer">
-    <div id="J_toolbar">
-        <div id="J_gpsInfoWrap" class="cur_pos cur_pos_has">
+    <div id="J_toolbar" class="list_s_fixed" style="width:100%">
+        <div id="J_gpsInfoWrap" class="cur_pos" style="position:static">
             <%if(Lizard.runAt!='client'){%>
             <%=h1text%>
             <%}else{%>
             <a href="javascript:;" class="cur_reload" id="J_reloadGPS"></a><span id="J_gpsInfo">定位中</span>
             <%}%>
         </div>
-        <div id="J_gpsSpace" style="height:30px"></div>
+        <!--<div id="J_gpsSpace" style="height:30px"></div>-->
         <div id="J_quickOpBar" class="quickOpBar">
             <div id="J_quickWrapper">
-                <ul class="m_BorderRadiusWrap">
-                    <li class="current">全部</li>
-                    <li>可用红包</li>
-                    <li>周末可用</li>
-                    <li>免预约</li>
-                    <li>可用红</li>
-                    <li>周末可用</li>
-                    <li>免预约</li>
-                </ul>
+                <ul class="m_BorderRadiusWrap"><li class="current">全部</li><li>可用红包</li><li>周末可用</li><li>免预约</li><li>可用红</li><li>周末可用</li><li>免预约</li><li>周末可用</li></ul>
             </div>
         </div>
-        <div id="J_quickSpace" style="height:55px"></div>
+        <!--<div id="J_quickSpace" style="height:55px"></div>-->
     </div>
-    <section class="cont_wrap" id="J_searchBoxWrap">
+    <div id="J_toolbarSpace" style="height:75px"></div>
+    <section id="J_searchBoxWrap" class="cont_wrap" style="margin-top:5px">
         <!--
         <div class="list_s clear-input-box" id="J_keywordSearchPanel">
             <input type="text" placeholder="位置/品牌/名称" readonly="readonly" class="list_s_input" id="J_keywordSearch">

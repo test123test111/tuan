@@ -1,7 +1,7 @@
 define(['c'], function () {
     var WIN = window,
         DOC = WIN.document,
-        SCROLL_ACCURACY = 1000, //1000 ms
+        SCROLL_ACCURACY = 50, //1000 ms
         SCROLL_EVENT = 'scroll',
         SCROLL_STATUS = {
             START: 0,
@@ -53,7 +53,6 @@ define(['c'], function () {
     }
     function scrollHandler() {
         updateStatus();
-        //trigger('')
     }
     observer = {
         init: function () {
