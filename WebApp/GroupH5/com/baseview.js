@@ -1,5 +1,5 @@
 ﻿define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cCommonPageFactory', 'PageHistory', 'cWidgetGuider', 'cUtility', 'cWidgetFactory', 'cWidgetGeolocation'],
-function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFactory, History, Guider, cUtility, WidgetFactory, Geolocation) {
+function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFactory, History, Guider, cUtility, WidgetFactory) {
 
     var PAGE_NAME = 'TuanBaseView';
     var PAGE_NAMELIST = 'TuanBaseListView';

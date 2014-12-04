@@ -88,11 +88,12 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         },
         /**
          * 是否从微信分享跳转过来的链接，微信中为自动添加from=singlemessage，导致详情页back跳转404
+         * 如果分享到朋友圈会有from=timeline,导致详情页back跳转404
          * @param {String} fromUrl
          * @returns {*|boolean}
          */
         isFromWeChat: function(fromUrl){
-            return fromUrl && (fromUrl.toLowerCase().indexOf('singlemessage')>-1);
+            return fromUrl && (/singlemessage|timeline/.test(fromUrl.toLowerCase()));
         },
         recommendNearby: function(){
             var cityId = this.cityId;
