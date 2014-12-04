@@ -1,5 +1,5 @@
-﻿define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cCommonPageFactory', 'PageHistory', 'cWidgetGuider', 'cUtility'],
-function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFactory, History, Guider, cUtility) {
+﻿define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cCommonPageFactory', 'PageHistory', 'cWidgetGuider', 'cUtility', 'cWidgetFactory', 'cWidgetGeolocation'],
+function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFactory, History, Guider, cUtility, WidgetFactory, Geolocation) {
 
     var PAGE_NAME = 'TuanBaseView';
     var PAGE_NAMELIST = 'TuanBaseListView';
@@ -138,7 +138,31 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
                 }]
             });
             this.alert.show();
+        },
+        /**
+         *
+         * @param title {String} marker文本
+         * @param lng {Number} 经度
+         * @param lat {Number} 纬度
+         */
+        showCommonMap: function(title, lng, lat){
+            var geolocation = this.geolocation;
+
+            if(!geolocation){
+                geolocation = WidgetFactory.create('Geolocation');
+                this.geolocation = geolocation;
+            }
+            if(isInApp){
+                geolocation.show_map({
+                    latitude: lat,
+                    longitude: lng,
+                    title: title
+                });
+            }else{
+                this.forwardJump('hotelmap','/webapp/tuan/hotelmap?lon=' + lng + '&lat=' + lat + '&hotelName=' + title);
+            }
         }
+
     };
     var TuanBaseView = BasePageView.extend(options);
 

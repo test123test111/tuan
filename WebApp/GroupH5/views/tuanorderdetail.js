@@ -391,15 +391,11 @@ function (TuanApp, libs, c, Crypt, TuanBaseView, CommonPageFactory, WidgetFactor
         showHotelMap: function (e) {
             var target = $(e.currentTarget),
                 coords = target.attr('data-coords').split(','),
+                lng = coords[0],
+                lat = coords[1],
                 hotelName = target.attr('data-hotel-name');
 
-            window.mapdata = {
-                Longitude: coords[0],
-                Latitude: coords[1],
-                hotelName: hotelName
-            };
-
-            this.forwardJump('hotelmap', '/webapp/tuan/hotelmap?lon=' + coords[0] + '&lat=' + coords[1] + '&hotelName=' + hotelName);
+            this.showCommonMap(hotelName, lng, lat);
         },
         getAppUrl: function () {
             return "ctrip://wireless/GrouponHotelOrder?orderId=" + this.orderId;

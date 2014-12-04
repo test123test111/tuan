@@ -123,15 +123,11 @@ function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBase
         showMap: function (e) {
             var target = $(e.currentTarget),
                 coords = target.attr('data-coords').split(','),
+                lng = coords[0],
+                lat = coords[1],
                 hotelName = target.attr('data-hotel-name');
 
-            window.mapdata = {
-                Longitude: coords[0],
-                Latitude: coords[1],
-                hotelName: hotelName
-            };
-
-            this.forwardJump('hotelmap', '/webapp/tuan/hotelmap?lon=' + coords[0] + '&lat=' + coords[1] + '&hotelName=' + hotelName);
+            this.showCommonMap(hotelName, lng, lat);
         },
         /**
          * 点击跳转跳转到国内酒店详情页

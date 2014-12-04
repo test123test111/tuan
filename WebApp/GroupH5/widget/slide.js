@@ -168,6 +168,8 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
 
             this.container.html(_.template(this.tpl)({data: data}));
 
+            //图片只有一张的时候不可滑动
+            (this.source && this.source.length === 1) && (this.container.find('.pics_show_box_in').css('width', '100%'));
         },
         _autoplay: function(){
             var self = this;
