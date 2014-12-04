@@ -24,6 +24,7 @@ widget/voicesearch.js
 util/httperrortpl.js
 com/numberstep.js
 widget/payment.js
+widget/wechatshare.js
 util/scrollobserver.js
 util/memcache.js
 widget/amap.js
