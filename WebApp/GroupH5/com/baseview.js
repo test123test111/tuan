@@ -162,7 +162,6 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
                 this.forwardJump('hotelmap','/webapp/tuan/hotelmap?lon=' + lng + '&lat=' + lat + '&hotelName=' + title);
             }
         }
-
     };
     var TuanBaseView = BasePageView.extend(options);
 

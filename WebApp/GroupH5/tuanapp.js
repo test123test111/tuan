@@ -4,7 +4,7 @@ define(['PageHistory'], function () {
         RE_H5_PAGE_URL = /(.*)\/webapp\/(\w+)\/(.*)/, //h5页面
         RE_H5_TUAN_PAGE = /^#\w/i;
 
-    window._log = {stash: [], log: function(s) {this.stash.push(s ? JSON.stringify(s) : s);}};
+    window._log = window._log || {stash: [], log: function(s) {this.stash.push(s ? JSON.stringify(s) : s);}};
     var TuanApp = {
         init: function () {
             //检查来源，并做保存来源数据
@@ -217,7 +217,11 @@ define(['PageHistory'], function () {
         /**
          * 判断是当前是否生产环境
          */
-        isProduction: true
+        isProduction: true,
+        /**
+         * 判断是否在App里面
+         */
+        isInApp: false
     };
 
     require(['libs', 'cUtility', 'cWidgetFactory', 'cHybridFacade', 'cWidgetGuider'], function (libs, Util, WidgetFactory, Facade) {
@@ -225,7 +229,8 @@ define(['PageHistory'], function () {
 
         TuanApp.init();
 
-        if (Util.isInApp()) {
+        TuanApp.isInApp = Util.isInApp();
+        if (TuanApp.isInApp) {
             if (_.isFunction(Guider.app_check_network_status)) {
                 //获取现在的网络状况
                 Guider.app_check_network_status({
@@ -243,7 +248,7 @@ define(['PageHistory'], function () {
             });
         }
 
-        if (Util.isInApp()) {
+        if (TuanApp.isInApp) {
             //Hybrid非生产环境
             var env = Util.isPreProduction();
             if (env === '0' || env === '1' || env === '2') {

@@ -108,6 +108,8 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 this.LazyLoad.unbindEvents();
                 //this.hideLoading();
                 this.$el.find('.ad_link').hide(); //默认不显示广告
+                this.hideOfflineAlert();
+                this.hideSwitchAlert();
             },
             getCityFromAppCached: function(cb) {
                 if (!isInApp) {
@@ -116,7 +118,6 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 }
                 HybridShell.Fn('get_cached_ctrip_city', function(result){
                     var city;
-
                     if (result) {
                         city = result.CityEntities[0];
                         //iphone6渲染异常，先让app和JS交互完成再渲染
@@ -225,7 +226,6 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 listModel.setParam(param);
                 listModel.excute(function (data) {
                     var list = data;
-
                     this.isLoading = false;
                     if (data && data.products && data.count && +data.count > 0) {
                         self.renderList(list);
@@ -354,7 +354,6 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 bannerModel.excute(function (data) {
                     var bannerWrap = this.$el.find('.ad_link'),
                         banners = data && data.banners;
-
                     //支持展示2个或4个广告位，4个广告位尺寸相同
                     if (banners && (banners.length == 2 || banners.length == 4)) {
                         bannerWrap.html(adTpl({ ads: banners }));
@@ -365,7 +364,6 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                     }
 
                 }, function () {
-
                 }, true, this);
             },
             /**
@@ -420,26 +418,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                     callback: function (json_obj) {
                         var hasNetwork = json_obj && json_obj.hasNetwork;
                         if (!hasNetwork) { //无网络提示
-                            var alertMsg = new UIAlert({
-                                title: '提示',
-                                message: '未连接到互联网，请检查网络设置<br/>您也可以拨打携程客服电话咨询',
-                                buttons: [
-                                    {
-                                        text: '知道了',
-                                        click: function () {
-                                            this.hide();
-                                        }
-                                    },
-                                    {
-                                        text: '拨打电话',
-                                        click: function () {
-                                            Guider.callService();
-                                            this.hide();
-                                        }
-                                    }
-                                ]
-                            });
-                            alertMsg.show();
+                            self.showOfflineAlert();
                             return;
                         }
                         callback && callback.call(self);
@@ -506,31 +485,9 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                     return;
                 }
                 this.locating = false;
-                var self = this;
                 positionStore.set(null);
                 loadingLayer && loadingLayer.hide();
-                var alertMsg = new UIAlert({
-                    title: '提示',
-                    message: '无法获取您的城市，您可以选择其他城市',
-                    buttons: [
-                        {
-                            text: '取消',
-                            click: function () {
-                                self.recordSwitchCityFlag();
-                                this.hide();
-                            }
-                        },
-                        {
-                            text: '选择城市',
-                            click: function () {
-                                self.recordSwitchCityFlag();
-                                self.showCityPage();
-                                this.hide();
-                            }
-                        }
-                    ]
-                });
-                alertMsg.show();
+                this.showSwitchCityAlert('无法获取您的城市，您可以选择其他城市');
                 this.hideLoading();
             },
             /**
@@ -573,32 +530,10 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 }, false, this);
             },
             getCityFailed: function () {
-                var self = this;
-                self.locating = false;
+                this.locating = false;
                 positionStore.setAttr("cityId", null);
                 positionStore.setAttr("cityName", null);
-                var alertMsg = new UIAlert({
-                    title: '提示',
-                    message: '无法获取您的城市，您可以选择其他城市',
-                    buttons: [
-                        {
-                            text: '取消',
-                            click: function () {
-                                self.recordSwitchCityFlag();
-                                this.hide();
-                            }
-                        },
-                        {
-                            text: '选择城市',
-                            click: function () {
-                                self.showCityPage();
-                                self.recordSwitchCityFlag();
-                                this.hide();
-                            }
-                        }
-                    ]
-                });
-                alertMsg.show();
+                this.showSwitchCityAlert('无法获取您的城市，您可以选择其他城市');
             },
             /**
              * 提示是否需要城市切换
@@ -606,8 +541,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
              */
             promptSwitchCity: function (cityData) {
                 var self = this,
-                    currentCity = self.getSelectedCity(),
-                    alertMsg;
+                    currentCity = self.getSelectedCity();
 
                 //如果用户点击取消，则不再提醒用户切换城市
                 if (sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) == 1) {
@@ -618,7 +552,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                     //如果用户点击取消，则不再提醒用户切换城市
                     if (sessionStorage.getItem(IGNORE_CITY_CHANGE_KEY) != 1 && (currentCity.id > 0 && currentCity.id != cityData.cityId)) {
                         if (cityData.hasGroupProduct) {
-                            alertMsg = new UIAlert({
+                            this.switchCity1 = new UIAlert({
                                 title: '提示',
                                 message: '目前您的定位在' + cityData.cityName + '，是否切换?',
                                 buttons: [
@@ -644,30 +578,9 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                                     }
                                 ]
                             });
-                            alertMsg.show();
+                            this.switchCity1.show();
                         } else {
-                            alertMsg = new UIAlert({
-                                title: '提示',
-                                message: '您所在的城市暂无团购产品<br/>您可以选择其他城市',
-                                buttons: [
-                                    {
-                                        text: '取消',
-                                        click: function () {
-                                            self.recordSwitchCityFlag();
-                                            this.hide();
-                                        }
-                                    },
-                                    {
-                                        text: '选择城市',
-                                        click: function () {
-                                            self.recordSwitchCityFlag();
-                                            self.showCityPage();
-                                            this.hide();
-                                        }
-                                    }
-                                ]
-                            });
-                            alertMsg.show();
+                            this.showSwitchCityAlert('您所在的城市暂无团购产品<br/>您可以选择其他城市');
                         }
                     }
                     //已经是同城了
@@ -675,28 +588,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                         self.recordSwitchCityFlag();
                     }
                 } else {
-                    alertMsg = new UIAlert({
-                        title: '提示',
-                        message: '无法获取您的城市，您可以选择其他城市',
-                        buttons: [
-                            {
-                                text: '取消',
-                                click: function () {
-                                    self.recordSwitchCityFlag();
-                                    this.hide();
-                                }
-                            },
-                            {
-                                text: '选择城市',
-                                click: function () {
-                                    self.recordSwitchCityFlag();
-                                    self.showCityPage();
-                                    this.hide();
-                                }
-                            }
-                        ]
-                    });
-                    alertMsg.show();
+                    this.showSwitchCityAlert('无法获取您的城市，您可以选择其他城市');
                 }
             },
             /*
@@ -770,6 +662,66 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 }, false, this, function () {
                     this.hideLoading();
                 });
+            },
+            /**
+             * 设备没有联网时出现的alert提示
+             */
+            showOfflineAlert: function() {
+                this.offlineAlert = new UIAlert({
+                    title: '提示',
+                    message: '未连接到互联网，请检查网络设置<br/>您也可以拨打携程客服电话咨询',
+                    buttons: [
+                        {
+                            text: '知道了',
+                            click: function () {
+                                this.hide();
+                            }
+                        },
+                        {
+                            text: '拨打电话',
+                            click: function () {
+                                Guider.callService();
+                                this.hide();
+                            }
+                        }
+                    ]
+                });
+                this.offlineAlert.show();
+            },
+            hideOfflineAlert: function () {
+                this.offlineAlert && this.offlineAlert.hide();
+            },
+            /**
+             * 显示 选择城市的Alert
+             */
+            showSwitchCityAlert: function(title) {
+                var self = this;
+                this.switchCity = new UIAlert({
+                    title: '提示',
+                    message: title,
+                    buttons: [
+                        {
+                            text: '取消',
+                            click: function () {
+                                self.recordSwitchCityFlag();
+                                this.hide();
+                            }
+                        },
+                        {
+                            text: '选择城市',
+                            click: function () {
+                                self.recordSwitchCityFlag();
+                                self.showCityPage();
+                                this.hide();
+                            }
+                        }
+                    ]
+                });
+                this.switchCity.show();
+            },
+            hideSwitchAlert: function() {
+                this.switchCity && this.switchCity.hide();
+                this.switchCity1 && this.switchCity1.hide();
             }
         });
         return View;

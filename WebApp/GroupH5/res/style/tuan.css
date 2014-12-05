@@ -110,7 +110,7 @@ header h2{letter-spacing: 2px; font-size: 1.286em;}
 .cui-alert,.cui-toast,.cui-mask,.cui-loading {-webkit-backface-visibility:hidden;-ms-backface-visibility:hidden;backface-visibility:hidden;-webkit-perspective:1000;-ms-perspective:1000;perspective:1000;}
 .cui-mask {-webkit-animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1); animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1);}
 .cui-loading {-webkit-animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1),drop 650ms ease-out;animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1),drop 650ms ease-out;}
-.cui-alert,.cui-toast,.cui-warning {-webkit-animation:popscale 600ms cubic-bezier(0.680,0,0.265,1); animation:popscale 600ms cubic-bezier(0.680,0,0.265,1);}
+.cui-pop-box,.cui-toast,.cui-warning {-webkit-animation:popscale 600ms cubic-bezier(0.680,0,0.265,1); animation:popscale 600ms cubic-bezier(0.680,0,0.265,1);}
 /* 售完 */
 .sold_out{position:absolute;z-index:2;top:-12px;right:-30px;width:80px;padding-top:20px;background-color:#666;color:#fff;text-align:center;-webkit-transform:rotateZ(45deg);-ms-transform:rotateZ(45deg);transform:rotateZ(45deg);}
 /* 列表页头部 */
