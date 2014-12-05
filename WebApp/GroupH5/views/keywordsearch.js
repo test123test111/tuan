@@ -333,7 +333,8 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                          tuanType = data.classty.parent.val;
                          currType = StringsData.groupType[tuanType];
                          subVal = data.classty.val;
-                         subName = data.classty.key;
+                         //subName = data.classty.key;
+                         subName = data.word;
                      } else {
                          tuanType = data.classty.val;
                          currType = StringsData.groupType[tuanType];
