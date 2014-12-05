@@ -4,7 +4,7 @@
  * @contact li.xx@ctrip.com
  * @description
  */
-define(['libs', 'c', 'cUtility'], function(libs, c, Util){
+define(['libs', 'c', 'cUtility', 'TuanApp'], function(libs, c, Util, TuanApp){
 
     var $main = $('#main'),
         $body = $('body'),
@@ -18,7 +18,7 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
         var d = {
             btn: '<i style="position:fixed;bottom:300px;color:green;z-index:9999;">CL</i>',
             div: '<div style="position:fixed;bottom:290px;z-index:10000;display:none;width: 100%;"><button class="J_clearStorage">Clear</button><button class="J_xiaoli">Xiaoli</button><button class="J_www">www</button><button class="J_normal">Normal</button><button class="J_noOne">None</button><button class="J_reload">Reload</button><div class="J_debugLogSwitch"></div></div>',
-            conBox: '<div class="J_logContent" style="position: fixed;bottom:100px;z-index: 10001;height:130px;width: 100%;display: none;background:gray;"><i style="height: 30px;" class="cui-grayload-close"></i><textarea style="width: 100%;height: 100%;" placeholder="Here is log"></textarea></div>'
+            conBox: '<div class="J_logContent" style="position: fixed;bottom:100px;z-index: 10001;height:130px;width: 100%;display: none;background:gray;"><i style="height: 30px;" class="cui-grayload-close"></i><textarea class="J_textLog" style="width: 100%;height:100px;overflow: auto;" disabled="disabled"></textarea></div>'
         };
         this.opt = $.extend(d, options);
         this.init();
@@ -27,11 +27,11 @@ define(['libs', 'c', 'cUtility'], function(libs, c, Util){
     ConsoleDebug.prototype = {
         init: function() {
             var self = this;
-            if (this._isDevEnv()) {
+            if (!TuanApp.isProduction) {
 //                this.btn = $(this.opt.btn).appendTo($main);
 
                 window._log = $.extend(window._log, {log: function(s) {
-                    var $text = self.consoleBox.find('textarea'),
+                    var $text = self.consoleBox.find('.J_textLog'),
                         stash = this.stash;
                     //$text.html($text.html() ? $text.html() + '\n' + JSON.stringify(s) : JSON.stringify(s));
                     stash.push(typeof s !== 'undefined' ? JSON.stringify(s) : '');
