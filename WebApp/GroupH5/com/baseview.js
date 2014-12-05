@@ -1,4 +1,5 @@
-﻿define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cHybridFacade', 'cCommonPageFactory', 'PageHistory', 'cWidgetFactory', 'cWidgetGuider'],
+﻿/*jshint -W030 */
+define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cHybridFacade', 'cCommonPageFactory', 'PageHistory', 'cWidgetFactory', 'cWidgetGuider'],
 function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPageFactory, History, WidgetFactory) {
 
     var PAGE_NAME = 'TuanBaseView';
