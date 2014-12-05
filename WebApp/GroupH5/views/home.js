@@ -106,7 +106,8 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 this.alert.hide();
                 this.listWrap.html(EMPTY);
                 this.LazyLoad.unbindEvents();
-                this.hideLoading();
+                //this.hideLoading();
+                this.$el.find('.ad_link').hide(); //默认不显示广告
             },
             getCityFromAppCached: function(cb) {
                 if (!isInApp) {
@@ -118,7 +119,10 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
 
                     if (result) {
                         city = result.CityEntities[0];
-                        cb({id: city.CityID, name: city.CityName});
+                        //iphone6渲染异常，先让app和JS交互完成再渲染
+                        setTimeout(function(){
+                            cb({id: city.CityID, name: city.CityName});
+                        }, 0);
                     } else {
                         cb();
                     }

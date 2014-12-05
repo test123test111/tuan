@@ -1,4 +1,4 @@
-﻿/*jshint -W030 */
+/*jshint -W030 */
 define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cHybridFacade', 'cCommonPageFactory', 'PageHistory', 'cWidgetFactory', 'cWidgetGuider'],
 function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPageFactory, History, WidgetFactory) {
 
@@ -7,13 +7,13 @@ function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPa
     var isInApp = Util.isInApp();
     var Guider = WidgetFactory.create('Guider');
     //注册IOS手势事件
-    isInApp && Facade.registerOne('METHOD_WEB_VIEW_DID_APPEAR', 'web_view_did_appear');
-    isInApp && Guider.register({
-        tagname: 'METHOD_WEB_VIEW_DID_APPEAR',
-        callback: function () {
-            CtripPage.app_enable_drag_animation(true);
-        }
-    });
+    // isInApp && Facade.registerOne('METHOD_WEB_VIEW_DID_APPEAR', 'web_view_did_appear');
+    // isInApp && Guider.register({
+        // tagname: 'METHOD_WEB_VIEW_DID_APPEAR',
+        // callback: function () {
+            // CtripPage.app_enable_drag_animation(true);
+        // }
+    // });
     if (CommonPageFactory.hasPage(PAGE_NAME) || CommonPageFactory.hasPage(PAGE_NAMELIST)) {
         return;
     }
@@ -148,7 +148,31 @@ function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPa
                 }]
             });
             this.alert.show();
+        },
+        /**
+         *
+         * @param title {String} marker文本
+         * @param lng {Number} 经度
+         * @param lat {Number} 纬度
+         */
+        showCommonMap: function(title, lng, lat){
+            var geolocation = this.geolocation;
+
+            if(!geolocation){
+                geolocation = WidgetFactory.create('Geolocation');
+                this.geolocation = geolocation;
+            }
+            if(isInApp){
+                geolocation.show_map({
+                    latitude: lat,
+                    longitude: lng,
+                    title: title
+                });
+            }else{
+                this.forwardJump('hotelmap','/webapp/tuan/hotelmap?lon=' + lng + '&lat=' + lat + '&hotelName=' + title);
+            }
         }
+
     };
     var TuanBaseView = BasePageView.extend(options);
 

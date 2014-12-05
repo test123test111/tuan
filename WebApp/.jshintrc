@@ -16,6 +16,7 @@
         //浏览器全局变量
         "window",
         "location",
+        "localStorage",
         "sessionStorage",
         "top",
         "self",
@@ -30,7 +31,8 @@
         "clearTimeout",
         "setInterval",
         "clearInterval",
-        "console"
+        "console",
+        "WeixinJSBridge"
     ],
     //if while等必须用花括号, 例如if(){xx}
     "curly": true,

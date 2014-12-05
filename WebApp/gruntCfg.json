@@ -33,10 +33,10 @@
         },
         "resource": {
             "pic.c-ctrip.com": {
-                "/h5/tuan/spr_index_3.2.png": 0
             }
         },
         "lizardEnv": "pro",
+        "cssMini": false,
         "isSimplifyHtml": true
     }
 

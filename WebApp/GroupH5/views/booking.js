@@ -415,8 +415,8 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 var submitBtnPanel = $('.J_orderbtnbox');
                 this.els.telDom.add(this.els.ticketUserDom).on('focus', function () {
                     submitBtnPanel.css({
-                        position: 'static',
-                        bottom: '0px'
+                        position: 'absolute',
+                        bottom: '-45px'
                     });
                 }).on('blur', function () {
                     submitBtnPanel.css({

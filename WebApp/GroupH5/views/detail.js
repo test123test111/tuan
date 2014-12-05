@@ -3,8 +3,8 @@
  * 详情页
  * @url m.ctrip.com/webapp/tuan/detail/{pid}.html
  */
-define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'cWidgetFactory', 'CallPhone'],
-function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, html, WidgetFactory, CallPhone) {
+define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'cWidgetFactory', 'CallPhone', 'WechatShare'],
+function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, html, WidgetFactory, CallPhone, WechatShare) {
     var MSG = {
             pageTitle: '团购详情',
             delFavoriteSuccess: '已取消收藏',
@@ -79,7 +79,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             //from中可能含有querystring，用getQuery获取不到完整的带querystring的URL
             this.fromUrl = Util.getUrlParam(location.href, 'from');
             //如果没有fromUrl或者来自微信
-            if(!this.fromUrl || this.isFromWeChat(this.fromUrl)){
+            if(!this.fromUrl || this.isFromWeChat()){
                 this.fromUrl = '';
             }
 
@@ -88,11 +88,13 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         },
         /**
          * 是否从微信分享跳转过来的链接，微信中为自动添加from=singlemessage，导致详情页back跳转404
+         * 如果分享到朋友圈会有from=timeline,导致详情页back跳转404
          * @param {String} fromUrl
          * @returns {*|boolean}
          */
-        isFromWeChat: function(fromUrl){
-            return fromUrl && (fromUrl.toLowerCase().indexOf('singlemessage')>-1);
+        isFromWeChat: function(){
+            // return fromUrl && (/singlemessage|timeline/.test(fromUrl.toLowerCase()));
+            return typeof WeixinJSBridge !== 'undefined';
         },
         recommendNearby: function(){
             var cityId = this.cityId;
@@ -154,9 +156,10 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         prepareShareData: function (callback) {
             var self = this,
                 data,
+                cid = self.cityId,
                 shareInfo = ShareToSNSInfo,
                 detailData = self.detailData,
-                productUrl = 'http://m.ctrip.com/webapp/tuan/detail/' + self.productId+'.html?cityid='+self.cityId,
+                productUrl = 'http://m.ctrip.com/webapp/tuan/detail/' + self.productId+'.html' + (cid ? '?cityid=' + cid : ''),
                 hotelInfo = detailData.hotels[0] || detailData.recommendHotel.hotel || {name: detailData.name}, //如果多店酒店，则显示推荐酒店信息
                 images = detailData.images,
                 imgUrl = images && images.length && images[0].small,
@@ -175,14 +178,18 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 linkUrl: productUrl,
                 isIOSSystemShare: false
             };
-            //如果有图片链接则现在到本地再进行分享
-            imgUrl && Guider.downloadData({
-                url: imgUrl,
-                callback: function(ret){
-                    data.imgUrl = ret.savedPath;
-                    callback && callback.call(self, data);
-                }
-            });
+            if (isInApp) {
+                //如果有图片链接则下载到本地再进行分享
+                imgUrl && Guider.downloadData({
+                    url: imgUrl,
+                    callback: function(ret){
+                        data.imgUrl = ret.savedPath;
+                        callback && callback.call(self, data);
+                    }
+                });
+            } else {
+                callback && callback.call(self, data);
+            }
         },
         /**
         * 分享按钮事件
@@ -313,6 +320,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             this.hideLoading();
             this.hideWarning404();
             this.mask && this.mask.hide();
+            this.CallPhone && this.CallPhone.hideMask();
         },
         /**
          * 判断是否从hybrid的公共收藏列表页过来
@@ -436,6 +444,26 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             this.CallPhone = new CallPhone({
                 view: this
             });
+
+            this.isFromWeChat() && this.initWechatShare();
+        },
+        initWechatShare: function () {
+            this.prepareShareData(function(data) {
+                try {
+                    var we = new WechatShare({
+                        data: {
+                            // "appid": appid, //只有发送好友信息才需要appid
+                            "img_url": data.imgUrl,
+                            "img_width": "200",
+                            "img_height": "200",
+                            "link": data.linkUrl,
+                            "desc": data.text,
+                            "title": data.title
+                        }
+                    });
+                } catch (e) {
+                }
+            });
         },
         //跳转至图文详情页
         gotoGroupContent:function(){
@@ -484,15 +512,11 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         showMap: function (e) {
             var target = $(e.currentTarget),
                 coords = target.attr('data-coords').split(','),
+                lng = coords[0],
+                lat = coords[1],
                 hotelName = target.attr('data-hotel-name');
 
-            window.mapdata = {
-                Longitude: coords[0],
-                Latitude: coords[1],
-                hotelName: hotelName
-            };
-
-            this.forwardJump('hotelmap','/webapp/tuan/hotelmap?lon=' + coords[0] + '&lat=' + coords[1] + '&hotelName=' + hotelName);
+            this.showCommonMap(hotelName, lng, lat);
         },
         showComment: function () {
             this.forwardJump('hotelcomments', '/webapp/tuan/hotelcomments');

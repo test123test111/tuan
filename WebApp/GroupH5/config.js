@@ -17,6 +17,7 @@
             HttpErrorHelper: baseUrl +"util/httperrortpl",
             NumberStep: baseUrl +"com/numberstep",
             Payment: baseUrl +"widget/payment",
+            WechatShare: baseUrl +"widget/wechatshare",
             ScrollObserver: baseUrl +"util/scrollobserver",
             MemCache: baseUrl +"util/memcache",
             AMapWidget: baseUrl +"widget/amap",

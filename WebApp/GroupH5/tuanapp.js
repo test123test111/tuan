@@ -10,7 +10,6 @@ define(['PageHistory'], function () {
             //检查来源，并做保存来源数据
             this.saveUnion();
         },
-        isSEO: Lizard.renderAt === 'server',
         showLoading: function () {
             this.loading.show();
         },

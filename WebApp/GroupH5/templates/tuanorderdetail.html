@@ -29,14 +29,14 @@
     <%}else{%>
         <!--产品名称、信息-->
         <%var hasAddrOrPhone = ContactInfo.hotelAddr||ContactInfo.splitphone%>
-        <div class="order_htl_info arr_r<%if(!hasAddrOrPhone){%> order_mid_autumn<%}%>" id="J_tuanDetail">
+        <div class="order_htl_info arr_r<%if(!hasAddrOrPhone){%> order_mid_autumn<%}%> <%=isTicket?'order_htl_ticket':'' %>" id="J_tuanDetail">
             <div class="order_htl_info_t"><%=pname %></div>
             <!-- 门票对接去除使用有效期  -->
             <%if(typeof couponValidDate!='undefined' && !isTicket) {%><div class="order_htl_info_txt"><%=couponValidDate%>过期</div><%}%>
         </div>
         <!--地址电话-->
         <%if(hasAddrOrPhone){%>
-        <ul class="box_list box_listT2">
+        <ul class="<%=isTicket? 'box_list box_listT2' :'subblist' %>">
             <%if(ContactInfo.hotelAddr){%>
             <li class="arr_r" id="J_hotelMap" data-coords="<%=ContactInfo.hotelLnglat[0].longitude + ',' + ContactInfo.hotelLnglat[0].latitude%>" data-hotel-name="<%=ContactInfo.hotelName%>">
                 <span class="subb_address i_bef"><%=ContactInfo.hotelAddr%></span>
@@ -46,7 +46,7 @@
             <%if (ContactInfo.phoneList && ContactInfo.phoneList.length) {
                 var phones = _.map(ContactInfo.phoneList, function(p) {return p.phone;});
             %>
-                <li class="arr_r" id="J_hotelTel" data-phone="<%=phones.join(',')%>">
+                <li class="arr_r wrap_phone" id="J_hotelTel" data-phone="<%=phones.join(',')%>">
                     <span class="subb_phone i_bef"><%_.each(phones, function(t) {%><span><%=t %></span><%}); %></span>
                     <i class="icon_txt"><a <%if (phones.length === 1) {%>href="tel:<%=phones[0]%>"<%} else {%>href="javascript:void(0);" <%}%>>预约/咨询</a></i>
 
@@ -54,7 +54,7 @@
             <%}%>
 
             <!-- 门票对接增加使用时间和兑换方式-->
-            <%  var hasBinfo = (typeof binfo === 'object');
+            <%  var hasBinfo = (typeof binfo === 'object') && (binfo.ckintime);
             if (hasBinfo) {%>
             <li class="autocon"><dl class="order_dl">
                 <dt>使用日期</dt><dd><%=binfo.ckintime %></dd>
@@ -77,6 +77,7 @@
             <dt>支付方式</dt><dd><%=payType %></dd>
             <%}%>
         </dl>
+
         <dl class="order_dl">
             <dt>单价</dt><dd>¥<%=product.price.dPrice%></dd>
             <dt>数量</dt><dd><%=qty%>份</dd>

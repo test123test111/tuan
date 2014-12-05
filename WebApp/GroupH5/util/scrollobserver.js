@@ -1,4 +1,3 @@
-var i=0;
 define(['c'], function () {
     var WIN = window,
         DOC = WIN.document,
