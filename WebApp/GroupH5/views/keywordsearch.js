@@ -193,7 +193,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              this.turning();
              //@since v2.6 在搜索框中保留搜索关键词
              this.els.keywordInput.val(StoreManage.getCurrentKeyWord() ? StoreManage.getCurrentKeyWord().word : '');
-             this.els.keywordInput[0].focus();
+             //this.els.keywordInput[0].focus();
              setTimeout(_.bind(function () {
                  this.els.keywordInput[0].focus();
              }, this), 1000);
@@ -221,7 +221,9 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          },
          onShow: function () {
              this.header.hide();
-             this.els.keywordInput && this.els.keywordInput[0].focus();
+             setTimeout(function() {
+                 this.els.keywordInput && this.els.keywordInput[0].focus();
+             }.bind(this), 10);
          },
          onHide: function () {
              this.header.show();
