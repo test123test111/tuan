@@ -487,7 +487,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                                 if (tStore && tStore.id) {
                                     self.back({
                                         'did': tStore.id
-                                    });
+                                    }, true);
                                 } else {
                                     self.back();
                                 }
