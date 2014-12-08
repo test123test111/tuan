@@ -372,6 +372,9 @@ define(['c', 'cStore', 'PageTreeConfig'], function (c, cStore, PageTreeConfig) {
                 this.stack.push(id, url, ver);
                 this.stack.addSequeHistory({ id: id, url: url });
                 this.confirmForward(id);
+            } else if (last && last.id === id && id === 'detail') {
+                this.stack.pop();
+                this.stack.push(id, url, ver);
             }
         },
         //清空历史
