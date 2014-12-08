@@ -20,7 +20,7 @@
                 <%}%>
             </p>
             <%}%>
-            <p class="pro_list_subtit"><%=(p.descriptionhead && p.name.indexOf('【多店通用】') == -1 ? '[' + p.descriptionhead + ']' : '') + p.hotdescription%></p>
+            <p class="pro_list_subtit"><%=(p.descriptionhead && p.name.indexOf('【多店通用】') == -1 ? '[' + p.descriptionhead + ']' : '') + (p.hotdescription || '')%></p>
             <p class="pro_list_price">&yen;<i><%=p.price.dPrice%></i></p>
             <p class="wrap_label">
                 <%if(labelsNum <= 2){%>

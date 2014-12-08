@@ -492,6 +492,110 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                 cityid = CityListData[cityName];
             }
             return false;
+        },
+        /**
+        * 保存热词附带的查询参数
+        */
+        saveHotWordParam: function (data) {
+             var searchData = searchStore.get();
+             StoreManage.clearAll();
+             historyCityListStore.removeAttr('nearby');
+
+             //位置区域
+             if (data.pos) {
+                 var type = data.pos.type,
+                     val = data.pos.val,
+                     lat = data.pos.lat,
+                     lon = data.pos.lon,
+                     name = data.pos.name;
+                 positionfilterStore.set({
+                     'type': type,
+                     'val': val,
+                     'name': name,
+                     'pos': { type: 3, lat: lat, lon: lon, name: name }
+                 });
+             }
+             if (data.price) {
+                 if (StringsData.priceText[data.price]) {
+                     customFiltersStore.setAttr('price', { val: data.price, txt: StringsData.priceText[data.price] });
+                 }
+             }
+             if (data.trait) {
+                 if (StringsData.traitText[data.trait]) {
+                     customFiltersStore.setAttr('trait', { val: data.trait, txt: StringsData.traitText[data.trait] });
+                 }
+             }
+             if (data.star) {
+                 var stars = data.star.split(','), tmpstar = {};
+                 for (var s in stars) {
+                     s = stars[s];
+                     (StringsData.starText[s]) && (tmpstar[s] = StringsData.starText[s]);
+                 }
+                 if (tmpstar) {
+                     customFiltersStore.setAttr('star', tmpstar);
+                 }
+             }
+             if (data.brand && data.brand.length > 0) {
+                 for (var b in data.brand) {
+                     b = data.brand[b];
+                     b && b.val && b.key && customFiltersStore.setAttr('brand', { flag: 1, val: b.val, txt: b.key });
+                 }
+             }
+             if (data.markland) {
+                 StoreManage.setCurrentKeyWord({ id: data.markland.id, word: data.markland.name, type: 'markland' });
+             }
+             if (data.hotel) {
+                 StoreManage.setCurrentKeyWord({ id: data.hotel.id, word: data.hotel.name, type: 'hotelid' });
+             }
+             if (data.keyword) {
+                 StoreManage.setCurrentKeyWord({ word: data.word });
+             }
+             if (data.activity) {
+                 StoreManage.setCurrentKeyWord({ id: data.activity.id, word: data.activity.name, type: 'activity' });
+             }
+             if (data.district) {
+                 StoreManage.setCurrentKeyWord({ id: data.district.id, word: data.district.name, type: 'district' });
+             }
+             if (data.isweekend) {
+                 searchStore.setAttr('weekendsAvailable', data.isweekend);
+             }
+             if (data.multishop) {
+                 customFiltersStore.setAttr('multiShop', data.multishop);
+             }
+             if (data.voucher) {
+                 customFiltersStore.setAttr('voucher', data.voucher);
+             }
+             if (data.sort) {
+                 searchStore.setAttr('sortRule', data.sort.stype);
+                 searchStore.setAttr('sortType', data.sort.sval);
+             }
+             if (data.classty) {
+                 var tuanType, currType, subVal, subName;
+                 if (data.classty.parent) {
+                     tuanType = data.classty.parent.val;
+                     currType = StringsData.groupType[tuanType];
+                     subVal = data.classty.val;
+                     //subName = data.classty.key;
+                     subName = data.word;
+                 } else {
+                     tuanType = data.classty.val;
+                     currType = StringsData.groupType[tuanType];
+                 }
+                 categoryfilterStore.setAttr('tuanType', tuanType);
+                 if (currType) {
+                     categoryfilterStore.setAttr('category', currType.category);
+                     categoryfilterStore.setAttr('name', currType.name);
+                     categoryfilterStore.setAttr('tuanTypeIndex', currType.index);
+                 }
+                 categoryfilterStore.setAttr('subVal', subVal);
+                 categoryfilterStore.setAttr('subName', subName);
+                 searchStore.setAttr('ctype', tuanType);
+             }
+
+             var qparams = StoreManage.getGroupQueryParam();
+             searchStore.setAttr('qparams', qparams);
+             searchStore.setAttr('ctyId', searchData.ctyId);
+             searchStore.setAttr('ctyName', searchData.ctyName);
         }
     };
     return StoreManage;
