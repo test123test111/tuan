@@ -1,1 +1,0 @@
-define(["c"],function(){var e,t={};return e={setItem:function(e,n){return t[e]=n,this},getItem:function(e){return t[e]},removeItem:function(e){delete t[e]}}});

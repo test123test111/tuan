@@ -1,8 +1,11 @@
-﻿{
+﻿var config = {
     "webresourceSrc": "GroupH5",
     "buConfig": "config.js",
     "isSimple": true,
     "jshint": true,
+    "channel": "tuan",
+    "hybridChannel": "tuan",
+    "zip": "zip",
     "hybrid": {
         "hostname": "127.0.0.1",
         "views": {
@@ -40,4 +43,6 @@
         "isSimplifyHtml": true
     }
 
-}
+};
+
+module.exports = config;
