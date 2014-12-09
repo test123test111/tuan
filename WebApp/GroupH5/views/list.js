@@ -571,6 +571,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.hideWarning404();
             this.hideLoading();
             this.scrollObserver && this.scrollObserver.disable();
+            this.searchGuiderMask && this.searchGuiderMask.hide();
             this.alert && this.alert.hide();
 
             var tuanfilters = this.tuanfilters;
@@ -708,6 +709,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             var sortRule = searchData.sortRule;
             data.pageIdx = searchData.pageIdx;
             data.ctype = searchData.ctype;
+            data.hasPosition = !!positionfilterStore.getAttr('type');
             //var item = $.trim(this[sortRule == '8' ? 'businessListTpl' : 'productListTpl'](data)); //距离最近时，按商户聚合显示
             var item = $.trim(this.listTpl(data)); //距离最近时，按商户聚合显示
             if (data.count && +data.count > 0 && this.totalPages && +this.totalPages > 1) {
@@ -993,7 +995,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         },
         //快捷操作栏热词搜索
         hotWordSearch: function (e) {
-            var obj = '', url = '';
+            var obj = '';
             var cur = $(e.currentTarget);
             var type = cur.attr('data-type');
             var val = decodeURIComponent(cur.attr('data-val'));
@@ -1037,8 +1039,13 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             return "ctrip://wireless/hotel_groupon_list?c1=" + searchdata.ctyId + "&c2=" + c2;
         },
         initSearchGuider: function () {
+            var self = this;
             var searchGuider = this.$el.find('#J_searchGuider');
-            var mask = new Mask({
+            if (isInApp) {
+                searchGuider.css('background-position', '100% -13px');
+                searchGuider.find('.icon_search_w').hide();
+            }
+            this.searchGuiderMask = new Mask({
                 onCreate: function () {
                     var scope = this;
                     this.root.on('click', function () {
@@ -1048,10 +1055,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     });
                 }
             });
-            mask.show();
+            this.searchGuiderMask.show();
             searchGuider.show();
             searchGuider.on('click', function() {
-                mask.hide();
+                self.searchGuiderMask.hide();
                 searchGuider.hide();
                 localStorage.setItem(IS_FIRST_IN_LIST, 1);
             });

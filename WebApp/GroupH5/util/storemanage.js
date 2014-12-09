@@ -608,12 +608,42 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             searchStore.setAttr('qparams', data.qparams);
             searchStore.setAttr('sortRule', data.sortRule);
             searchStore.setAttr('sortType', data.sortType);
+            data.pos && searchStore.setAttr('pos', data.pos);
             for (var item, i = 0, l = data.qparams.length; i < l; i++) {
                 item = data.qparams[i];
                 switch (item.type) {
-                    case 5:
+                    case 1: //价格
+                        customFiltersStore.setAttr('price', item.value);
                         break;
-                    case 14:
+                    case 2: //星级
+                        customFiltersStore.setAttr('star', item.value);
+                        break;
+                    case 3: //品牌
+                        customFiltersStore.setAttr('brand', item.value);
+                        break;
+                    case 4: //行政区
+                    case 5: //商业区
+                    case 19://地铁线
+                        positionfilterStore.set({
+                            type: item.type,
+                            name: item.name,
+                            val: item.value
+                        });
+                        break;
+                    case 9: //距离
+                        customFiltersStore.setAttr('distance', item.value);
+                        break;
+                    case 14: //多店可用、小时房、天数、特色
+                        var t = item.value.split('|')[0];
+                        if (t === '102') { //多店可用
+                            customFiltersStore.setAttr('multishop', 1);
+                        } else if (t === '101') { //小时房
+                            //TODO
+                        } else if (t === '103') { //特色
+                            customFiltersStore.setAttr('trait', item.value);
+                        } else if (t === '701') { //天数
+                            customFiltersStore.setAttr('day', item.value);
+                        }
                         break;
                 }
             }
