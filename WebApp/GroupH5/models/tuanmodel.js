@@ -515,7 +515,7 @@
         __propertys__: function () {
             this.url = '/json/SearchHotWord';
             this.method = 'POST';
-            this.param = { cityid: 0 };
+            this.param = { ver: VERSION, cityid: 0 };
             this.result = TuanStore.TuanHotKeywords.getInstance();
         },
         initialize: function ($super, options) {

@@ -25,7 +25,7 @@
                 <%for(var i = 1; i <= num ; i++){%>
                 <ul class="sw_con" >
                     <%for(var j = 1; j <= 6 ; j++){ var index = (i-1)*6 + (j-1); if(index >=data.length){break;}%>
-                    <li data-json=<%=encodeURIComponent(JSON.stringify(data[index]))%>><%=data[index].word%></li>
+                    <li data-json=<%=encodeURIComponent(JSON.stringify(data[index]))%>><%=data[index].KeyWords.Key%></li>
                     <%}%>
                 </ul>
                 <%}%>

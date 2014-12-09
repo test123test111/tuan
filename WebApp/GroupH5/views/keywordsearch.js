@@ -8,11 +8,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
      var cui = c.ui,
         tuanSearchStore = TuanStore.GroupSearchStore.getInstance(),
         historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance(),
-        positionfilterStore = TuanStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
-        customFiltersStore = TuanStore.GroupCustomFilters.getInstance(), //团购自定义筛选项
-        categoryfilterStore = TuanStore.GroupCategoryFilterStore.getInstance(), //团购类型
         searchStore = TuanStore.GroupSearchStore.getInstance(),
-        historyCityListStore = TuanStore.TuanHistoryCityListStore.getInstance(),
         TabSlide = cWidgetFactory.create('TabSlide'),
         View;
      var BasePage = CommonPageFactory.create("TuanBaseView");
@@ -85,13 +81,12 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              StoreManage.addHistoryKeyWord(id, name, keytype);
              //历史搜索 处理end-------------
              //团购6.1新增， 根据地标查询时， 产品列表按照距离最近排序
-             (keytype === 'markland') && (searchStore.setAttr('sortRule', 8));
+             ((keytype || '').toLocaleLowerCase() === 'markland') && (searchStore.setAttr('sortRule', 8));
              this.doSubmit();
          },
          onSubmitSearch: function () {
              var keywordValue = FilterXss.filterXSS(this.els.keywordInput.val()), item;
              if (typeof keywordValue === "undefined" || keywordValue === "" || keywordValue === null) {return false;}
-             this.els.keywordInput[0].blur();
              StoreManage.clearSpecified(true);
              //团购6.1 新增，关键字若完全匹配为地标，按距离最近排序
              item = this.els.keywordSuggestWrap.find('[data-name="'+keywordValue+'"]');
@@ -159,6 +154,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
 
              self.tuankeyWordList.setParam('cityid', ctyId);
              self.tuankeyWordList.setParam('keyword', keyword);
+             self.tuankeyWordList.setParam('itemType', searchStore.getAttr('ctype'));
              self.tuankeyWordList.excute(function (data) {
                  self.createPage(data);
                  callback.call(this);
@@ -190,7 +186,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                              t.wordNew = t.word.replace(new RegExp(inpuKey.toLocaleLowerCase(), 'g'), '<em>' + inpuKey.toLocaleLowerCase() + '</em>')
                                 .replace(new RegExp(inpuKey.toLocaleUpperCase(), 'g'), '<em>' + inpuKey.toLocaleUpperCase() + '</em>');
                          }
-                         t.typeNew = StringsData.typeToName[t.type] || '';
+                         t.typeNew = StringsData.typeToName[t.type && t.type.toLocaleLowerCase()] || '';
                      });
                  }
 
@@ -215,7 +211,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              this.turning();
              //@since v2.6 在搜索框中保留搜索关键词
              this.els.keywordInput.val(StoreManage.getCurrentKeyWord() ? StoreManage.getCurrentKeyWord().word : '');
-             this.els.keywordInput[0].focus();
+             //this.els.keywordInput[0].focus();
              setTimeout(_.bind(function () {
                  this.els.keywordInput[0].focus();
              }, this), 1000);
@@ -243,7 +239,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          },
          onShow: function () {
              this.header.hide();
-             this.els.keywordInput && this.els.keywordInput[0].focus();
+             setTimeout(function() {this.els.keywordInput && this.els.keywordInput[0].focus();}.bind(this), 10);
          },
          onHide: function () {
              this.header.show();
@@ -260,10 +256,10 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                  searchData = tuanSearchStore.get();
              this.tuanHotKeywords.setParam('cityid', searchData.ctyId);
              this.tuanHotKeywords.excute(_.bind(function (data) {
-                 if (data && data.hotWords && data.hotWords.length > 0) {
+                 if (data && data.HotKeyWordsList && data.HotKeyWordsList.length > 0) {
                      self.hotkeywordsSlide = new TabSlide({
                          container: self.els.hotKeywordsWrap,
-                         source: data.hotWords,
+                         source: data.HotKeyWordsList,
                          tpl: self.els.hotKeywordsTpl.html()
                      });
                  }

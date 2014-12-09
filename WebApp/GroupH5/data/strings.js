@@ -81,7 +81,14 @@ define(function () {
             'zone': '位置',
             'location': '位置',
             'district': '位置',
-            'markland': '位置',
+            'markland': '位置',//地标
+            'attractions': '位置',//景点
+            'airport': '机场',
+            'railwayStation': '火车站',
+            'subway': '地铁站',
+            'brand': '名称',//品牌
+            'productName': '名称',//产品名称
+            'theme': '名称',//主题
             'hotelid': '名称',
             'hotelgroupid': '名称'
         }

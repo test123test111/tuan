@@ -374,8 +374,11 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                 });
             }
 
-            //关键词搜索切选择后，历史查询记录应置为默认值
             var keywordData = this.getCurrentKeyWord();
+            if (keywordData) {
+                qparams.push({type:7,value:keywordData.word});
+            }
+           /* //关键词搜索切选择后，历史查询记录应置为默认值
             if (keywordData) {
                 var keyType = (keywordData.type || '').toString().toLowerCase();
                 var keyValue = keywordData.id || keywordData.word;
@@ -396,7 +399,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                     type: keyType,
                     value: keyValue
                 });
-            }
+            }*/
             return qparams;
         },
         /**
