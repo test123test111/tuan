@@ -305,7 +305,7 @@
         __propertys__: function () {
             this.url = '/json/KeywordSearch';
             this.method = 'POST';
-            this.param = {};
+            this.param = {ver: VERSION};
             this.result = TuanStore.TuanKeyWordListStore.getInstance();
         },
         initialize: function ($super, options) {
@@ -522,6 +522,19 @@
             $super(options);
         }
     });
+
+    T.TuanHotWordsNewModel = new cBase.Class(AbstractModel, {
+        __propertys__: function () {
+            this.url = '/json/SearchWords';
+            this.method = 'POST';
+            this.param = { ver: VERSION, CityID: 0 };
+            this.result = TuanStore.TuanHotKeywords.getInstance();
+        },
+        initialize: function ($super, options) {
+            $super(options);
+        }
+    });
+
     //获取省市县数据
     T.TuanRegionInfoModel = new cBase.Class(AbstractModel, {
         __propertys__: function () {

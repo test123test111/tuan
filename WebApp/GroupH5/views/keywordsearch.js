@@ -16,7 +16,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          pageid: '214001',
          hpageid: '215001',
          tuankeyWordList: TuanModel.TuanKeyWordListModel.getInstance(),
-         tuanHotKeywords: TuanModel.TuanHotKeywordsModel.getInstance(),
+         tuanHotKeywords: TuanModel.TuanHotWordsNewModel.getInstance(),
          dateSource: new CDataSource(),
          selectItem: null,
          isComplete: false, //是否完成
@@ -254,12 +254,19 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          renderHotkeyword: function () {
              var self = this,
                  searchData = tuanSearchStore.get();
-             this.tuanHotKeywords.setParam('cityid', searchData.ctyId);
+             this.tuanHotKeywords.setParam('CityID', searchData.ctyId);
              this.tuanHotKeywords.excute(_.bind(function (data) {
-                 if (data && data.HotKeyWordsList && data.HotKeyWordsList.length > 0) {
+                 var hotkeys = [];
+                 if (data && data.hotkey && data.hotkey.length > 0) {
+                     _.each(data.hotkey, function(t) {
+                         _.each(t.KeyWords, function(v) {
+                             v.ItemType = t.ItemType;
+                             hotkeys.push(v);
+                         });
+                     });
                      self.hotkeywordsSlide = new TabSlide({
                          container: self.els.hotKeywordsWrap,
-                         source: data.HotKeyWordsList,
+                         source: hotkeys,
                          tpl: self.els.hotKeywordsTpl.html()
                      });
                  }
@@ -268,11 +275,16 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          goHotSearch: function (e) {
              var cur = $(e.currentTarget);
              var data = decodeURIComponent(cur.attr('data-json'));
-             data = JSON.parse(data);
-             if (data) {
-                StoreManage.saveHotWordParam(data);
+             data = this._parseJSON(data);
+             if (data && data.Val) {
+                StoreManage.parseHotkeyJson(this._parseJSON(data.Val));
                 this.forwardJump('list', '/webapp/tuan/list');
              }
+         },
+         _parseJSON: function (s) {
+             try{s = JSON.parse(s);}catch(e) {}
+
+             return s;
          }
      });
      return View;
