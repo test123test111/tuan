@@ -37,8 +37,9 @@
 
             //模版
             HomeTpl: baseUrl +"templates/home.html",
-            ListProductTpl: baseUrl +"templates/list.product.html",
-            ListBusinessTpl: baseUrl +"templates/list.business.html",
+            ListTpl: baseUrl +"templates/list.html",
+            //ListProductTpl: baseUrl +"templates/list.product.html",
+            //ListBusinessTpl: baseUrl +"templates/list.business.html",
             BookingTpl: baseUrl +"templates/booking.html",
             BookingSuccessTpl: baseUrl +"templates/booking.success.html",
             CityListTpl: baseUrl +"templates/citylist.html",

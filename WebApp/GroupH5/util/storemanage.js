@@ -599,6 +599,24 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
              searchStore.setAttr('qparams', qparams);
              searchStore.setAttr('ctyId', searchData.ctyId);
              searchStore.setAttr('ctyName', searchData.ctyName);
+        },
+        parseHotkeyJson: function (data) {
+            searchStore.setAttr('ctyId', data.ctyId);
+            searchStore.setAttr('ctyName', data.ctyName);
+            searchStore.setAttr('ctype', data.ctype);
+            searchStore.setAttr('pageIdx', '1');
+            searchStore.setAttr('qparams', data.qparams);
+            searchStore.setAttr('sortRule', data.sortRule);
+            searchStore.setAttr('sortType', data.sortType);
+            for (var item, i = 0, l = data.qparams.length; i < l; i++) {
+                item = data.qparams[i];
+                switch (item.type) {
+                    case 5:
+                        break;
+                    case 14:
+                        break;
+                }
+            }
         }
     };
     return StoreManage;
