@@ -102,7 +102,7 @@
             <span class="ui-info"><%=noresult %></span>
         </div>
         <ul class="ui-result-tar" id="J_deleteFilter">
-            <%typeof customFilter != 'undefined' && _.each(customFilter, function(item, key) {%>
+            <%_.each(customFilter, function(item, key) {%>
                 <%if(key=='star'){%>
                     <%_.each(item, function(v, i) {%>
                     <li data-type="<%=key%>" data-value="<%=i%>"><%=v%></li>
@@ -115,15 +115,15 @@
                     <li data-type="<%=key%>" data-value="<%=item.val%>"><%=item.txt%></li>
                 <%}%>
             <%})%>
-            <%if (typeof positionFilter != 'undefined' && positionFilter.name) {%>
+            <%if (positionFilter.name) {%>
                 <%if (positionFilter.type != -6) {%>
                     <li data-type="position"><%=positionFilter.name%></li>
                 <%}else{%>
                     <li data-type="position"><%=positionFilter.pos.distance%>公里</li>
                 <%}%>
             <%}%>
-            <%if (typeof weekendsAvailable != 'undefined') {%><li data-type="weekendsAvailable">周末可用</li><%}%>
-            <%if (typeof keywordData != 'undefined' && keywordData.word) {%><li data-type="keyword"><%=keywordData.word%></li><%}%>
+            <%if (weekendsAvailable) {%><li data-type="weekendsAvailable">周末可用</li><%}%>
+            <%if (keywordData.word) {%><li data-type="keyword"><%=keywordData.word%></li><%}%>
         </ul>
         <div class="ui-tips">
             <p>或者拨打携程客服电话</p>
@@ -132,5 +132,5 @@
     </div>
 <%} else if(typeof KeyWords != 'undefined') {%>
     <!--热词-->
-    <ul class="m_BorderRadiusWrap"><li<%if (!CUR_HOTKEY) {%> class="current"<%}%>>全部</li><%_.each(KeyWords, function(item) {%><li data-json=<%=encodeURIComponent(item.Val)%><%if(CUR_HOTKEY && CUR_HOTKEY.val===item.Val){%> class="current"<%}%>><%=item.Key%></li><%})%></ul>
+    <ul class="m_BorderRadiusWrap"><li<%if (!CUR_HOTKEY) {%> class="current"<%}%>>全部</li><%_.each(KeyWords, function(item) {%><li data-type="<%=item.Type%>" data-val=<%=encodeURIComponent(item.Val)%><%if(CUR_HOTKEY && CUR_HOTKEY.val===item.Val){%> class="current"<%}%>><%=item.Key%></li><%})%></ul>
 <%}%>

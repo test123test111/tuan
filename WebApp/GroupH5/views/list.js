@@ -9,7 +9,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
     var REFRESH_GPS_LOADING_CLS = 'ani_rotation',
         PAGE_POSITION = 'PAGE_LIST_POSITION',
         Mask = c.ui.Mask,
-        toolbarHeight = 30,
         isInApp = Util.isInApp(),
         IS_FIRST_IN_LIST = 'TUAN_FIRST_IN_LIST',
         listModel = TuanModels.TuanListModel.getInstance(), //团购列表(产品聚合)
@@ -296,9 +295,9 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
 
             var isVacation = +searchStore.getAttr('ctype') === 7;
             this.controlGPSInfoWrap(!isVacation); //旅游度假隐藏列表顶部距离信息
-            toolbarHeight = isVacation ? 0 : 30;//定位信息栏的高度
+            this.toolbarHeight = isVacation ? 0 : 30;//定位信息栏的高度
             this.toolbar.css('top', isInApp ? '0px' : '48px');
-            this.toolbarSpace.css('height', toolbarHeight);
+            this.toolbarSpace.css('height', this.toolbarHeight);
         },
         //快捷操作栏半固定
         toolbarObserver: function (evt, data) {
@@ -306,7 +305,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 space = this.toolbarSpace,
                 direction = data.direction;
             if (direction.toLowerCase() == 'down') {
-                if (data.y > toolbarHeight) {
+                if (data.y > this.toolbarHeight) {
                     toolbar.removeClass('list_s_fixed');
                     space.hide();
                 }
@@ -393,9 +392,11 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         * 更新header
         * @param title
         * @param isCity 是否城市
+        * @param count 搜索结果条数
         */
-        updateTitle: function (title, isCity) {
+        updateTitle: function (title, isCity, count) {
             var self = this;
+            var customtitle = '';
             var header = this.header;
             var headerData = {
                 back: true,
@@ -426,7 +427,8 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             var ICON = {
                 map: '<b id="J_gotoMapPage" class="i_bef icon_map_w"></b>',
                 search: '<b id="J_gotoSearch" class="i_bef icon_search_w"></b>',
-                down: '<i class="i_tri"></i>'
+                down: '<i class="i_tri"></i>',
+                returnico: '<i id="js_return" class="returnico"></i>'
             };
             var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
             if (!hasKeyword) {
@@ -439,7 +441,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     }
                 }];
             }
-            var customtitle = '<h2><div id="J_cityBtn" class="list_hd_button2"><em class="header_mutrow">' + title + '</em>' + (isCity ? ICON.down : '') + '</div></h2><i id="js_return" class="returnico"></i>';
+            if (hasKeyword) {
+                customtitle = '<div class="search_title"><span class="word">' + title + '</span>' + (count !== undefined ? '<span class="num">(' + count + ')</span>' : '') + '</div>';
+            } else {
+                customtitle = '<h2><div id="J_cityBtn" class="list_hd_button2"><em class="header_mutrow">' + title + '</em>' + (isCity ? ICON.down : '') + '</div></h2>';
+            }
+            customtitle += ICON.returnico;
             if (+ctype === 7) {//旅游度假隐藏标题栏右侧地图按钮
                 headerData.customtitle = customtitle + (hasKeyword ? '' : ICON.search);
             } else {
@@ -459,8 +466,9 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     self.showCityPage();
                 };
             } else {
-                headerData.title = title;
+                headerData.title = title + (hasKeyword && count !== undefined ? '(' + count + ')': '' );
             }
+
             header.set(headerData);
             header.show();
             if (!isInApp) { //H5需要自己设置按钮的回调
@@ -724,7 +732,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 this.renderHotWord(data.hotkey);
             } else {
                 this.quickOpBar.hide();
-                toolbarHeight -= toolbarHeight > 45 ? 45 : 0;
+                this.toolbarHeight -= this.toolbarHeight > 45 ? 45 : 0;
             }
         },
         /**
@@ -793,7 +801,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 if (data && data[key] && data[key].length && data.count && +data.count > 0) {
                     var keywordData = StoreManage.getCurrentKeyWord();
                     if (self.isFromKeywordSearch() && keywordData) {
-                        self.updateTitle(keywordData.word + '(' +  data.count + ')', false);
+                        self.updateTitle(keywordData.word, false, data.count);
                     }
                     this.isDataReady = true;
                     this.totalPages = Math.ceil(data.count / this.pageSize);
@@ -848,7 +856,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         renderNoResult: function (msg, key, customdata) {
             var keywordData = StoreManage.getCurrentKeyWord();
             if (this.isFromKeywordSearch() && keywordData) {
-                this.updateTitle(keywordData.word + '(0)', false);
+                this.updateTitle(keywordData.word, false, 0);
             }
             var lst = {
                 count: 0,
@@ -922,15 +930,18 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     break;
                 case 'weekendsAvailable':
                     searchStore.setAttr('weekendsAvailable', 0);
-                    this.$el.find('#weekends')[0].checked = false;
+                    var weekends = this.$el.find('#weekends');
+                    weekends[0] && (weekends[0].checked = false);
                     break;
                 case 'voucher':
                     customFiltersStore.removeAttr('voucher');
-                    this.$el.find('#voucher')[0].checked = false;
+                    var voucher = this.$el.find('#voucher');
+                    voucher[0] && (voucher[0].checked = false);
                     break;
                 case 'multiShop':
                     customFiltersStore.removeAttr('multiShop');
-                    this.$el.find('#multiShop')[0].checked = false;
+                    var multiShop = this.$el.find('#multiShop');
+                    multiShop[0] && (multiShop[0].checked = false);
                     break;
                 case 'keyword':
                     StoreManage.removeCurrentKeyWord();
@@ -940,14 +951,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 case 'feature':
                     searchStore.removeAttr('from_feature');
                     this.updateTitle(searchStore.getAttr('ctyName'), true);
-                    //this.updateTitle(StringsData.groupType[0].name);
                     break;
                 case 'price':
                     searchStore.setAttr('qparams', []);
                     label.find('li[data-tab="price"] i').hide();
                     customFiltersStore.removeAttr('price');
                     this.updateTitle(searchStore.getAttr('ctyName'), true);
-                    //this.updateTitle(StringsData.groupType[0].name);
                     break;
                 default:
                     customFiltersStore.removeAttr(type);
@@ -974,8 +983,8 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 data = data && data[0];
                 if (data && data.KeyWords && data.KeyWords.length) {
                     this.quickOpBar.show();
-                    toolbarHeight += toolbarHeight < 75 ? 45 : 0; //快捷操作栏的高度
-                    this.toolbarSpace.css('height', toolbarHeight);
+                    this.toolbarHeight += this.toolbarHeight < 75 ? 45 : 0; //快捷操作栏的高度
+                    this.toolbarSpace.css('height', this.toolbarHeight);
                     data.CUR_HOTKEY = this.CUR_HOTKEY;
                     this.quickWrapper.html(this.listTpl(data));
                     this.setQuickScroll();
@@ -984,18 +993,28 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         },
         //快捷操作栏热词搜索
         hotWordSearch: function (e) {
-             var cur = $(e.currentTarget);
-             var val = decodeURIComponent(cur.attr('data-json'));
-             cur.addClass('current').siblings('.current').removeClass('current');
-             var obj = JSON.parse(val);
-             if (obj) {
-                this.CUR_HOTKEY = {key: cur.text(), val: val};
-                StoreManage.parseHotkeyJson(obj);
-                this.getGroupListData();
-             } else {
+            var obj = '', url = '';
+            var cur = $(e.currentTarget);
+            var type = cur.attr('data-type');
+            var val = decodeURIComponent(cur.attr('data-val'));
+            cur.addClass('current').siblings('.current').removeClass('current');
+            if (type === 'json') {
+                try {
+                    obj = JSON.parse(val);
+                } catch (err) {
+                    window.console && console.log(err);
+                }
+                if (obj && $.isPlainObject(obj)) {
+                    this.CUR_HOTKEY = {key: cur.text(), val: val};
+                    StoreManage.parseHotkeyJson(obj);
+                    this.getGroupListData();
+                }
+            } else if (type === 'url') {
+                 TuanApp.jumpToPage(val, this);
+            } else {
                 StoreManage.clearAll();
                 this.getGroupListData();
-             }
+            }
         },
         homeHandler: function () {
             searchStore.setAttr('pageIdx', 1);
@@ -1036,7 +1055,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 searchGuider.hide();
                 localStorage.setItem(IS_FIRST_IN_LIST, 1);
             });
-        },
+        }
     });
     return View;
 });
