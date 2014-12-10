@@ -243,13 +243,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          },
          onShow: function () {
              this.header.hide();
-<<<<<<< HEAD
-             setTimeout(function() {
-                 this.els.keywordInput && this.els.keywordInput[0].focus();
-             }.bind(this), 10);
-=======
              setTimeout(function() {this.els.keywordInput && this.els.keywordInput[0].focus();}.bind(this), 10);
->>>>>>> v2.7
          },
          onHide: function () {
              this.header.show();

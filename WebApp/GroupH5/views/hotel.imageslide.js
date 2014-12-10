@@ -42,8 +42,13 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
                 }
             });
         },
-        onShow: function() {},
-        onHide: function() {},
+        onShow: function() {
+            //修复bug，摸页面上除了图片的地方时滑动有问题。
+            this.$el.on('touchstart', function(e) {e.preventDefault();});
+        },
+        onHide: function() {
+            this.$el.off('touchstart');
+        },
         backAction: function() {
             this.back();
         },

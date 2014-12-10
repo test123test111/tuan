@@ -42,7 +42,7 @@ define(['libs'], function () {
                 this.container.on(this.options.event[i], eventHandler);
             }
 
-            this.triggerEvent();
+            this.triggerNow();
         },
         _imgLoaded: function($t, o){
             $t[0].src = $t.attr(o.attr);
@@ -101,12 +101,15 @@ define(['libs'], function () {
          */
         updateDom: function () {
             this.eles = (this.options.wrap === window) ? $('img').not('[' + this.options.stateAttr + ' = "true"]') : $('img', this.wrap).not('[' + this.options.stateAttr + '="true"]');
-            this.container.trigger(this.options.event[0]);
+            this.triggerNow();
         },
         unbindEvents: function () {
             for (var i in this.options.event) {
                 this.container.off(this.options.event[i]);
             }
+        },
+        triggerNow: function() {
+            this.container.trigger(this.options.event[0]);
         }
     };
 
