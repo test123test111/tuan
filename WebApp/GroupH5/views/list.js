@@ -442,7 +442,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             }];
             //}
             if (hasKeyword) {
-                customtitle = '<div class="search_title"><span class="word">' + title + '</span>' + (count !== undefined ? '<span class="num">(' + count + ')</span>' : '') + '</div>';
+                customtitle = '<div class="search_title"><span class="word">' + title + '</span><span class="num">' + (count !== undefined ? '(' + count + ')' : '') + '</span></div>';
             } else {
                 customtitle = '<h2><div id="J_cityBtn" class="list_hd_button2"><em class="header_mutrow">' + title + '</em>' + (isCity ? ICON.down : '') + '</div></h2>';
             }
@@ -731,7 +731,8 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             if (data.count > 0 && data.pageIdx >= this.totalPages) {
                 this.listWrap.append('<p class="sec-waiting" style="display:block;">没有更多结果了</p>');
             }
-            if (!this.isFromKeywordSearch() && data.hotkey && data.pageIdx <= 1) {
+            var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
+            if (!hasKeyword && data.hotkey && data.pageIdx <= 1) {
                 this.renderHotWord(data.hotkey);
             } else {
                 this.quickOpBar.hide();
@@ -986,7 +987,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 data = data && data[0];
                 if (data && data.KeyWords && data.KeyWords.length) {
                     this.quickOpBar.show();
-                    this.toolbarHeight += this.toolbarHeight === 0 || this.toolbarHeight === 30 ? 45 : 0; //快捷操作栏的高度
+                    this.toolbarHeight += this.toolbarHeight < 45 ? 45 : 0; //快捷操作栏的高度
                     this.toolbarSpace.css('height', this.toolbarHeight);
                     data.CUR_HOTKEY = this.CUR_HOTKEY;
                     this.quickWrapper.html(this.listTpl(data));
@@ -998,6 +999,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         hotWordSearch: function (e) {
             var obj = '';
             var cur = $(e.currentTarget);
+            if (cur.hasClass('current')) { return; }
             var type = cur.attr('data-type');
             var val = decodeURIComponent(cur.attr('data-val'));
             cur.addClass('current').siblings('.current').removeClass('current');
@@ -1008,14 +1010,15 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     window.console && console.log(err);
                 }
                 if (obj && $.isPlainObject(obj)) {
-                    this.CUR_HOTKEY = {key: cur.text(), val: val};
+                    this.CUR_HOTKEY = val;
                     StoreManage.parseHotkeyJson(obj);
                     this.getGroupListData();
                 }
             } else if (type === 'url') {
                  TuanApp.jumpToPage(val, this);
             } else {
-                StoreManage.clearAll();
+                this.CUR_HOTKEY = 'ALL';
+                StoreManage.clearSpecified(true);
                 this.getGroupListData();
             }
         },

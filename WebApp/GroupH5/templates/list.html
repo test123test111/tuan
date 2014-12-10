@@ -132,5 +132,5 @@
     </div>
 <%} else if(typeof KeyWords != 'undefined') {%>
     <!--热词-->
-    <ul class="m_BorderRadiusWrap"><li<%if (!CUR_HOTKEY) {%> class="current"<%}%>>全部</li><%_.each(KeyWords, function(item) {%><li data-type="<%=item.Type%>" data-val=<%=encodeURIComponent(item.Val)%><%if(CUR_HOTKEY && CUR_HOTKEY.val===item.Val){%> class="current"<%}%>><%=item.Key%></li><%})%></ul>
+    <ul class="m_BorderRadiusWrap"><li<%if (CUR_HOTKEY == 'ALL') {%> class="current"<%}%>>全部</li><%_.each(KeyWords, function(item) {%><li data-type="<%=item.Type%>" data-val=<%=encodeURIComponent(item.Val)%><%if(CUR_HOTKEY===item.Val){%> class="current"<%}%>><%=item.Key%></li><%})%></ul>
 <%}%>
