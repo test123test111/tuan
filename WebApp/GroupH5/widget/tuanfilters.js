@@ -312,15 +312,6 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     panel.find('.choosed').removeClass('choosed');
                     item.addClass('choosed');
 
-                    if (isVacation) { //“旅游度假”分类不按“附近团购”查询
-                        historyCityListStore.removeAttr('nearby');
-                        page.toolbarHeight -= page.toolbarHeight === 30 || page.toolbarHeight === 75 ? 30 : 0;
-                    } else {
-                        page.toolbarHeight += page.toolbarHeight === 0 || page.toolbarHeight === 45 ? 30 : 0;
-                    }
-                    page.toolbarSpace.css('height', page.toolbarHeight);
-                    page.controlGPSInfoWrap(!isVacation);
-
                     var distance = customFiltersStore.getAttr('distance');
                     //清除除团购类型和城市外的所有查询条件
                     StoreManage.clearSpecified(false);
@@ -339,6 +330,17 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
 
                     searchStore.setAttr('qparams', StoreManage.getGroupQueryParam());
                     searchStore.setAttr('ctype', tuanType);
+
+                    if (isVacation) { //“旅游度假”分类不按“附近团购”查询
+                        historyCityListStore.removeAttr('nearby');
+                        page.toolbarHeight -= page.toolbarHeight === 30 || page.toolbarHeight === 75 ? 30 : 0;
+                    } else {
+                        page.toolbarHeight += page.toolbarHeight === 0 || page.toolbarHeight === 45 ? 30 : 0;
+                    }
+                    page.toolbarSpace.css('height', page.toolbarHeight);
+                    page.controlGPSInfoWrap(!isVacation);
+                    page.updateTitle(searchStore.getAttr('ctyName'), true);
+
                     self.options.categoryTrigger.html(subName || StringsData.groupType[tuanType].name);
                     self.resetPosition(tuanType);
                     self.getListData();

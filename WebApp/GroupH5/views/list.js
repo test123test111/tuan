@@ -431,16 +431,16 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 returnico: '<i id="js_return" class="returnico"></i>'
             };
             var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
-            if (!hasKeyword) {
-                headerData.moreRightMenus = [{
-                    tagname: 'tuan_keyword_search',  //点击之后callback给H5的事件名字,
-                    imagePath: 'tuan/pic/h5/tuan/icon_search_w.png',  //按钮上的图片， v5.8开始支持
-                    pressedImagePath: 'tuan/pic/h5/tuan/icon_search_w.png', //按钮上的图片选中的效果图，v5.8开始支持
-                    callback: function () {
-                        self.showKeywordSearch();
-                    }
-                }];
-            }
+            //if (!hasKeyword) {
+            headerData.moreRightMenus = [{
+                tagname: 'tuan_keyword_search',  //点击之后callback给H5的事件名字,
+                imagePath: 'tuan/pic/h5/tuan/icon_search_w.png',  //按钮上的图片， v5.8开始支持
+                pressedImagePath: 'tuan/pic/h5/tuan/icon_search_w.png', //按钮上的图片选中的效果图，v5.8开始支持
+                callback: function () {
+                    self.showKeywordSearch();
+                }
+            }];
+            //}
             if (hasKeyword) {
                 customtitle = '<div class="search_title"><span class="word">' + title + '</span>' + (count !== undefined ? '<span class="num">(' + count + ')</span>' : '') + '</div>';
             } else {
@@ -448,9 +448,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             }
             customtitle += ICON.returnico;
             if (+ctype === 7) {//旅游度假隐藏标题栏右侧地图按钮
-                headerData.customtitle = customtitle + (hasKeyword ? '' : ICON.search);
+                //headerData.customtitle = customtitle + (hasKeyword ? '' : ICON.search);
+                headerData.customtitle = customtitle + ICON.search;
             } else {
-                headerData.customtitle = customtitle + (hasKeyword ? '' : ICON.search) + ICON.map;
+                headerData.customtitle = customtitle + ICON.search + ICON.map;
                 (headerData.moreRightMenus || (headerData.moreRightMenus = [])).unshift({
                     tagname: 'tuan_list_map',  //点击之后callback给H5的事件名字,
                     imagePath: 'tuan/pic/h5/tuan/icon_map_w.png',  //按钮上的图片， v5.8开始支持
@@ -734,7 +735,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 this.renderHotWord(data.hotkey);
             } else {
                 this.quickOpBar.hide();
-                this.toolbarHeight -= this.toolbarHeight > 45 ? 45 : 0;
+                this.toolbarHeight -= this.toolbarHeight >= 45 ? 45 : 0;
             }
         },
         /**
@@ -985,7 +986,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 data = data && data[0];
                 if (data && data.KeyWords && data.KeyWords.length) {
                     this.quickOpBar.show();
-                    this.toolbarHeight += this.toolbarHeight < 75 ? 45 : 0; //快捷操作栏的高度
+                    this.toolbarHeight += this.toolbarHeight === 0 || this.toolbarHeight === 30 ? 45 : 0; //快捷操作栏的高度
                     this.toolbarSpace.css('height', this.toolbarHeight);
                     data.CUR_HOTKEY = this.CUR_HOTKEY;
                     this.quickWrapper.html(this.listTpl(data));

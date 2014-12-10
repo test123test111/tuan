@@ -36,7 +36,7 @@ if(typeof products!="undefined" && products && products.length>0 && count && +co
             <p class="pro_list_ext">
                 <span class="pro_list_oldprice"><del data-price="<%=p.price.cPrice %>">&yen;<%=p.price.cPrice %></del></span>
                 <%if(+p.cSold>0){%><span class="pro_list_sold">已售<%=p.cSold %></span><%}%>
-                <%if(+p.score>0 && ctype!==7){%><span class="split">|</span><span class="pro_list_rank"><i><%=p.score %></i>分</span><%}%>
+                <%if(+p.score>0 && p.category && p.category.ctgoryid==1){%><%if(+p.cSold>0){%><span class="split">|</span><%}%><span class="pro_list_rank"><i><%=p.score %></i>分</span><%}%>
             </p>
             <%if (p.activities && p.activities.length > 0) {
                 for (var j in p.activities) {

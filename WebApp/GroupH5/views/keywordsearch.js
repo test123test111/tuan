@@ -81,7 +81,10 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              StoreManage.addHistoryKeyWord(id, name, keytype);
              //历史搜索 处理end-------------
              //团购6.1新增， 根据地标查询时， 产品列表按照距离最近排序
-             ((keytype || '').toLocaleLowerCase() === 'markland') && (searchStore.setAttr('sortRule', 8));
+             if ((keytype || '').toLocaleLowerCase() === 'markland') {
+                searchStore.setAttr('sortRule', 8);
+                searchStore.setAttr('sortType', 1);
+             }
              this.doSubmit();
          },
          onSubmitSearch: function () {
@@ -138,7 +141,8 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              try {
                  if (typeof keyword == "undefined" || keyword === "" || keyword === null) {return;}
                  var searchData = tuanSearchStore.get();
-
+                 keyword = keyword.replace(/\.|\{|\}|\[|\]|\*|\^|\'/img, '');
+                 keyword = keyword.toLowerCase().trim();
                  this.lastinputkey = keyword;
                  this.$el.find('.s_city_loading').show();
                  this.getKeywordListData(keyword, searchData.ctyId, function () {
