@@ -41,6 +41,8 @@ define(['libs'], function () {
             for (var i in events) {
                 this.container.on(this.options.event[i], eventHandler);
             }
+
+            this.triggerEvent();
         },
         _imgLoaded: function($t, o){
             $t[0].src = $t.attr(o.attr);

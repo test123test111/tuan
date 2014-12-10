@@ -3,13 +3,14 @@
  * 列表页面
  * @url: m.ctrip.com/webapp/tuan/list
  */
-define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', 'MemCache', 'StringsData', 'cUtility', 'cGeoService', 'cWidgetFactory', 'cUIToast', 'TuanStore', 'TuanModel', 'TuanFilters', 'StoreManage', 'LazyLoad', 'ScrollObserver', 'text!ListProductTpl', 'text!ListBusinessTpl', 'cWidgetGeolocation'],
-function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, StringsData, Util, GeoService, WidgetFactory, Toast, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, listProduct, listBusiness) {
+define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', 'MemCache', 'StringsData', 'cUtility', 'cGeoService', 'cWidgetFactory', 'cUIToast', 'cUIScroll', 'TuanStore', 'TuanModel', 'TuanFilters', 'StoreManage', 'LazyLoad', 'ScrollObserver', 'text!ListTpl', 'cWidgetGeolocation'],
+function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, StringsData, Util, GeoService, WidgetFactory, Toast, Scroll, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, html) {
     'use strict';
     var REFRESH_GPS_LOADING_CLS = 'ani_rotation',
         PAGE_POSITION = 'PAGE_LIST_POSITION',
-        CUI = c.ui,
+        Mask = c.ui.Mask,
         isInApp = Util.isInApp(),
+        IS_FIRST_IN_LIST = 'TUAN_FIRST_IN_LIST',
         listModel = TuanModels.TuanListModel.getInstance(), //团购列表(产品聚合)
         hotelListModel = TuanModels.TuanHotelListModel.getInstance(), //团购列表(商户聚合)
         sortStore = TuanStore.GroupSortStore.getInstance(), //团购排序
@@ -26,7 +27,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
         View,
         MSG = {
-            tuangou: '团购',
             youAreHere: '您的位置 '
         },
         Guider = WidgetFactory.create('Guider'),
@@ -48,11 +48,17 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             //筛选项容器
             this.filterWrap = wrap.find('.J_filtersAndSortPanel');
             //产品聚合模版渲染函数
-            this.productListTpl = _.template(listProduct);
+            this.listTpl = _.template(html);
             //商户聚合模版渲染函数
-            this.businessListTpl = _.template(listBusiness);
+            //this.businessListTpl = _.template(listBusiness);
+            //热词渲染函数
+            //this.hotkeyTpl = _.template($('#J_hotkey').html()),
             //当前位置容器
             this.gpsInfoWrap = wrap.find('#J_gpsInfoWrap');
+            this.quickOpBar = wrap.find('#J_quickOpBar');
+            this.quickWrapper = wrap.find('#J_quickWrapper');
+            this.toolbar = wrap.find('#J_toolbar');
+            this.toolbarSpace = wrap.find('#J_toolbarSpace');
         },
         events: {
             'click li[data-id]': 'detailHandler', //详情页
@@ -62,6 +68,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             'click .J_showMore': 'showMore',
             'click .J_phone': 'callPhone',
             'click #J_deleteFilter li': 'deleteFilter',
+            'click #J_quickWrapper li': 'hotWordSearch',
             'click .J_filtersAndSortPanel': function () {
                 //为了不挡住公司的广告（z-index:2002），把filterWrap的z-index默认设置为2001，这里点击之后再设置为9999
                 this.filterWrap.css('z-index', '9999');
@@ -135,18 +142,6 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 cityId = currentCity.CityId;
 
             return cityId && cityId != searchStore.getAttr('ctyId');
-        },
-        positionSearchPanel: function (data) {
-            var self = this,
-                direction = data.direction;
-            //向上传，出现关键词浮层，当滚动下于50，则不浮动
-            if (direction.toLowerCase() == 'up' && data.y > 30) {
-                self.keywordPanel.addClass('list_s_fixed');
-                self.keywordPanel.css('top', !isInApp && self.isNearBy() ? '78px' : isInApp ? '0' : '48px'); //如果在app中head被native头取代
-            } else {
-                self.keywordPanel.removeClass('list_s_fixed');
-                self.keywordPanel.css('top', '0');
-            }
         },
         /**
         * 重新定位
@@ -290,31 +285,67 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             tuanfilters.sort.hide();
         },
         onCreate: function () {
-            var wrap = this.$el;
             searchStore.setAttr('pageIdx', 1);
             //滚动加载下一页数据
             this.onWindowScroll = $.proxy(this._onWindowScroll, this);
-            // this.isNearBy() && this.createGPS();
             this.render();
 
             //检查来源，并做保存来源数据
             TuanApp.saveUnion(true);
 
-            this.gpsInfoWrap.css('top', isInApp ? '0px' : '48px');
-            if (isInApp) {
-                wrap.find('#J_searchBoxWrap').addClass('hybrid');
-                //如果是hybrid初始化语音功能
-                TuanApp.initVoiceSearch && TuanApp.initVoiceSearch(wrap.find('#J_voiceTrigger'));
+            var isVacation = +searchStore.getAttr('ctype') === 7;
+            this.controlGPSInfoWrap(!isVacation); //旅游度假隐藏列表顶部距离信息
+            this.toolbarHeight = isVacation ? 0 : 30;//定位信息栏的高度
+            this.toolbar.css('top', isInApp ? '0px' : '48px');
+            this.toolbarSpace.css('height', this.toolbarHeight);
+        },
+        //快捷操作栏半固定
+        toolbarObserver: function (evt, data) {
+            var toolbar = this.toolbar,
+                space = this.toolbarSpace,
+                direction = data.direction;
+            if (direction.toLowerCase() == 'down') {
+                if (data.y > this.toolbarHeight) {
+                    toolbar.removeClass('list_s_fixed');
+                    space.hide();
+                }
+            } else {
+                toolbar.addClass('list_s_fixed');
+                toolbar.css('top', isInApp ? '0px' : '48px');
+                space.show();
             }
         },
-        isFromDetail: function (refer) {
+        //快捷操作栏横向滚动
+        setQuickScroll: function () {
+            var wrapper = this.quickWrapper;
+            var scroller = wrapper.find('ul');
+            var uiScroll, width = 0;
+            var items = scroller.find('li');
+            _.each(items, function(item) {
+                width += $(item).width() + 3; //3 is margin right
+            });
+            scroller.css('width', width);
+            uiScroll = new Scroll({
+                wrapper: wrapper,
+                scrollbars: false,
+                scrollX: true, //横向滚动
+                scrollY: false //竖直滚动
+            });
+        },
+        isFromDetail: function () {
+            var refer = this.referUrl;
             return refer && refer.match(/detail/i);
         },
-        isFromListMap: function (refer) {
+        isFromListMap: function () {
+            var refer = this.referUrl;
             return refer && refer.match(/listmap/i);
         },
+        isFromKeywordSearch: function () {
+            var refer = this.referUrl;
+            return refer && refer.match(/keywordsearch/i);
+        },
         controlGPSInfoWrap: function (visible) {
-            this.gpsInfoWrap.css('display', visible ? '' : 'none');
+            this.gpsInfoWrap[visible ? 'show' : 'hide']();
         },
         /**
         * @param {Object} searchData 所有查询条件键值对
@@ -360,12 +391,14 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
         /**
         * 更新header
         * @param title
+        * @param isCity 是否城市
+        * @param count 搜索结果条数
         */
-        updateTitle: function (title) {
+        updateTitle: function (title, isCity, count) {
             var self = this;
-
-            this.header.set({
-                title: title.indexOf(MSG.tuangou) > -1 ? title : title + MSG.tuangou,
+            var customtitle = '';
+            var header = this.header;
+            var headerData = {
                 back: true,
                 view: this,
                 events: {
@@ -387,43 +420,96 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                                 self.back('home');
                             }
                         }
-                    },
-                    homeHandler: $.proxy(self.homeHandler, self),
-                    commitHandler: function () {
+                    }
+                }
+            };
+            var ctype = searchStore.getAttr('ctype');
+            var ICON = {
+                map: '<b id="J_gotoMapPage" class="i_bef icon_map_w"></b>',
+                search: '<b id="J_gotoSearch" class="i_bef icon_search_w"></b>',
+                down: '<i class="i_tri"></i>',
+                returnico: '<i id="js_return" class="returnico"></i>'
+            };
+            var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
+            //if (!hasKeyword) {
+            headerData.moreRightMenus = [{
+                tagname: 'tuan_keyword_search',  //点击之后callback给H5的事件名字,
+                imagePath: 'tuan/pic/h5/tuan/icon_search_w.png',  //按钮上的图片， v5.8开始支持
+                pressedImagePath: 'tuan/pic/h5/tuan/icon_search_w.png', //按钮上的图片选中的效果图，v5.8开始支持
+                callback: function () {
+                    self.showKeywordSearch();
+                }
+            }];
+            //}
+            if (hasKeyword) {
+                customtitle = '<div class="search_title"><span class="word">' + title + '</span>' + (count !== undefined ? '<span class="num">(' + count + ')</span>' : '') + '</div>';
+            } else {
+                customtitle = '<h2><div id="J_cityBtn" class="list_hd_button2"><em class="header_mutrow">' + title + '</em>' + (isCity ? ICON.down : '') + '</div></h2>';
+            }
+            customtitle += ICON.returnico;
+            if (+ctype === 7) {//旅游度假隐藏标题栏右侧地图按钮
+                //headerData.customtitle = customtitle + (hasKeyword ? '' : ICON.search);
+                headerData.customtitle = customtitle + ICON.search;
+            } else {
+                headerData.customtitle = customtitle + ICON.search + ICON.map;
+                (headerData.moreRightMenus || (headerData.moreRightMenus = [])).unshift({
+                    tagname: 'tuan_list_map',  //点击之后callback给H5的事件名字,
+                    imagePath: 'tuan/pic/h5/tuan/icon_map_w.png',  //按钮上的图片， v5.8开始支持
+                    pressedImagePath: 'tuan/pic/h5/tuan/icon_map_w.png', //按钮上的图片选中的效果图，v5.8开始支持
+                    callback: function () {
                         self.gotoMapPage();
                     }
-                },
-                btn: { title: "地图", id: 'J_gotoMapPage', classname: 'rightblue' }
-            });
-            this.header.show();
+                });
+            }
+            if (isCity) {
+                headerData.citybtn = title;
+                headerData.events.citybtnHandler = function () { //click citybtn按钮的回调(Hybrid)
+                    self.showCityPage();
+                };
+            } else {
+                headerData.title = title + (hasKeyword && count !== undefined ? '(' + count + ')': '' );
+            }
+
+            header.set(headerData);
+            header.show();
+            if (!isInApp) { //H5需要自己设置按钮的回调
+                isCity && header.root.find('#J_cityBtn').on('click', $.proxy(self.showCityPage, this));
+                header.root.find('#J_gotoSearch').on('click', $.proxy(self.showKeywordSearch, this));
+                header.root.find('#J_gotoMapPage').on('click', $.proxy(self.gotoMapPage, this));
+            }
         },
         gotoMapPage: function () {
-            if (this.isDataReady) {
+            //if (this.isDataReady) {
                 //地图的widget只会实例化一次，这里需要使用缓存
                 this.forwardJump('listmap', '/webapp/tuan/listmap');
-            }
+            //}
         },
         createPage: function () {
             var searchData = searchStore.get(),
-                ctype = searchData.ctype,
+                //ctype = searchData.ctype,
                 cityId = searchData.ctyId || StringsData.defaultCity.id,
                 isNearby = this.isNearBy(),
                 isOneYuan = this.isOneYuan(),
-                title = StringsData.groupType[ctype].name || StringsData.groupType[0].name;
+                keywordData = StoreManage.getCurrentKeyWord();
 
-            if (isOneYuan) {
-                title = '一元团购';
+            if (!(this.isFromKeywordSearch() && keywordData)) {
+                if (isOneYuan) {
+                    this.updateTitle('一元团购', false);
+                } else {
+                    this.updateTitle(searchData.ctyName, true);
+                }
+            } else {
+                this.updateTitle(keywordData.word, false);
             }
-            this.updateTitle(title);
-            this.initKeywordSearch(); //初始化关键词搜索框
+            //this.initKeywordSearch(); //初始化关键词搜索框
             this.hideForbiddens(!isNearby, '.J_forbidden');
-            this.keywordPanel = this.$el.find('#J_keywordSearchPanel');
+            //this.keywordPanel = this.$el.find('#J_keywordSearchPanel');
 
             if (isNearby) { //'我的附近'进入
                 this.getGroupListData();
 
                 //地图页可能更改了团购分类
-                if (this.isFromListMap(this.referUrl)) {
+                if (this.isFromListMap()) {
                     this.tuanfilters && this.tuanfilters.updateCategoryName();
                 }
             } else {
@@ -486,6 +572,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.hideWarning404();
             this.hideLoading();
             this.scrollObserver && this.scrollObserver.disable();
+            this.searchGuiderMask && this.searchGuiderMask.hide();
             this.alert && this.alert.hide();
 
             var tuanfilters = this.tuanfilters;
@@ -508,8 +595,9 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.referUrl = refer || this.getLastViewName();
             this.parseSEOPostData();
             //定位提示容
-            this.gpsInfoWrap = this.$el.find('#J_gpsInfo');
+            this.infoWrap = this.$el.find('#J_gpsInfo');
             this.gpsReloadBtn = this.$el.find('#J_reloadGPS');
+            //this.setQuickScroll();
 
             var self = this;
             var isNearBy;
@@ -518,13 +606,14 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             if (returnPageStore) { returnPageStore.remove(); }
 
             if (searchStore.getAttr('from_feature')) {
-
-                this.emptyPage('当地特色', searchStore.getAttr('ctyName'));
+                this.updateTitle('当地特色', false);
+                this.renderNoResult('', 'hotels', {'feature': {val: '', txt: '当地特色'}});
+                this.gpsInfoWrap.text('距离：' + searchStore.getAttr('ctyName') + StringsData.CITY_CENTER);
                 return;
             }
 
-            //如果从详情页后退不请求数据,否则重新请求
-            if (!this.isFromDetail(this.referUrl) || !MemCache.getItem('hasListData')) {
+            //如果从详情页后退不请求数据
+            if (!this.isFromDetail() || !MemCache.getItem('hasListData')) {
                 //显示loading
                 this.showLoading();
                 //清空列表
@@ -538,7 +627,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     //调整代码执行，原先位置会导致从攻略过来，一直显示定位中
                     var gpsInfo = geolcationStore.getAttr('gps');
                     if (isNearBy && gpsInfo) {
-                        var infoWrap = self.gpsInfoWrap,
+                        var infoWrap = self.infoWrap,
                             reloadBtn = self.gpsReloadBtn,
                             gps = geolocationStore.getAttr('gps'),
                             text = '距离: ';
@@ -559,23 +648,25 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                             self.tuanfilters.sort.select(item, true);
                         }
                     }
-                    //获取当前城市切请求数据
+                    //获取当前城市且请求数据
                     self.renderPageByCity();
                 });
             } else {
-                var ctype = searchStore.getAttr('ctype');
-                var title = StringsData.groupType[ctype].name || StringsData.groupType[0].name;
                 if (this.isOneYuan()) {
-                    title = '一元团购';
+                    this.updateTitle('一元团购', false);
+                } else {
+                    this.updateTitle(searchStore.getAttr('ctyName'), true);
                 }
-                this.updateTitle(title);
                 this._restoreScrollPos();
             }
 
             //图片延迟加载插件
             this.LazyLoad = new LazyLoad({ wrap: this.$el, animate: 'opacity-fade-in' });
             $(window).bind('scroll', this.onWindowScroll);
+            this.scrollObserver = ScrollObserver.init();
             this.scrollObserver && this.scrollObserver.enable();
+            $(window).bind('customScrollStart', $.proxy(this.toolbarObserver, this));
+            !localStorage.getItem(IS_FIRST_IN_LIST) && this.initSearchGuider();
         },
         _onWindowScroll: function () {
             var pos = c.ui.Tools.getPageScrollPos(),
@@ -618,7 +709,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             var searchData = searchStore.get();
             var sortRule = searchData.sortRule;
             data.pageIdx = searchData.pageIdx;
-            var item = $.trim(this[sortRule == '8' ? 'businessListTpl' : 'productListTpl'](data)); //距离最近时，按商户聚合显示
+            data.ctype = searchData.ctype;
+            data.hasPosition = !!positionfilterStore.getAttr('type');
+            //var item = $.trim(this[sortRule == '8' ? 'businessListTpl' : 'productListTpl'](data)); //距离最近时，按商户聚合显示
+            var item = $.trim(this.listTpl(data)); //距离最近时，按商户聚合显示
             if (data.count && +data.count > 0 && this.totalPages && +this.totalPages > 1) {
                 if (sortRule == '8') {
                     this.listWrap.append(item);
@@ -636,6 +730,12 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             }
             if (data.count > 0 && data.pageIdx >= this.totalPages) {
                 this.listWrap.append('<p class="sec-waiting" style="display:block;">没有更多结果了</p>');
+            }
+            if (!this.isFromKeywordSearch() && data.hotkey && data.pageIdx <= 1) {
+                this.renderHotWord(data.hotkey);
+            } else {
+                this.quickOpBar.hide();
+                this.toolbarHeight -= this.toolbarHeight >= 45 ? 45 : 0;
             }
         },
         /**
@@ -702,6 +802,10 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 self.hideLoading();
                 notClearAll && self.hideBottomLoading();
                 if (data && data[key] && data[key].length && data.count && +data.count > 0) {
+                    var keywordData = StoreManage.getCurrentKeyWord();
+                    if (self.isFromKeywordSearch() && keywordData) {
+                        self.updateTitle(keywordData.word, false, data.count);
+                    }
                     this.isDataReady = true;
                     this.totalPages = Math.ceil(data.count / this.pageSize);
                     if (this.totalPages > 1) {
@@ -752,30 +856,30 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                 $(window).unbind('scroll', this.onWindowScroll);
             }, !!fromServer, self);
         },
-        emptyPage: function (title, cityName) {
-            this.updateTitle(title);
-            this.renderNoResult('', 'hotels', {'feature': {val: '', txt: title}});
-            this.gpsInfoWrap.text('距离：' + cityName + StringsData.CITY_CENTER);
-        },
         renderNoResult: function (msg, key, customdata) {
+            var keywordData = StoreManage.getCurrentKeyWord();
+            if (this.isFromKeywordSearch() && keywordData) {
+                this.updateTitle(keywordData.word, false, 0);
+            }
             var lst = {
                 count: 0,
                 positionFilter: positionfilterStore.get() || {},
                 weekendsAvailable: searchStore.getAttr('weekendsAvailable'),
-                keywordData: StoreManage.getCurrentKeyWord()
+                keywordData: keywordData
             };
             customdata = customdata || customFiltersStore.get() || {};
             var distance = customdata && customdata.distance && customdata.distance.val;
             distance = distance || lst.positionFilter.pos && lst.positionFilter.pos.distance;
             lst[key] = null;
             if (msg) {
-                lst.msg = msg;
+                lst.noresult = msg;
             } else {
-                lst.msg = (distance ? distance + '公里内' : '') + '没找到符合条件的结果，请修改条件重新查询';
+                lst.noresult = (distance ? distance + '公里内' : '') + '没找到符合条件的结果，请修改条件重新查询';
             }
             lst.customFilter = customdata;
             this.renderList(lst);
         },
+        /*
         initKeywordSearch: function () {
             var searchBox = this.$el.find('#J_keywordSearch'),
                 lastSearchKeyword = StoreManage.getCurrentKeyWord();
@@ -784,6 +888,7 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             CUI.InputClear(searchBox);
             searchBox.val(lastSearchKeyword && lastSearchKeyword.word || ''); //关键词字段，TODO：转存到另一个localstorage
         },
+        */
         detailHandler: function (e) {
             var id = $(e.currentTarget).attr('data-id'),
                 cid = searchStore.getAttr('ctyId');
@@ -828,29 +933,33 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
                     break;
                 case 'weekendsAvailable':
                     searchStore.setAttr('weekendsAvailable', 0);
-                    this.$el.find('#weekends')[0].checked = false;
+                    var weekends = this.$el.find('#weekends');
+                    weekends[0] && (weekends[0].checked = false);
                     break;
                 case 'voucher':
                     customFiltersStore.removeAttr('voucher');
-                    this.$el.find('#voucher')[0].checked = false;
+                    var voucher = this.$el.find('#voucher');
+                    voucher[0] && (voucher[0].checked = false);
                     break;
                 case 'multiShop':
                     customFiltersStore.removeAttr('multiShop');
-                    this.$el.find('#multiShop')[0].checked = false;
+                    var multiShop = this.$el.find('#multiShop');
+                    multiShop[0] && (multiShop[0].checked = false);
                     break;
                 case 'keyword':
                     StoreManage.removeCurrentKeyWord();
                     this.$el.find('#J_keywordSearch').val('');
+                    this.updateTitle(searchStore.getAttr('ctyName'), true);
                     break;
                 case 'feature':
                     searchStore.removeAttr('from_feature');
-                    this.updateTitle(StringsData.groupType[0].name);
+                    this.updateTitle(searchStore.getAttr('ctyName'), true);
                     break;
                 case 'price':
                     searchStore.setAttr('qparams', []);
                     label.find('li[data-tab="price"] i').hide();
                     customFiltersStore.removeAttr('price');
-                    this.updateTitle(StringsData.groupType[0].name);
+                    this.updateTitle(searchStore.getAttr('ctyName'), true);
                     break;
                 default:
                     customFiltersStore.removeAttr(type);
@@ -869,6 +978,46 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             this.showLoading();
             this.hideBottomLoading();
             this.getGroupListData();
+        },
+        renderHotWord: function (hotkey) {
+            var ctype = searchStore.getAttr('ctype');
+            if ($.isArray(hotkey) && hotkey.length > 0) {
+                var data = $.grep(hotkey, function (v) { return v.ItemType == ctype; });
+                data = data && data[0];
+                if (data && data.KeyWords && data.KeyWords.length) {
+                    this.quickOpBar.show();
+                    this.toolbarHeight += this.toolbarHeight === 0 || this.toolbarHeight === 30 ? 45 : 0; //快捷操作栏的高度
+                    this.toolbarSpace.css('height', this.toolbarHeight);
+                    data.CUR_HOTKEY = this.CUR_HOTKEY;
+                    this.quickWrapper.html(this.listTpl(data));
+                    this.setQuickScroll();
+                }
+            }
+        },
+        //快捷操作栏热词搜索
+        hotWordSearch: function (e) {
+            var obj = '';
+            var cur = $(e.currentTarget);
+            var type = cur.attr('data-type');
+            var val = decodeURIComponent(cur.attr('data-val'));
+            cur.addClass('current').siblings('.current').removeClass('current');
+            if (type === 'json') {
+                try {
+                    obj = JSON.parse(val);
+                } catch (err) {
+                    window.console && console.log(err);
+                }
+                if (obj && $.isPlainObject(obj)) {
+                    this.CUR_HOTKEY = {key: cur.text(), val: val};
+                    StoreManage.parseHotkeyJson(obj);
+                    this.getGroupListData();
+                }
+            } else if (type === 'url') {
+                 TuanApp.jumpToPage(val, this);
+            } else {
+                StoreManage.clearAll();
+                this.getGroupListData();
+            }
         },
         homeHandler: function () {
             searchStore.setAttr('pageIdx', 1);
@@ -889,6 +1038,31 @@ function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, S
             var searchdata = searchStore.get();
             var c2 = searchdata.ctype; //searchdata.ctype==1?2:0;
             return "ctrip://wireless/hotel_groupon_list?c1=" + searchdata.ctyId + "&c2=" + c2;
+        },
+        initSearchGuider: function () {
+            var self = this;
+            var searchGuider = this.$el.find('#J_searchGuider');
+            if (isInApp) {
+                searchGuider.css('background-position', '100% -13px');
+                searchGuider.find('.icon_search_w').hide();
+            }
+            this.searchGuiderMask = new Mask({
+                onCreate: function () {
+                    var scope = this;
+                    this.root.on('click', function () {
+                        scope.hide();
+                        searchGuider.hide();
+                        localStorage.setItem(IS_FIRST_IN_LIST, 1);
+                    });
+                }
+            });
+            this.searchGuiderMask.show();
+            searchGuider.show();
+            searchGuider.on('click', function() {
+                self.searchGuiderMask.hide();
+                searchGuider.hide();
+                localStorage.setItem(IS_FIRST_IN_LIST, 1);
+            });
         }
     });
     return View;

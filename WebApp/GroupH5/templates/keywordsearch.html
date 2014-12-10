@@ -25,7 +25,7 @@
                 <%for(var i = 1; i <= num ; i++){%>
                 <ul class="sw_con" >
                     <%for(var j = 1; j <= 6 ; j++){ var index = (i-1)*6 + (j-1); if(index >=data.length){break;}%>
-                    <li data-json=<%=encodeURIComponent(JSON.stringify(data[index]))%>><%=data[index].word%></li>
+                    <li data-json=<%=encodeURIComponent(JSON.stringify(data[index]))%>><%=data[index].Key%></li>
                     <%}%>
                 </ul>
                 <%}%>
@@ -47,7 +47,7 @@
             <%for(var i=0, olen=data.history.length, c; i < olen; i++) {
                     c=data.history[i];
             %>
-                <li class="city_item <% if(keyid && keyid == c.id){ %> choosed<%} %>" data-type="<%=c.type%>" data-name="<%=c.word%>" data-id="<%=c.id%>" data-filter="<%=c.word%>"><%=c.word %></li>
+                <li class="J_resultItem city_item <% if(keyid && keyid == c.id){ %> choosed<%} %>" data-type="<%=c.type%>" data-name="<%=c.word%>" data-id="<%=c.id%>" data-filter="<%=c.word%>"><%=c.word %></li>
             <%}%>
             </ul>
             <div class="base_btn01_wrap_b neg_mgt20 J_clearhistory">
@@ -56,11 +56,11 @@
         <%}%>
         <%if(data.Results&&data.Results.length>0){%>
         <ul class="city_list searchresult">
-        <%for(var i=0, len=data.Results.length, c; i<len; i++) {
-            c = data.Results[i];
+        <%
+            _.each(data.Results, function(t) {
         %>
-            <li class="city_item <% if(keyid && keyid == c.id){ %> choosed<%} %>" data-type="<%=c.type%>" data-name="<%=c.word%>" data-id="<%=c.id%>" data-filter="<%=c.word%>"><%=c.word %></li>
-        <%}%>
+                <li class="J_resultItem city_item <% if(keyid && keyid == t.id){ %> choosed<%} %>" data-type="<%=t.type%>" data-name="<%=t.word%>" data-id="<%=t.id%>" data-filter="<%=t.word%>"><%=t.wordNew %><span class="cate"><%=t.typeNew %></span></li>
+        <%});%>
         </ul>
         <%}else if(data.Results){%>
          <p class="city_noresult">抱歉，没有搜索到相关信息</p>
