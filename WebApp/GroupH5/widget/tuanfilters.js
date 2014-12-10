@@ -128,7 +128,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.val||curr.type!=-4){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(AirportStation, function(val){%>',
-                        '<li data-type="-4" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-4&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div></li>',
+                        '<li data-type="-4" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-4&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -138,7 +138,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.line){%> class="backwards"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(SubwayLine, function(val){%>',
-                        '<li data-type="-5" data-value="<%=val.val%>" data-text="<%=val.txt%>" class="arr_r<%if(curr.line==val.val){%> backwards<%}%>"><div class="txt01"><%=val.txt%></div><span class="txt03"><%if(curr.line==val.val&&curr.type==-3){%><%=curr.name%><%}%></span></li>',
+                        '<li data-type="-5" data-value="<%=val.val%>" data-text="<%=val.txt%>" class="arr_r<%if(curr.line==val.val){%> backwards<%}%>"><div class="txt01"><%=val.txt%></div><span class="txt03"><%if(curr.line==val.val&&curr.type==-3){%><%=curr.name%><%}%></span><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -148,7 +148,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.val||curr.type!=-2){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(Attraction, function(val){%>',
-                        '<li data-type="-2" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-2&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div></li>',
+                        '<li data-type="-2" data-value="<%=val.val%>" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-2&&curr.val==val.val){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -158,7 +158,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     '<ul class="pop_filter_baselist" style="min-height:285px">',
                         '<li<%if(!curr.pos||curr.type!=-1){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
                     '<%_.each(College, function(val){%>',
-                        '<li data-type="-1" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-1&&curr.pos.lat==val.lat&&curr.pos.lon==val.lon){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div></li>',
+                        '<li data-type="-1" data-pos=\'<%=JSON.stringify(val.pos)%>\' data-text="<%=val.txt%>"<%if(curr.type==-1&&curr.pos.lat==val.lat&&curr.pos.lon==val.lon){%> class="choosed"<%}%>><div class="txt01"><%=val.txt%></div><span class="txt02"><%=val.groupCount%></span></li>',
                     '<%})%>',
                     '</ul>',
                 '</div>',
@@ -173,7 +173,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             '<li data-type="19" data-line="<%=lineId%>"<%if(curr.val==lineId&&curr.type==19){%> class="choosed"<%}%> data-text="<%=lineName%>"><div class="txt01">全线</div></li>',
             '<%_.each(arr, function(a,i){%>',
             '<li data-type="-3" data-value="<%=a.val%>" data-line="<%=lineId%>" data-pos=\'<%=JSON.stringify(a.pos)%>\' data-text="<%=a.txt%>"<%if(curr.val==a.val){%> class="choosed"<%}%>>',
-                '<div class="txt01"><%=a.txt%></div>',
+                '<div class="txt01"><%=a.txt%></div><span class="txt02"><%=a.groupCount%></span>',
             '</li>',
             '<%})%>'
         ].join(''));
@@ -307,15 +307,10 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     var subVal = item.data('value') || '';
                     var subName = item.data('name');
                     var currType = StringsData.groupType[tuanType];
+                    var isVacation = tuanType == 7;
+                    var page = self.page;
                     panel.find('.choosed').removeClass('choosed');
                     item.addClass('choosed');
-
-                    self.page.updateTitle(currType.name);
-                    self.page.searchKeywordInput.val('');
-
-                    if (tuanType == 7) { //“旅游度假”分类不按“附近团购”查询
-                        historyCityListStore.removeAttr('nearby');
-                    }
 
                     var distance = customFiltersStore.getAttr('distance');
                     //清除除团购类型和城市外的所有查询条件
@@ -335,6 +330,17 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
 
                     searchStore.setAttr('qparams', StoreManage.getGroupQueryParam());
                     searchStore.setAttr('ctype', tuanType);
+
+                    if (isVacation) { //“旅游度假”分类不按“附近团购”查询
+                        historyCityListStore.removeAttr('nearby');
+                        page.toolbarHeight -= page.toolbarHeight === 30 || page.toolbarHeight === 75 ? 30 : 0;
+                    } else {
+                        page.toolbarHeight += page.toolbarHeight === 0 || page.toolbarHeight === 45 ? 30 : 0;
+                    }
+                    page.toolbarSpace.css('height', page.toolbarHeight);
+                    page.controlGPSInfoWrap(!isVacation);
+                    page.updateTitle(searchStore.getAttr('ctyName'), true);
+
                     self.options.categoryTrigger.html(subName || StringsData.groupType[tuanType].name);
                     self.resetPosition(tuanType);
                     self.getListData();

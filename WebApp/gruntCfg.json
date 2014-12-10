@@ -32,6 +32,8 @@
             "/webapp/tuan/tuanorderdetail/2222.html":1
         },
         "resource": {
+            "pic.c-ctrip.com": {
+            }
         },
         "lizardEnv": "pro",
         "cssMini": false,

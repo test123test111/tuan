@@ -11,6 +11,7 @@
         "$",
         "Lizard",
         "CtripMap",
+        "CtripPage",
         "require",
         //浏览器全局变量
         "window",

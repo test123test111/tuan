@@ -1,0 +1,136 @@
+﻿<% if(typeof hotels != 'undefined' && hotels && hotels.length > 0 && count > 0) {%>
+    <!--商户聚合-->
+    <%var n = 0; _.each(hotels, function(hotel) {%>
+    <section class="list_title">
+        <h2><%=hotel.name%></h2>
+        <%if(+ctype!==7){%><span class="list_distance"><%=hotel.distance > 1 ? (hotel.distance.toFixed(1) + '公里') : (Math.round(hotel.distance * 1000) + '米')%></span><%}%>
+    </section>
+    <ul class="pro_list pro_list2">
+        <%var len = hotel.products && hotel.products.length;
+        _.each(hotel.products, function(product, index) {
+            var labelsNum = product.labels && product.labels.length;
+        %>
+            <li<%if(index>1){%> style="display: none" <%}%> data-id="<%=product.id%>" data-len="<%=len%>" data-count="<%=count%>">
+                <div class="pro_list_imgbox">
+                    <img data-img="<%=n++ %>" onerror="javascript:noPic(this);" data-lazy="<%=product.imgUrl?product.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" width="70" height="70" alt="<%=product.name%>" />
+                </div>
+                <div class="pro_list_info">
+                    <h4 class="pro_list_tit"><%=product.name%></h4>
+                    <p class="pro_list_price">¥<i><%=product.price.dPrice%></i></p>
+                    <p class="wrap_label">
+                        <%if(labelsNum <= 2){%>
+                            <%_.each(product.labels || [], function(o) {%>
+                                <span class="onsale_label02"><%=o.labelTxt%></span>
+                            <%}); %>
+                        <%} else {%>
+                            <span class="onsale_label02"><%=product.labels[0].labelTxt%></span>
+                            <span class="onsale_label03">更多优惠+</span>
+                        <%}%>
+                    </p>
+                    <p class="pro_list_ext">
+                        <span class="pro_list_oldprice"><del>¥<%=product.price.cPrice%></del></span>
+                        <%if(+product.cSold>0){%><span class="pro_list_sold">已售<%=product.cSold %></span><%}%>
+                        <%if(+product.score>0 && ctype!==7){%><span class="split">|</span><span class="pro_list_rank"><i><%=product.score %></i>分</span><%}%>
+                    </p>
+                </div>
+            </li>
+        <%})%>
+        <%if (len>2) {%>
+            <li class="more view_unfold J_showMore">查看其他<%=len-2%>条团购<span></span></li>
+        <%}%>
+    </ul>
+    <%})%>
+<%} else if(typeof products!='undefined' && products && products.length>0 && count && +count > 0) {%>
+    <!--产品聚合-->
+    <%if(pageIdx<=1){%><ul class="pro_list pro_list1"><%}%>
+    <%
+    for(var i = 0, len = products.length; i < len; i++){
+        var p = products[i];
+        var labelsNum = p.labels && p.labels.length;
+    %>
+    <li data-id="<%=p.id %>" data-len="<%=products.length %>" data-count="<%=count %>">
+        <div class="pro_list_imgbox">
+            <img data-img="<%=i %>" onerror="javascript:noPic(this);" data-lazy="<%=p.imgUrl?p.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" />
+        </div>
+        <div class="pro_list_info">
+            <h4 class="pro_list_tit"><%=p.name%></h4>
+            <%if(p.distance>0 && ctype!==7){%>
+            <p class="pro_list_dist">
+                <%if(p.distance>=1){%>
+                    <%=p.distance.toFixed(1)+'公里'%>
+                <%}else{%>
+                    <%=p.distance*1000+'米'%>
+                <%}%>
+            </p>
+            <%}%>
+            <p class="pro_list_subtit"><%if (!(isNearBy || hasPosition)) {%><%=p.descriptionhead ? '[' + p.descriptionhead + ']' : ''%><%}%><%=p.hotdescription || ''%></p>
+            <p class="pro_list_price">&yen;<i><%=p.price.dPrice%></i></p>
+            <p class="wrap_label">
+                <%if(labelsNum <= 2){%>
+                    <%_.each(p.labels || [], function(o) {%>
+                        <span class="onsale_label02"><%=o.labelTxt%></span>
+                    <%}); %>
+                <%} else {%>
+                    <span class="onsale_label02"><%=p.labels[0].labelTxt%></span>
+                    <span class="onsale_label03">更多优惠+</span>
+                <%}%>
+            </p>
+            <p class="pro_list_ext">
+                <span class="pro_list_oldprice"><del data-price="<%=p.price.cPrice %>">&yen;<%=p.price.cPrice %></del></span>
+                <%if(+p.cSold>0){%><span class="pro_list_sold">已售<%=p.cSold %></span><%}%>
+                <%if(+p.score>0 && p.category && p.category.ctgoryid==1){%><%if(+p.cSold>0){%><span class="split">|</span><%}%><span class="pro_list_rank"><i><%=p.score %></i>分</span><%}%>
+            </p>
+            <%if (p.activities && p.activities.length > 0) {
+                for (var j in p.activities) {
+                    var a = p.activities[j];
+                    if(a && a.type && +a.type > 0 && (+a.type == 2 || +a.type == 3) && +a.arg > 0) {
+            %>
+                <!--<span class="onsale_label01">返 ¥<%=a.arg%></span> -->
+            <%      }
+                }
+            }%>
+        </div>
+        <%if(p.labelVal && p.labelVal==99){ %><div class="sold_out">售完</div><%} %>
+    </li>
+    <%}%>
+    <%if(pageIdx<=1){%></ul><%}%>
+<%} else if(typeof noresult != 'undefined') {%>
+    <!--无结果-->
+    <div class="sec-noresult">
+        <div class="ui-result-no">
+            <span class="ico-search"></span>
+            <span class="ui-info"><%=noresult %></span>
+        </div>
+        <ul class="ui-result-tar" id="J_deleteFilter">
+            <%_.each(customFilter, function(item, key) {%>
+                <%if(key=='star'){%>
+                    <%_.each(item, function(v, i) {%>
+                    <li data-type="<%=key%>" data-value="<%=i%>"><%=v%></li>
+                    <%})%>
+                <%}else if(key=='multiShop'){%>
+                    <li data-type="multiShop">多店可用</li>
+                <%}else if(key=='voucher'){%>
+                    <li data-type="voucher">代金券</li>
+                <%}else{%>
+                    <li data-type="<%=key%>" data-value="<%=item.val%>"><%=item.txt%></li>
+                <%}%>
+            <%})%>
+            <%if (positionFilter.name) {%>
+                <%if (positionFilter.type != -6) {%>
+                    <li data-type="position"><%=positionFilter.name%></li>
+                <%}else{%>
+                    <li data-type="position"><%=positionFilter.pos.distance%>公里</li>
+                <%}%>
+            <%}%>
+            <%if (weekendsAvailable) {%><li data-type="weekendsAvailable">周末可用</li><%}%>
+            <%if (keywordData.word) {%><li data-type="keyword"><%=keywordData.word%></li><%}%>
+        </ul>
+        <div class="ui-tips">
+            <p>或者拨打携程客服电话</p>
+            <a href="tel:4000086666" data-phone="4000086666" class="btn-telephone J_phone">联系客服</a>
+        </div>
+    </div>
+<%} else if(typeof KeyWords != 'undefined') {%>
+    <!--热词-->
+    <ul class="m_BorderRadiusWrap"><li<%if (!CUR_HOTKEY) {%> class="current"<%}%>>全部</li><%_.each(KeyWords, function(item) {%><li data-type="<%=item.Type%>" data-val=<%=encodeURIComponent(item.Val)%><%if(CUR_HOTKEY && CUR_HOTKEY.val===item.Val){%> class="current"<%}%>><%=item.Key%></li><%})%></ul>
+<%}%>

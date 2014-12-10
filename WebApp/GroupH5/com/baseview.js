@@ -1,9 +1,19 @@
-﻿define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cCommonPageFactory', 'PageHistory', 'cWidgetGuider', 'cUtility', 'cWidgetFactory', 'cWidgetGeolocation'],
-function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFactory, History, Guider, cUtility, WidgetFactory) {
+/*jshint -W030 */
+define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cHybridFacade', 'cCommonPageFactory', 'PageHistory', 'cWidgetFactory', 'cWidgetGuider'],
+function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPageFactory, History, WidgetFactory) {
 
     var PAGE_NAME = 'TuanBaseView';
     var PAGE_NAMELIST = 'TuanBaseListView';
-    var isInApp = cUtility.isInApp();
+    var isInApp = Util.isInApp();
+    var Guider = WidgetFactory.create('Guider');
+    //注册IOS手势事件
+    // isInApp && Facade.registerOne('METHOD_WEB_VIEW_DID_APPEAR', 'web_view_did_appear');
+    // isInApp && Guider.register({
+        // tagname: 'METHOD_WEB_VIEW_DID_APPEAR',
+        // callback: function () {
+            // CtripPage.app_enable_drag_animation(true);
+        // }
+    // });
     if (CommonPageFactory.hasPage(PAGE_NAME) || CommonPageFactory.hasPage(PAGE_NAMELIST)) {
         return;
     }
@@ -75,7 +85,7 @@ function (c, AbstractStore, BasePageView, CommonListPage, Utility, CommonPageFac
             if (urlNode.jump) {
                 location.href = urlNode.fullurl;
             } else {
-                if (Utility.isInApp()) {
+                if (Util.isInApp()) {
                     var surl = /#(.*)$/.exec(urlNode.fullurl);
                     if (surl && surl.length > 1 && surl[1]) {
                         Lizard.goTo(surl[1], { viewName: urlNode.id, cache: urlNode.id == 'list' ? true : cache });

@@ -8,11 +8,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
      var cui = c.ui,
         tuanSearchStore = TuanStore.GroupSearchStore.getInstance(),
         historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance(),
-        positionfilterStore = TuanStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
-        customFiltersStore = TuanStore.GroupCustomFilters.getInstance(), //团购自定义筛选项
-        categoryfilterStore = TuanStore.GroupCategoryFilterStore.getInstance(), //团购类型
         searchStore = TuanStore.GroupSearchStore.getInstance(),
-        historyCityListStore = TuanStore.TuanHistoryCityListStore.getInstance(),
         TabSlide = cWidgetFactory.create('TabSlide'),
         View;
      var BasePage = CommonPageFactory.create("TuanBaseView");
@@ -20,7 +16,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          pageid: '214001',
          hpageid: '215001',
          tuankeyWordList: TuanModel.TuanKeyWordListModel.getInstance(),
-         tuanHotKeywords: TuanModel.TuanHotKeywordsModel.getInstance(),
+         tuanHotKeywords: TuanModel.TuanHotWordsNewModel.getInstance(),
          dateSource: new CDataSource(),
          selectItem: null,
          isComplete: false, //是否完成
@@ -50,7 +46,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          events: {
              'input #J_keywordInput': 'tuanKeyWordInput',
              'submit .search_wrap>form': 'onSubmitSearch',
-             'click .city_item': 'onKeywordItemClick',
+             'click .J_resultItem': 'onKeywordItemClick',
              'click #J_cancel': 'onCancelInput',
              'click .J_clearhistory': 'onClearHistory',
              'click #js_hotkeyword .sw_con>li': 'goHotSearch'
@@ -84,15 +80,26 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              //历史搜索 处理start----------
              StoreManage.addHistoryKeyWord(id, name, keytype);
              //历史搜索 处理end-------------
+             //团购6.1新增， 根据地标查询时， 产品列表按照距离最近排序
+             if ((keytype || '').toLocaleLowerCase() === 'markland') {
+                searchStore.setAttr('sortRule', 8);
+                searchStore.setAttr('sortType', 1);
+             }
              this.doSubmit();
          },
          onSubmitSearch: function () {
-             var keywordValue = FilterXss.filterXSS(this.els.keywordInput.val());
+             var keywordValue = FilterXss.filterXSS(this.els.keywordInput.val()), item;
              if (typeof keywordValue === "undefined" || keywordValue === "" || keywordValue === null) {return false;}
-             this.els.keywordInput[0].blur();
              StoreManage.clearSpecified(true);
-             StoreManage.addHistoryKeyWord(keywordValue, keywordValue, 7);
-             this.doSubmit();
+             //团购6.1 新增，关键字若完全匹配为地标，按距离最近排序
+             item = this.els.keywordSuggestWrap.find('[data-name="'+keywordValue+'"]');
+             if (item.length && item.attr('data-type') === 'markland') {
+                 item[0].click();
+             } else {
+                 StoreManage.addHistoryKeyWord(keywordValue, keywordValue, 7);
+                 this.doSubmit();
+             }
+
              return false;
          },
          tuanKeyWordInput: function (e) {
@@ -134,7 +141,8 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
              try {
                  if (typeof keyword == "undefined" || keyword === "" || keyword === null) {return;}
                  var searchData = tuanSearchStore.get();
-
+                 keyword = keyword.replace(/\.|\{|\}|\[|\]|\*|\^|\'/img, '');
+                 keyword = keyword.toLowerCase().trim();
                  this.lastinputkey = keyword;
                  this.$el.find('.s_city_loading').show();
                  this.getKeywordListData(keyword, searchData.ctyId, function () {
@@ -150,6 +158,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
 
              self.tuankeyWordList.setParam('cityid', ctyId);
              self.tuankeyWordList.setParam('keyword', keyword);
+             self.tuankeyWordList.setParam('itemType', searchStore.getAttr('ctype'));
              self.tuankeyWordList.excute(function (data) {
                  self.createPage(data);
                  callback.call(this);
@@ -172,6 +181,19 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
                      (!data.history) && (data.history = []);
                      data.history = data.history.concat.apply(data.history, hcitylist);
                  }
+
+                 //团购6.1新增关键字高亮
+                 var inpuKey = this.lastinputkey;
+                 if (data.Results && data.Results.length) {
+                     _.each(data.Results, function(t) {
+                         if (t.word) {
+                             t.wordNew = t.word.replace(new RegExp(inpuKey.toLocaleLowerCase(), 'g'), '<em>' + inpuKey.toLocaleLowerCase() + '</em>')
+                                .replace(new RegExp(inpuKey.toLocaleUpperCase(), 'g'), '<em>' + inpuKey.toLocaleUpperCase() + '</em>');
+                         }
+                         t.typeNew = StringsData.typeToName[t.type && t.type.toLocaleLowerCase()] || '';
+                     });
+                 }
+
                  html = this.cityListTplfun({ data: data, keyid: keyId });
 
                  this.els.keywordSuggestWrap.html(html);
@@ -221,9 +243,13 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          },
          onShow: function () {
              this.header.hide();
+<<<<<<< HEAD
              setTimeout(function() {
                  this.els.keywordInput && this.els.keywordInput[0].focus();
              }.bind(this), 10);
+=======
+             setTimeout(function() {this.els.keywordInput && this.els.keywordInput[0].focus();}.bind(this), 10);
+>>>>>>> v2.7
          },
          onHide: function () {
              this.header.show();
@@ -238,12 +264,19 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          renderHotkeyword: function () {
              var self = this,
                  searchData = tuanSearchStore.get();
-             this.tuanHotKeywords.setParam('cityid', searchData.ctyId);
+             this.tuanHotKeywords.setParam('CityID', searchData.ctyId);
              this.tuanHotKeywords.excute(_.bind(function (data) {
-                 if (data && data.hotWords && data.hotWords.length > 0) {
+                 var hotkeys = [];
+                 if (data && data.hotkey && data.hotkey.length > 0) {
+                     _.each(data.hotkey, function(t) {
+                         _.each(t.KeyWords, function(v) {
+                             v.ItemType = t.ItemType;
+                             hotkeys.push(v);
+                         });
+                     });
                      self.hotkeywordsSlide = new TabSlide({
                          container: self.els.hotKeywordsWrap,
-                         source: data.hotWords,
+                         source: hotkeys,
                          tpl: self.els.hotKeywordsTpl.html()
                      });
                  }
@@ -252,113 +285,21 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFa
          goHotSearch: function (e) {
              var cur = $(e.currentTarget);
              var data = decodeURIComponent(cur.attr('data-json'));
-             data = JSON.parse(data);
-             var searchData = searchStore.get(),
-                 qparams;
-             if (data) {
-                 StoreManage.clearAll();
-                 historyCityListStore.removeAttr('nearby');
-
-                 //位置区域
-                 if (data.pos) {
-                     var type = data.pos.type,
-                         val = data.pos.val,
-                         lat = data.pos.lat,
-                         lon = data.pos.lon,
-                         name = data.pos.name;
-                     positionfilterStore.set({
-                         'type': type,
-                         'val': val,
-                         'name': name,
-                         'pos': { type: 3, lat: lat, lon: lon, name: name }
-                     });
-
-                 }
-
-                 if (data.price) {
-                     if (StringsData.priceText[data.price]) {
-                         customFiltersStore.setAttr('price', { val: data.price, txt: StringsData.priceText[data.price] });
-                     }
-                 }
-                 if (data.trait) {
-                     if (StringsData.traitText[data.trait]) {
-                         customFiltersStore.setAttr('trait', { val: data.trait, txt: StringsData.traitText[data.trait] });
-                     }
-                 }
-                 if (data.star) {
-                     var stars = data.star.split(','), tmpstar = {};
-                     for (var s in stars) {
-                         s = stars[s];
-                         (StringsData.starText[s]) && (tmpstar[s] = StringsData.starText[s]);
-                     }
-                     if (tmpstar) {
-                         customFiltersStore.setAttr('star', tmpstar);
-                     }
-                 }
-                 if (data.brand && data.brand.length > 0) {
-                     for (var b in data.brand) {
-                         b = data.brand[b];
-                         b && b.val && b.key && customFiltersStore.setAttr('brand', { flag: 1, val: b.val, txt: b.key });
-                     }
-                 }
-                 if (data.markland) {
-                     historyKeySearchtore.setAttr("key", { id: data.markland.id, word: data.markland.name, type: 'markland' });
-                 }
-                 if (data.hotel) {
-                     historyKeySearchtore.setAttr("key", { id: data.hotel.id, word: data.hotel.name, type: 'hotelid' });
-                 }
-                 if (data.keyword) {
-                     historyKeySearchtore.setAttr("key", { word: data.keyword });
-                 }
-                 if (data.activity) {
-                     historyKeySearchtore.setAttr("key", { id: data.activity.id, word: data.activity.name, type: 'activity' });
-                 }
-                 if (data.district) {
-                     historyKeySearchtore.setAttr("key", { id: data.district.id, word: data.district.name, type: 'district' });
-                 }
-                 if (data.isweekend) {
-                     searchStore.setAttr('weekendsAvailable', data.isweekend);
-                 }
-                 if (data.multishop) {
-                     customFiltersStore.setAttr('multiShop', data.multishop);
-                 }
-                 if (data.voucher) {
-                     customFiltersStore.setAttr('voucher', data.voucher);
-                 }
-                 if (data.sort) {
-                     searchStore.setAttr('sortRule', data.sort.stype);
-                     searchStore.setAttr('sortType', data.sort.sval);
-                 }
-                 if (data.classty) {
-                     var tuanType, currType, subVal, subName;
-                     if (data.classty.parent) {
-                         tuanType = data.classty.parent.val;
-                         currType = StringsData.groupType[tuanType];
-                         subVal = data.classty.val;
-                         //subName = data.classty.key;
-                         subName = data.word;
-                     } else {
-                         tuanType = data.classty.val;
-                         currType = StringsData.groupType[tuanType];
-                     }
-                     categoryfilterStore.setAttr('tuanType', tuanType);
-                     if (currType) {
-                         categoryfilterStore.setAttr('category', currType.category);
-                         categoryfilterStore.setAttr('name', currType.name);
-                         categoryfilterStore.setAttr('tuanTypeIndex', currType.index);
-                     }
-                     categoryfilterStore.setAttr('subVal', subVal);
-                     categoryfilterStore.setAttr('subName', subName);
-                     searchStore.setAttr('ctype', tuanType);
-                 }
-
-                 qparams = StoreManage.getGroupQueryParam();
-                 searchStore.setAttr('qparams', qparams);
-                 searchStore.setAttr('ctyId', searchData.ctyId);
-                 searchStore.setAttr('ctyName', searchData.ctyName);
-                 this.forwardJump('list', '/webapp/tuan/list');
+             data = this._parseJSON(data);
+             if (data && data.Val) {
+                StoreManage.parseHotkeyJson(this._parseJSON(data.Val));
+                this.forwardJump('list', '/webapp/tuan/list');
              }
+         },
+         _parseJSON: function (s) {
+             try{s = JSON.parse(s);}catch(e) {}
+
+             return s;
          }
      });
      return View;
  });
+
+/*
+changelog:  @date: 20141128   1. 团购6.1新增关键字高亮 2. 地标查询按距离最近展示；
+ */

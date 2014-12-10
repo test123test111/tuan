@@ -38,8 +38,7 @@ util/form/validator.js
 util/form/field.js
 text.js
 text!HomeTpl
-text!ListProductTpl
-text!ListBusinessTpl
+text!ListTpl
 text!BookingTpl
 text!BookingSuccessTpl
 text!CityListTpl

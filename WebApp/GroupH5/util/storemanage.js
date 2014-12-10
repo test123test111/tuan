@@ -374,20 +374,15 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                 });
             }
 
-            //关键词搜索切选择后，历史查询记录应置为默认值
             var keywordData = this.getCurrentKeyWord();
+            if (keywordData) {
+                qparams.push({type:7,value:keywordData.word});
+            }
+            /* //关键词搜索切选择后，历史查询记录应置为默认值
             if (keywordData) {
                 var keyType = (keywordData.type || '').toString().toLowerCase();
                 var keyValue = keywordData.id || keywordData.word;
-                var traType = {
-                    'hotelid': 18,
-                    'zone': 5,  //商业区
-                    'hotelgroupid': 3,
-                    'location': 4,  //行政区
-                    'activity': 11, //活动
-                    'district': 16, //景区
-                    'markland': 17  //地标
-                };
+                var traType = StringsData.traType;
                 if (keyType) {
                     if (/\D/.test(keyType)) { //keyType不是数字，才需要转换
                         if (traType[keyType]) {
@@ -404,7 +399,7 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                     type: keyType,
                     value: keyValue
                 });
-            }
+            }*/
             return qparams;
         },
         /**
@@ -412,7 +407,8 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
         */
         saveQueryString: function (callback) {
             var getQuery = Lizard.P,
-                groupType = getQuery('ctype'), //团购类型
+                ctypeIndex = getQuery('ctype'),  //团购类型，兼容旧版
+                tuanType = getQuery('tuantype'), //团购类型，新版请传tuantype (@since 2014/12/10 tuan2.7 app6.1)
                 price = getQuery('price'), //价格
                 star = getQuery('star'), //星级
                 kwd = getQuery('kwd'), //关键词
@@ -463,13 +459,19 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             }
 
             //团购类型接收
-            if (groupType) {
+            if (tuanType || ctypeIndex) {
+                var ctype = tuanType || StringsData.index2ctype[ctypeIndex];
+                var currType = StringsData.groupType[ctype];
                 categoryfilterStore.remove();
-                searchStore.setAttr('ctype', StringsData.index2ctype[groupType]);
+                categoryfilterStore.setAttr('tuanType', ctype);
+                categoryfilterStore.setAttr('category', currType.category);
+                categoryfilterStore.setAttr('name', currType.name);
+                categoryfilterStore.setAttr('tuanTypeIndex', currType.index);
+                searchStore.setAttr('ctype', ctype);
             }
 
             //星级筛选(酒店客房时，传star才有效)
-            if (star && groupType == 1) {
+            if (star && ctypeIndex == 1) {
                 customFiltersStore.setAttr('star', star.replace(',', '|'));
             }
             //价格筛选
@@ -500,6 +502,172 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
                 cityid = CityListData[cityName];
             }
             return false;
+        },
+        /**
+        * 保存热词附带的查询参数
+        */
+        saveHotWordParam: function (data) {
+             var searchData = searchStore.get();
+             StoreManage.clearAll();
+             historyCityListStore.removeAttr('nearby');
+
+             //位置区域
+             if (data.pos) {
+                 var type = data.pos.type,
+                     val = data.pos.val,
+                     lat = data.pos.lat,
+                     lon = data.pos.lon,
+                     name = data.pos.name;
+                 positionfilterStore.set({
+                     'type': type,
+                     'val': val,
+                     'name': name,
+                     'pos': { type: 3, lat: lat, lon: lon, name: name }
+                 });
+             }
+             if (data.price) {
+                 if (StringsData.priceText[data.price]) {
+                     customFiltersStore.setAttr('price', { val: data.price, txt: StringsData.priceText[data.price] });
+                 }
+             }
+             if (data.trait) {
+                 if (StringsData.traitText[data.trait]) {
+                     customFiltersStore.setAttr('trait', { val: data.trait, txt: StringsData.traitText[data.trait] });
+                 }
+             }
+             if (data.star) {
+                 var stars = data.star.split(','), tmpstar = {};
+                 for (var s in stars) {
+                     s = stars[s];
+                     (StringsData.starText[s]) && (tmpstar[s] = StringsData.starText[s]);
+                 }
+                 if (tmpstar) {
+                     customFiltersStore.setAttr('star', tmpstar);
+                 }
+             }
+             if (data.brand && data.brand.length > 0) {
+                 for (var b in data.brand) {
+                     b = data.brand[b];
+                     b && b.val && b.key && customFiltersStore.setAttr('brand', { flag: 1, val: b.val, txt: b.key });
+                 }
+             }
+             if (data.markland) {
+                 StoreManage.setCurrentKeyWord({ id: data.markland.id, word: data.markland.name, type: 'markland' });
+             }
+             if (data.hotel) {
+                 StoreManage.setCurrentKeyWord({ id: data.hotel.id, word: data.hotel.name, type: 'hotelid' });
+             }
+             if (data.keyword) {
+                 StoreManage.setCurrentKeyWord({ word: data.word });
+             }
+             if (data.activity) {
+                 StoreManage.setCurrentKeyWord({ id: data.activity.id, word: data.activity.name, type: 'activity' });
+             }
+             if (data.district) {
+                 StoreManage.setCurrentKeyWord({ id: data.district.id, word: data.district.name, type: 'district' });
+             }
+             if (data.isweekend) {
+                 searchStore.setAttr('weekendsAvailable', data.isweekend);
+             }
+             if (data.multishop) {
+                 customFiltersStore.setAttr('multiShop', data.multishop);
+             }
+             if (data.voucher) {
+                 customFiltersStore.setAttr('voucher', data.voucher);
+             }
+             if (data.sort) {
+                 searchStore.setAttr('sortRule', data.sort.stype);
+                 searchStore.setAttr('sortType', data.sort.sval);
+             }
+             if (data.classty) {
+                 var tuanType, currType, subVal, subName;
+                 if (data.classty.parent) {
+                     tuanType = data.classty.parent.val;
+                     currType = StringsData.groupType[tuanType];
+                     subVal = data.classty.val;
+                     //subName = data.classty.key;
+                     subName = data.word;
+                 } else {
+                     tuanType = data.classty.val;
+                     currType = StringsData.groupType[tuanType];
+                 }
+                 categoryfilterStore.setAttr('tuanType', tuanType);
+                 if (currType) {
+                     categoryfilterStore.setAttr('category', currType.category);
+                     categoryfilterStore.setAttr('name', currType.name);
+                     categoryfilterStore.setAttr('tuanTypeIndex', currType.index);
+                 }
+                 categoryfilterStore.setAttr('subVal', subVal);
+                 categoryfilterStore.setAttr('subName', subName);
+                 searchStore.setAttr('ctype', tuanType);
+             }
+
+             var qparams = StoreManage.getGroupQueryParam();
+             searchStore.setAttr('qparams', qparams);
+             searchStore.setAttr('ctyId', searchData.ctyId);
+             searchStore.setAttr('ctyName', searchData.ctyName);
+        },
+        parseHotkeyJson: function (data) {
+            var searchData = searchStore.get();
+            var ctype = +searchData.ctype;
+            var isHotelType = ctype === 1;
+            searchStore.setAttr('pageIdx', '1');
+            searchStore.setAttr('sortRule', data.sortRule);
+            searchStore.setAttr('sortType', data.sortType);
+            if (data.pos && data.ctyId === searchData.ctyId) {//热词城市和当前城市相同
+                searchStore.setAttr('pos', data.pos);
+            }
+            for (var item, i = 0, l = data.qparams.length; i < l; i++) {
+                item = data.qparams[i];
+                switch (item.type) {
+                    case 1: //价格
+                        customFiltersStore.setAttr('price', item.value);
+                        break;
+                    case 2: //星级
+                        isHotelType && customFiltersStore.setAttr('star', item.value);
+                        break;
+                    case 3: //品牌
+                        isHotelType && customFiltersStore.setAttr('brand', item.value);
+                        break;
+                    case 4: //行政区
+                    case 5: //商业区
+                    case 19://地铁线
+                        if (data.ctyId === searchData.ctyId) {//热词城市和当前城市相同
+                            positionfilterStore.set({
+                                type: item.type,
+                                name: item.name,
+                                val: item.value
+                            });
+                        }
+                        break;
+                    case 9: //距离
+                        this.isNearBy() && customFiltersStore.setAttr('distance', item.value);
+                        break;
+                    case 14: //多店可用、代金券、钟点房、天数、特色
+                        var r = item.value.split('|');
+                        var t = r[0];
+                        if (t === '102') { //多店可用、代金券
+                            if (isHotelType) {
+                                if (r[1] == '10201') {//多店可用
+                                    customFiltersStore.setAttr('multishop', 1);
+                                } else if (r[1] == '10202') {//代金券
+                                    customFiltersStore.setAttr('voucher', 1);
+                                }
+                            }
+                        } else if (t === '101') { //钟点房
+                            isHotelType && categoryfilterStore.getAttr('subVal', item.value);
+                        } else if (t === '103') { //特色
+                            isHotelType && customFiltersStore.setAttr('trait', item.value);
+                        } else if (t === '701') { //天数
+                            if (ctype === 7) {//当前是旅游度假分类时，才存入
+                                customFiltersStore.setAttr('day', item.value);
+                            }
+                        }
+                        break;
+                }
+            }
+            var qparams = this.getGroupQueryParam();
+            searchStore.setAttr('qparams', qparams);
         }
     };
     return StoreManage;

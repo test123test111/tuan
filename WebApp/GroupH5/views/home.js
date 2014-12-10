@@ -228,6 +228,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                     var list = data;
                     this.isLoading = false;
                     if (data && data.products && data.count && +data.count > 0) {
+                        data.ctype = searchData.ctype;
                         self.renderList(list);
                     } else {
                         this.listWrap.html(this.tplNoproduct);

@@ -91,9 +91,10 @@ function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, GeoService, TuanMod
             }
 
             historyKeySearchtore.remove();
+            var view = this.getLastViewName() || 'home';
             //返回列表页
             setTimeout(function () {
-                self.forwardJump('home', '/webapp/tuan/home');
+                self.forwardJump(view, '/webapp/tuan/' + view);
             }, 100);
         },
         cityGroupTitleClick: function (e) {
