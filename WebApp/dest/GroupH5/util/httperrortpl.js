@@ -1,0 +1,1 @@
+define([],function(){var e={500:"服务器出错，请稍后再试！",404:"连接失败，网络不给力哦！",408:"网络不给力哦，请在更好的网络环境下使用！"},t=function(t){return e[t]},a={getMessage:function(e){var a=e.status,s=e.statusText;if(a>=500)switch(a){case 500:s=t(500,{});break;default:s=t(500,{})}else if(a>=400)switch(a){case 408:s=t(408,{});break;case 404:s=t(404,{});break;default:s=t(404,{})}else s=t(404,{});return s}};return a});
