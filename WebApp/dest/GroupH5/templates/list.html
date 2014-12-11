@@ -123,7 +123,7 @@
                 <%}%>
             <%}%>
             <%if (weekendsAvailable) {%><li data-type="weekendsAvailable">周末可用</li><%}%>
-            <%if (keywordData.word) {%><li data-type="keyword"><%=keywordData.word%></li><%}%>
+            <%if (keywordData && keywordData.word) {%><li data-type="keyword"><%=keywordData.word%></li><%}%>
         </ul>
         <div class="ui-tips">
             <p>或者拨打携程客服电话</p>
