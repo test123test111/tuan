@@ -45,7 +45,7 @@ define(function () {
             '6':    { 'index': 4, 'name': '门票', 'category': 'ticket' },
             '9':    { 'index': 5, 'name': '娱乐', 'category': 'entertainment' },
             '106':  { 'index': 6, 'name': '一元团购', 'category': 'onepaygroup' },
-            '108':  { 'index': 7, 'name': '当地特色', 'category': 'feature' }
+            '108':  { 'index': 7, 'name': '城市诱惑', 'category': 'feature' }
         },
         //key为url里面的ctype，val为真实的ctype
         index2ctype: {

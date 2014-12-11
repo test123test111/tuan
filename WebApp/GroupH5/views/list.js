@@ -605,12 +605,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 // TODO: 补充注释
                 if (returnPageStore) { returnPageStore.remove(); }
 
-                if (searchStore.getAttr('from_feature')) {
-                    this.updateTitle('当地特色', false);
-                    this.renderNoResult('', 'hotels', {'feature': {val: '', txt: '当地特色'}});
-                    this.gpsInfoWrap.text('距离：' + searchStore.getAttr('ctyName') + StringsData.CITY_CENTER);
-                    return;
-                }
+				if (searchStore.getAttr('from_feature')) {
+					this.updateTitle('城市诱惑', false);
+					this.renderNoResult('', 'hotels', {'feature': {val: '', txt: '城市诱惑'}});
+					this.gpsInfoWrap.text('距离：' + searchStore.getAttr('ctyName') + StringsData.CITY_CENTER);
+					return;
+				}
 
                 //如果从详情页后退不请求数据
                 if (!this.isFromDetail() || !MemCache.getItem('hasListData')) {

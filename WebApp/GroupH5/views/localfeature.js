@@ -12,7 +12,7 @@
             var self = this;
 
             this.header.set({
-                title: '当地特色',
+                title: '城市诱惑',
                 back: true,
                 view: this,
                 events: {

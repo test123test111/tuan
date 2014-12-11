@@ -558,7 +558,7 @@
             $super(options);
         }
     });
-    //当地特色
+    //城市诱惑
     T.BannerClassModel = new cBase.Class(AbstractModel, {
         __propertys__: function () {
             this.url = '/json/BannerClass';
