@@ -1,1 +1,231 @@
-define(["TuanApp","libs","c","cUtility","cWidgetFactory","cGeoService","TuanStore","TuanBaseView","cCommonPageFactory","TuanModel","CommonStore","StoreManage","text!HotelSubbranchTpl","CallPhone","cWidgetGeolocation"],function(t,e,o,n,i,a,s,r,c,l,d,h,u,p){function m(t){return t.toISOString().substring(0,10).replace(/-/g,"")}var g,f={pageTitle:"商户列表"},w=n.isInApp(),v="ani_rotation",y=s.GroupGeolocation.getInstance(),C=s.TuanDetailsStore.getInstance(),b=l.TuanBranchOfficeModel.getInstance(),k=a.GeoLocation,T={up:"arrow_skin01_up",down:"arrow_skin01_down"},S=c.create("TuanBaseView");return g=S.extend({events:{"click .J_showMap":"showMap","click .J_jumpHotel":"jumpHotel","click .J_busiCity":"showHotel","click #J_relocation":"relocation"},onCreate:function(){this.htmlfun=_.template(u)},onLoad:function(){this.cityId=Lizard.P("cityid"),null!==C.get()?this.showBranch():this.backAction(),this.setHeader()},setHeader:function(){var t=this;this.header.set({title:f.pageTitle,back:!0,home:!0,view:this,tel:4000086666,events:{returnHandler:function(){t.backAction()},homeHandler:function(){t.backHome()}}})},showBranch:function(t){var e,o=this,n=this.cityId,i=t||y.getAttr("gps")||{};this.showLoading(),e={id:C.getAttr("id"),pos:{lon:i.lng,lat:i.lat,type:3,name:i.city}},n&&(e.cityid=n),b.setParam(e),b.excute(function(t){if(o.hideLoading(),!t.groups.length)return void o.showMessage("抱歉，数据加载失败，请重试!");var e=h.getCurrentCity();e.CityName&&(i.CityName=e.CityName),o.$el.html($.trim(o.htmlfun({data:t.groups,gps:i,cityId:n}))),document.addEventListener("scroll",o.onScroll),o.CallPhone=new p({view:this})},function(t){var e=t.msg?t.msg:"啊哦,数据加载出错了!";o.showToast(e,3,function(){o.backAction()}),o.hideLoading()},!0,this)},onShow:function(){},onHide:function(){k.UnSubscribe("tuan/subbranch"),this.CallPhone&&this.CallPhone.hideMask()},backAction:function(){var t={},e=C.getAttr("id"),o=this.cityId;e&&(t.did=e),o&&(t.cityid=o),this.back(t)},backHome:function(){t.tHome()},showMap:function(t){var e=$(t.currentTarget),o=e.attr("data-coords").split(","),n=o[0],i=o[1],a=e.attr("data-hotel-name");this.showCommonMap(a,n,i)},jumpHotel:function(e){var o=$(e.currentTarget).data("id");if(o){var n=new Date,i=new Date(n.setDate(n.getDate()+1)),a=encodeURIComponent(location.href),s=w?"ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate="+m(new Date)+"&checkOutDate="+m(i)+"&hotelId="+o+"&from="+a:"http://m.ctrip.com/webapp/hotel/hoteldetail/"+o+".html?from="+a,r=this.getHistory();r.stack.pop(),t.jumpToPage(s,this)}},showHotel:function(t){var e,o,n=$(t.currentTarget),i=n.find(".J_arrow"),a=T.up+" "+T.down,s=document.querySelector("#J_gpsAddr");i.hasClass(T.up)?(i.toggleClass(a),n.removeClass("J_sticky").removeClass("busi_fixed").css("top","0").next().hide(),n.parent().css("padding-top","0"),document.removeEventListener("scroll",this.onScroll)):(e=this.$el.find("."+T.up),e.toggleClass(a),o=e.parent().parent(),o.removeClass("J_sticky").removeClass("busi_fixed").css("top","0").next().hide(),o.parent().css("padding-top","0"),i.toggleClass(a),n.addClass("J_sticky").next().show(),document.body.scrollTop=w?n.offset().top-(s?30:0):n.offset().top-(s?78:0),document.addEventListener("scroll",this.onScroll)),this.onScroll()},onScroll:function(){var t=document.querySelector(".J_sticky");if(t){var e=document.querySelector("#J_gpsAddr"),o=t.parentNode,n=o.offsetTop;window.scrollY>=n&&window.scrollY<=n+o.getBoundingClientRect().height-40?(t.classList.add("busi_fixed"),t.parentNode.style.paddingTop="45px",t.style.top=w?e?"30px":"0":e?"78px":"48px"):(t.classList.remove("busi_fixed"),t.parentNode.style.paddingTop="0",!w&&(t.style.top="0"))}},relocation:function(t){var e=this,o=$(t.target),n=this.$el.find("#J_gpsAddr");o.addClass(v),k.Subscribe("tuan/subbranch",{onComplete:function(t){o.removeClass(v),n.html("您的位置："+(t.address||"未知位置")),e.showBranch(t)},onError:function(){o.removeClass(v),n.html("暂无定位信息"),e.showToast("抱歉，获取不到当前位置，请打开GPS后重试!")},onPosComplete:function(){},onPosError:function(){o.removeClass(v),n.html("暂无定位信息"),e.showToast("抱歉，获取不到当前位置，请打开GPS后重试!")}},this,!0)}})});
+/*jshint -W030 */
+/**
+ * 商户列表
+ * @url: m.ctrip.com/webapp/tuan/hotelsubbranch
+ */
+define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'cGeoService', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'StoreManage', 'text!HotelSubbranchTpl', 'CallPhone', 'cWidgetGeolocation'],
+function (TuanApp, libs, c, Util, WidgetFactory,cGeoService, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, StoreManage, html, CallPhone) {
+    var MSG = {
+            pageTitle: "商户列表"
+        },
+        isInApp = Util.isInApp(),
+        REFRESH_GPS_LOADING_CLS = 'ani_rotation',
+        geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
+        tuanDetailsStore = TuanStore.TuanDetailsStore.getInstance(),
+        tuanBranchOfficeModel = TuanModel.TuanBranchOfficeModel.getInstance(),
+        Geolocation = cGeoService.GeoLocation,
+        ICON = {up: 'arrow_skin01_up', down: 'arrow_skin01_down'};
+
+    /**
+     * 获取yyyy-mm-dd格式时间
+     * @param {Date} date
+     * @returns {string}
+     */
+    function formatDate(date){
+        return date.toISOString().substring(0, 10).replace(/-/g, '');
+    }
+
+    var PageView = CommonPageFactory.create("TuanBaseView"),
+        View;
+    View = PageView.extend({
+        events: {
+            'click .J_showMap': 'showMap',
+            'click .J_jumpHotel': 'jumpHotel',
+            'click .J_busiCity': 'showHotel',
+            'click #J_relocation': 'relocation'
+        },
+        onCreate: function () {
+            this.htmlfun = _.template(html);
+        },
+        onLoad: function () {
+            this.cityId = Lizard.P('cityid');
+            if (tuanDetailsStore.get() !== null) {
+                this.showBranch();
+            } else {
+                this.backAction();
+            }
+            //更新头部
+            this.setHeader();
+        },
+        setHeader: function () {
+            var self = this;
+            this.header.set({
+                title: MSG.pageTitle,
+                back: true,
+                home: true,
+                view: this,
+                tel: 4000086666,
+                events: {
+                    returnHandler: function () {
+                        self.backAction();
+                    },
+                    homeHandler: function () {
+                        self.backHome();
+                    }
+                }
+            });
+        },
+        showBranch: function (gps) {
+            var self = this,
+                cityId = this.cityId,
+                param,
+                gpsInfo = gps || geolocationStore.getAttr('gps') || {};
+            this.showLoading();
+            param = {
+                id: tuanDetailsStore.getAttr('id'),
+                pos: {
+                    lon: gpsInfo.lng,
+                    lat: gpsInfo.lat,
+                    type: 3, //数据来源，默认3为高德
+                    name: gpsInfo.city//服务端用来判断是否同城
+                }
+            };
+            cityId && (param.cityid = cityId);//服务端用来判断是否同城
+            tuanBranchOfficeModel.setParam(param);
+            //获取详细信息
+            tuanBranchOfficeModel.excute(function (data) {
+                self.hideLoading();
+                if (!data.groups.length) {
+                    self.showMessage('抱歉，数据加载失败，请重试!');
+                    return;
+                }
+                var cityInfo = StoreManage.getCurrentCity();
+                cityInfo.CityName && (gpsInfo.CityName = cityInfo.CityName);
+                self.$el.html($.trim(self.htmlfun({ data: data.groups, gps: gpsInfo, cityId: cityId })));
+                // self.onScroll();
+                document.addEventListener('scroll', self.onScroll);
+                self.CallPhone = new CallPhone({view: this});
+            }, function (err) {
+                var msg = err.msg ? err.msg : '啊哦,数据加载出错了!';
+                // this.showHeadWarning('团购分店信息', msg, function () {
+                self.showToast(msg, 3, function () {
+                    self.backAction();
+                });
+                self.hideLoading();
+            }, true, this);
+        },
+        onShow: function () { },
+        onHide: function () {
+            Geolocation.UnSubscribe('tuan/subbranch');
+            this.CallPhone && this.CallPhone.hideMask();
+        },
+        backAction: function () {
+            var o = {};
+            var id = tuanDetailsStore.getAttr('id');
+            var cityid = this.cityId;
+            id && (o.did = id);
+            cityid && (o.cityid = cityid);
+            this.back(o);
+        },
+        backHome: function () {
+            TuanApp.tHome();
+        },
+        showMap: function (e) {
+            var target = $(e.currentTarget),
+                coords = target.attr('data-coords').split(','),
+                lng = coords[0],
+                lat = coords[1],
+                hotelName = target.attr('data-hotel-name');
+
+            this.showCommonMap(hotelName, lng, lat);
+        },
+        /**
+         * 点击跳转跳转到国内酒店详情页
+         */
+        jumpHotel: function(e){
+            var hotelId = $(e.currentTarget).data('id');
+            if (!hotelId) {return;}
+            var today = new Date();
+            var tomorrow = new Date(today.setDate(today.getDate()+1));
+            var fromUrl = encodeURIComponent(location.href);
+            var url = isInApp ?
+                'ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate='+formatDate(new Date())+'&checkOutDate='+formatDate(tomorrow)+'&hotelId='+hotelId+'&from='+fromUrl :
+                'http://m.ctrip.com/webapp/hotel/hoteldetail/' + hotelId + '.html?from=' + fromUrl;
+            var history = this.getHistory();
+            history.stack.pop();
+            TuanApp.jumpToPage(url, this);
+        },
+        showHotel: function (e) {
+            var target = $(e.currentTarget),
+                unflod, unflodWrap,
+                arrow = target.find('.J_arrow'),
+                upDown = ICON.up + ' ' + ICON.down,
+                hasLocation = document.querySelector('#J_gpsAddr');
+
+            if (arrow.hasClass(ICON.up)) {
+                arrow.toggleClass(upDown);
+                target.removeClass('J_sticky').removeClass('busi_fixed').css('top', '0').next().hide();
+                target.parent().css('padding-top', '0');
+                document.removeEventListener('scroll', this.onScroll);
+            } else {
+                unflod = this.$el.find('.' + ICON.up);
+                unflod.toggleClass(upDown);
+                unflodWrap = unflod.parent().parent();
+                unflodWrap.removeClass('J_sticky').removeClass('busi_fixed').css('top', '0').next().hide();
+                unflodWrap.parent().css('padding-top', '0');
+
+                arrow.toggleClass(upDown);
+                target.addClass('J_sticky').next().show();
+                if (isInApp) {
+                    document.body.scrollTop = target.offset().top - (hasLocation ? 30 : 0);
+                } else {
+                    document.body.scrollTop = target.offset().top - (hasLocation ? 78 : 0);
+                }
+                document.addEventListener('scroll', this.onScroll);
+            }
+            this.onScroll();
+        },
+        onScroll: function () {
+            var scroll = document.querySelector('.J_sticky');
+            if (!scroll) { return; }
+            var hasLocation = document.querySelector('#J_gpsAddr');
+            var wrap = scroll.parentNode;
+            var offsetTop = wrap.offsetTop;
+            if (window.scrollY >= offsetTop) {
+                if (window.scrollY <= offsetTop + wrap.getBoundingClientRect().height - 40) {
+                    scroll.classList.add('busi_fixed');
+                    scroll.parentNode.style.paddingTop = '45px';//设置45px占据fixed后留下的空间
+                    if (isInApp) {
+                        scroll.style.top = hasLocation ? '30px' : '0';
+                    } else {
+                        scroll.style.top = hasLocation ? '78px' : '48px';
+                    }
+                } else {
+                    scroll.classList.remove('busi_fixed');
+                    scroll.parentNode.style.paddingTop = '0';
+                    !isInApp && (scroll.style.top = '0');
+                }
+            } else {
+                scroll.classList.remove('busi_fixed');
+                scroll.parentNode.style.paddingTop = '0';
+                !isInApp && (scroll.style.top = '0');
+            }
+        },
+        //重新定位
+        relocation: function (e) {
+            var self = this,
+                target = $(e.target),
+                gpsAddr = this.$el.find('#J_gpsAddr');
+            target.addClass(REFRESH_GPS_LOADING_CLS);
+            Geolocation.Subscribe('tuan/subbranch', {
+                onComplete: function (gps) {
+                    target.removeClass(REFRESH_GPS_LOADING_CLS);
+                    gpsAddr.html('您的位置：' + (gps.address || '未知位置'));
+                    self.showBranch(gps);
+                },
+                onError: function () {
+                    target.removeClass(REFRESH_GPS_LOADING_CLS);
+                    gpsAddr.html('暂无定位信息');
+                    self.showToast('抱歉，获取不到当前位置，请打开GPS后重试!');
+                },
+                onPosComplete: function () {},
+                onPosError: function () {
+                    target.removeClass(REFRESH_GPS_LOADING_CLS);
+                    gpsAddr.html('暂无定位信息');
+                    self.showToast('抱歉，获取不到当前位置，请打开GPS后重试!');
+                }
+            }, this, true);
+        }
+    });
+    return View;
+});

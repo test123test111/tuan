@@ -1,1 +1,105 @@
-define(["TuanApp","libs","TuanBaseView","cCommonPageFactory","cUtility","TuanModel","TuanStore","cHolidayPriceCalendar"],function(e,t,n,a,i,r,o,c){var d,s=r.TicketBookingModel.getInstance(),l=o.TuanDetailsStore.getInstance(),u=a.create("TuanBaseView");return d=u.extend({events:{},onLoad:function(){},onShow:function(){var e=this;this.header.set({title:"选择日历",view:this,back:!0,events:{returnHandler:function(){e.back()}}});var t=l.getAttr("ckintime"),n="cui_cld_daycrt";this.showLoading(),s.setParam({pid:l.getAttr("id"),daterange:{sdate:"",edate:""}}),s.excute(function(a){e.hideLoading();var r=a.plist[0].PDList;_.each(r,function(t){t.dateStr=t.date,t.date=new Date(e._convertTimeString(t.date)),t.price=parseInt(t.price,10)}),e.calendar=new c({monthsNum:2,voidInvalid:!0,priceDate:r,header:!1,onShow:function(){i.isInApp()&&this.$el.find(".cui_cldweek").css("top","0px"),!i.isInApp()&&this.$el.css("zIndex","0"),t&&this.$el.find('[data-date="'+t+'"]').addClass(n)},onHide:function(){e.show(),this.remove()},callback:function(t,a,i){var o=e._formatCalendarDate(t)+(a.holiday||a.days);this.$el.find("."+n).removeClass(n),i.addClass(n),l.setAttr("ckintimetxt",o),e._storeDailyPrice(r,a.value),e.forwardJump("booking","/webapp/tuan/booking")}}),e.$el.append(e.calendar.$el),e.calendar.show()},function(){e.hideLoading()})},onHide:function(){},onCreate:function(){},_storeDailyPrice:function(e,t){var n;_.each(e,function(e){return e.dateStr==t?(n=e.price,!1):void 0}),l.setAttr("ckintime",t),l.setAttr("ticketPrice",n||0)},_formatCalendarDate:function(e){return"string"==typeof e&&(e=new Date(this._convertTimeString(e))),e.getMonth()+1+"月"+e.getDate()+"日 "},_convertTimeString:function(e){return e&&e.replace(/-/g,"/")}})});
+/*jshint -W030 */
+/**
+ * Created by li.xx on 2014/11/20.
+ * @contact li.xx@ctrip.com
+ * @description 门票价格日历的选择页面
+ */
+define(['TuanApp', 'libs', 'TuanBaseView', 'cCommonPageFactory', 'cUtility', 'TuanModel', 'TuanStore', 'cHolidayPriceCalendar'],
+    function (TuanApp, libs, TuanBaseView, CommonPageFactory, Util, TModel, TStore, HolidayPriceCalendar) {
+        
+        var View,
+            ticketBookingModel = TModel.TicketBookingModel.getInstance(), //门票对接选择日期
+            tuanDetailStore = TStore.TuanDetailsStore.getInstance(), //产品相关信息
+            PageView = CommonPageFactory.create("TuanBaseView");
+
+        View = PageView.extend({
+            events: {},
+            onLoad: function() {
+
+            },
+            onShow: function() {
+                var self = this;
+                this.header.set({
+                    title: '选择日历',
+                    view: this,
+                    back: true,
+                    events: {
+                        returnHandler: function () {
+                            self.back();
+                        }
+                    }
+                });
+                var date = tuanDetailStore.getAttr('ckintime'),
+                    selectCls = 'cui_cld_daycrt';
+
+                //daterange: {sdate: '', edate: ''}
+                this.showLoading();
+                ticketBookingModel.setParam({pid:tuanDetailStore.getAttr('id'), daterange: {sdate: '', edate:''}});
+                ticketBookingModel.excute(function(data) {
+                    self.hideLoading();
+                    var priceDate = data.plist[0].PDList;
+                    _.each(priceDate, function(t) {
+                        t.dateStr = t.date;
+                        t.date = new Date(self._convertTimeString(t.date));
+                        t.price = parseInt(t.price, 10);
+                    });
+                    self.calendar = new HolidayPriceCalendar({
+                        monthsNum: 2,
+                        voidInvalid: true, //没有价格的日期是否有效可点,false可点
+                        priceDate: priceDate,
+                        header: false,
+//                        startPriceTime: priceDate[0] && priceDate[0].date,
+                        onShow: function() {
+                            //(如果在当前view打开的话)隐藏上一个view， 否则会有bug：日历可以左右滑动且滑到最下面的时候会露出上一个view的内容
+                            Util.isInApp() && (this.$el.find('.cui_cldweek').css('top', '0px'));
+                            !Util.isInApp() && (this.$el.css('zIndex', '0'));
+                            date && this.$el.find('[data-date="' + date + '"]').addClass(selectCls);
+                        },
+                        onHide: function() {
+                            self.show();
+                            this.remove();
+                        },
+                        callback: function(date, dateStyle, target) {
+                            var textVal = self._formatCalendarDate(date) + (dateStyle.holiday || dateStyle.days);
+                            this.$el.find('.' + selectCls).removeClass(selectCls);
+                            target.addClass(selectCls);
+                            tuanDetailStore.setAttr('ckintimetxt', textVal);//刷新页面后用来做显示
+                            self._storeDailyPrice(priceDate, dateStyle.value);
+                            self.forwardJump('booking', '/webapp/tuan/booking');
+                        }
+                    });
+                    self.$el.append(self.calendar.$el);
+                    self.calendar.show();
+                }, function() {
+                    self.hideLoading();
+                });
+
+            },
+            onHide: function() {
+            },
+            onCreate: function() {
+
+            },
+            _storeDailyPrice: function(data, date) {
+                var price;
+                _.each(data, function(t) {
+                    if (t.dateStr == date) {
+                        price = t.price;
+                        return false;
+                    }
+                });
+                tuanDetailStore.setAttr('ckintime', date);
+                tuanDetailStore.setAttr('ticketPrice', price || 0);
+            },
+            _formatCalendarDate: function(date) {
+                (typeof date === 'string') && (date = new Date(this._convertTimeString(date)));
+                return (date.getMonth()+ 1) +'月' + date.getDate() + '日 ';
+            },
+            _convertTimeString: function(dateStr) {
+                return dateStr && dateStr.replace(/-/g, '/');
+            }
+        });
+
+
+        return View;
+    });

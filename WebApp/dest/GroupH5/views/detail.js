@@ -1,1 +1,620 @@
-define(["TuanApp","libs","c","MemCache","cUtility","cHybridFacade","cWidgetMember","cWidgetGuider","TuanStore","TuanBaseView","cCommonPageFactory","TuanModel","CommonStore","text!DetailTpl","cWidgetFactory","CallPhone","WechatShare"],function(t,e,a,i,o,r,n,s,c,d,l,h,u,f,m,p,v){function g(t){return t.toISOString().substring(0,10).replace(/-/g,"")}var w,I={pageTitle:"团购详情",delFavoriteSuccess:"已取消收藏",addFavoriteSuccess:"收藏成功",delFavoriteError:"取消收藏失败",addFavoriteError:"添加收藏失败"},b={content:"仅售<%=price%>元！<%=name%>，<%if(score>0){%>评价<%=score%>分，<%}%><%if(addr){%><%=addr%><%}%>"},k="view_unfold",D="view_fold",T="success",y="btm_tuan_btn_dis",C=o.isInApp(),F=h.TuanDetailModel.getInstance(),S=c.TuanDetailsStore.getInstance(),J=h.TuanAddFavorite.getInstance(),H=h.TuanDelFavorite.getInstance(),P=c.GroupGeolocation.getInstance(),M=u.UserStore.getInstance(),x=c.TuanOrderInfoStore.getInstance(),L=c.TuanInvoiceStore.getInstance(),U=m.create("Member"),R=m.create("Guider"),A=Lizard.P,O=l.create("TuanBaseView");return w=O.extend({pageid:"214008",hpageid:"215008",hasAd:!1,backHome:function(){t.tHome()},events:{"click #J_submit":"submit","click .J_relatedProducts":"gotoRelatedProducts","click .J_tips":"showTips","click .J_viewMoreBtn":"ctrlInfoTip","click #J_pic":"showImages","click #J_branch":"showBranch","click .J_showDetailMap":"showMap","click #J_comment":"showComment","click #J_service":"showService","click #J_morehotel":"showMorehotel","click #J_expandInvalid":"toggleInvalidDateInfo","click #J_recommendNearby":"recommendNearby","click #J_gotoHotelDetail":"onHotelDetailClick","click .J_nearProducts":"gotoNearProduct","click #J_groupContain":"gotoGroupContent"},onCreate:function(){this.htmlfun=_.template(f),this.cityId=A("cityid"),this.productId=A("pid")||A("productID"),this.externalReferURL=A("url")},_onLoad:function(){this.fromUrl=o.getUrlParam(location.href,"from"),(!this.fromUrl||this.isFromWeChat())&&(this.fromUrl=""),this.removeOrderData(),this.getTuanDetail()},isFromWeChat:function(){return"undefined"!=typeof WeixinJSBridge},recommendNearby:function(){var t=this.cityId;this.forwardJump("nearlist","/webapp/tuan/nearlist?pid="+this.productId+(t?"&cityid="+t:""))},setHeader:function(t){var e,a=this;if(e={title:I.pageTitle,back:!0,view:this,favorited:!!t,favorite:!t,share:!0,events:{returnHandler:function(){a.$el.html(""),a.backAction()}}},!C){var i=t?"icon_fav i_bef":"icon_unfav i_bef";e.events.commitHandler=function(){a.favorite()},e.btn={title:"",id:"favorite",classname:i}}this.header.set(e),this.header.show()},favorite:function(){var t=this,e=t.favorInfo;t.checkLogin()&&(e&&e.isFavor?t._delFavorite():t._addFavorite())},prepareShareData:function(t){var e,a=this,i=a.cityId,o=b,r=a.detailData,n="http://m.ctrip.com/webapp/tuan/detail/"+a.productId+".html"+(i?"?cityid="+i:""),s=r.hotels[0]||r.recommendHotel.hotel||{name:r.name},c=r.images,d=c&&c.length&&c[0].small,l=r.name||s.name;e={imgUrl:d,text:_.template(o.content)({price:r.price&&r.price.dPrice||"",name:l,score:s.score,addr:s&&s.addr||"",link:n}),title:s.name,linkUrl:n,isIOSSystemShare:!1},C?d&&R.downloadData({url:d,callback:function(i){e.imgUrl=i.savedPath,t&&t.call(a,e)}}):t&&t.call(a,e)},bindShareEvent:function(){var t=this;R.apply({callback:function(){},hybridCallback:function(){R.register({tagname:r.METHOD_SHARE,callback:function(){t.prepareShareData(function(t){R.shareToVendor(t)})}})}})},updateFavorStatus:function(t,e){var a=this;a.updateFavorButton(t),a.favorInfo={isFavor:!!t,favorId:e},S.setAttr("favorInfo",a.favorInfo)},updateFavorButton:function(t){var e=this;e.setHeader(t),R.apply({callback:function(){},hybridCallback:function(){R.register({tagname:r.METHOD_FAVORITE,callback:function(){e.favorite()}}),R.register({tagname:r.METHOD_FAVORITED,callback:function(){e.favorite()}})}})},_addFavorite:function(){var t=this;J.setParam({pid:t.productId,type:t.productInfo.pcId}),J.excute(function(e){e&&e.ResponseStatus.Ack.toLowerCase()===T&&(t.updateFavorStatus(!0,e.favorId),t.showToast(I.addFavoriteSuccess))},function(){t.showToast(I.addFavoriteError)})},_delFavorite:function(){var t=this;H.setParam({favorId:t.favorInfo.favorId}),H.excute(function(e){e&&e.ResponseStatus.Ack.toLowerCase()===T&&(t.updateFavorStatus(!1),t.showToast(I.delFavoriteSuccess))},function(){t.showToast(I.delFavoriteError)})},checkLogin:function(){var t=this,e=location.port;return M.isLogin()?!0:(!C&&t.showLoading(),U.memberLogin({domain:"//"+document.domain+(e&&80==e?"":":"+e),param:"?t=1&from="+encodeURIComponent("/webapp/tuan/detail/"+t.productId+".html"+(this.cityId?"?cityid="+this.cityId:"")),callback:function(){t._onLoad(t.referer)}}),!1)},onShow:function(){this.hideLoading(),this._onLoad()},onHide:function(){this.timer&&clearInterval(this.timer),this.hideLoading(),this.hideWarning404(),this.mask&&this.mask.hide(),this.CallPhone&&this.CallPhone.hideMask()},isFromHybridFavorPage:function(){return C&&1==A("from_native_page")},isFromHotel:function(t){return t.indexOf("/hotel/")>-1},backAction:function(){if(this.isFromHybridFavorPage())return void R.backToLastPage({param:JSON.stringify({biz:"tuan",refresh:"1"})});var e=decodeURIComponent(this.fromUrl||"");if(e){var a=this.getHistory();a.stack.pop(),this.isFromHotel(e)?location.href=e:t.jumpToPage(e,this)}else this.back()},removeOrderData:function(){L&&L.remove(),x&&x.remove()},getTuanDetail:function(){var e,a=this,i=this.cityId,o=P.getAttr("gps")||{};this.showLoading(),e={id:a.productId,pos:{lon:o.lng,lat:o.lat,type:3,name:o.city},environment:t.environment},i&&(e.cityid=i),F.setParam(e),F.excute(function(t){var e,i=t.channelInfo,o=i&&i.isCorrectChannel;return this.hideLoading(),t&&t.hotels?(o||this.showMessage("该产品暂不支持手机售卖， 请在电脑端登录携程后购买。"),this.detailData=t,this.renderData(t),e=t.favorInfo,a.favorInfo=e,a.productInfo=t,a.updateFavorStatus(e&&e.isFavor,e&&e.favorId),void a.bindShareEvent()):void this.showMessage("抱歉，数据加载失败，请重试或返回!")},function(){var t=this;this.showWarning404($.proxy(t.getTuanDetail,t)),this.hideLoading()},!1,this)},renderData:function(t){var e,a=t.labelVal,i="",o=t.channelInfo,r=o&&o.isCorrectChannel;t.isInApp=C,this.$el.html($.trim(this.htmlfun({data:t}))),e=this.$el.find("#J_submit"),98==a||(99==a?i="已售完":100==a&&(i="已结束")),i&&e.attr("class",y).text(i).removeAttr("id"),r||e.attr("class",y),this.showTimer(t.etime),this.productData=t,this.CallPhone=new p({view:this}),this.isFromWeChat()&&this.initWechatShare()},initWechatShare:function(){this.prepareShareData(function(t){try{{new v({data:{img_url:t.imgUrl,img_width:"200",img_height:"200",link:t.linkUrl,desc:t.text,title:t.title}})}}catch(e){}})},gotoGroupContent:function(){this.forwardJump("lashou","/webapp/tuan/lashou/"+this.productId+".html")},submit:function(){this.$el.find("#J_submit").hasClass(y)||this.forwardJump("booking","/webapp/tuan/booking"+(this.externalReferURL?"?from="+this.externalReferURL:""))},gotoRelatedProducts:function(t){var e=$(t.currentTarget).data("id");this.forwardJump("detail","/webapp/tuan/detail/"+e+".html"+(this.cityId?"?cityid="+this.cityId:""))},ctrlInfoTip:function(t){var e=$(t.target),a=e.parent().prev().find(".J_tipsHidden");"hide"===e.attr("data-state")?(a.show(),e.attr({"data-state":"show"}).html("收起").removeClass("view_unfold").addClass("view_fold")):(e.attr({"data-state":"hide"}).html("查看全部").removeClass("view_fold").addClass("view_unfold"),a.hide())},showTips:function(){this.forwardJump("detailtips","/webapp/tuan/detailtips")},showImages:function(){var t=this.productData.images;t&&t.length&&this.forwardJump("hotelimages","/webapp/tuan/hotelimages/"+this.productId+".html",{viewName:"hotelimages"})},showBranch:function(){var t=this.cityId;this.forwardJump("hotelsubbranch","/webapp/tuan/hotelsubbranch"+(t?"?cityid="+t:""))},showMap:function(t){var e=$(t.currentTarget),a=e.attr("data-coords").split(","),i=a[0],o=a[1],r=e.attr("data-hotel-name");this.showCommonMap(r,i,o)},showComment:function(){this.forwardJump("hotelcomments","/webapp/tuan/hotelcomments")},showService:function(){this.forwardJump("hotelservice","/webapp/tuan/hotelservice")},showMorehotel:function(t){var e=this.$el.find(".J_relatedRest"),a=$(t.target),i=a.data("expanded");e.css({display:i?"none":""}).removeClass("no_bb"),a.data("expanded",!i).html(i?"更多":"收起").attr("class",i?"view_unfold":"view_fold")},showTimer:function(t){var e=Date.parse(t.replace(/\-/g,"/")),a=this.getServerDate();this.dateDiff=e-a;var i=864e5;this.dateDiff/i<3&&(this.timer=setInterval(_.bind(this.updateTimer,this),600))},updateTimer:function(){if(this.dateDiff>0){var t=864e5,e=36e5,a=6e4,i=1e3,o=this.dateDiff,r=Math.floor(o/t);o%=t;var n=Math.floor(o/e);o%=e;var s=Math.floor(o/a);o%=a;var c=Math.floor(o/i);this.$el.find(".tuan_hotel_time").text("剩余  "+r+"天"+n+"小时"+s+"分"+c+"秒"),this.dateDiff=this.dateDiff-1e3}else this.endTimer()},endTimer:function(){clearInterval(this.timer),this.$el.find(".tuan_hotel_time").text("0天0小时0分0秒"),this.$el.find("#J_submit").addClass(y)},getAppUrl:function(){var t=A("pid");return"ctrip://wireless/hotel_groupon_detail?c1="+t},toggleInvalidDateInfo:function(t){var e=$(t.target),a=e.hasClass(k),i=e.parent().prev();i[a?"show":"hide"](),a?e.removeClass(k).addClass(D).text("收起"):e.removeClass(D).addClass(k).text("查看不适用日期")},onHotelDetailClick:function(t){var e=$(t.target).attr("data-hotel-id");this.gotoHotelDetail(e)},gotoNearProduct:function(t){var e=$(t.currentTarget).data("id");this.forwardJump("detail","/webapp/tuan/detail/"+e+".html"+(this.cityId?"?cityid="+this.cityId:""))},gotoHotelDetail:function(e){var a=new Date,i=new Date(a.setDate(a.getDate()+1)),o=encodeURIComponent(location.href),r=C?"ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate="+g(new Date)+"&checkOutDate="+g(i)+"&hotelId="+e+"&from="+o:"http://m.ctrip.com/webapp/hotel/hoteldetail/"+e+".html?from="+o;t.jumpToPage(r,this)}})});
+﻿/*jshint -W030 */
+/**
+ * 详情页
+ * @url m.ctrip.com/webapp/tuan/detail/{pid}.html
+ */
+define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'cWidgetFactory', 'CallPhone', 'WechatShare'],
+function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, html, WidgetFactory, CallPhone, WechatShare) {
+    var MSG = {
+            pageTitle: '团购详情',
+            delFavoriteSuccess: '已取消收藏',
+            addFavoriteSuccess: '收藏成功',
+            delFavoriteError: '取消收藏失败',
+            addFavoriteError: '添加收藏失败'
+        },
+        ShareToSNSInfo = {
+            content: '仅售<%=price%>元！<%=name%>，<%if(score>0){%>评价<%=score%>分，<%}%><%if(addr){%><%=addr%><%}%>'
+        },
+        View,
+        UNFOLD_CLS = 'view_unfold',
+        FOLD_CLS = 'view_fold',
+        SUCCESS_STATUS = 'success',
+        disabledCls = 'btm_tuan_btn_dis',
+        isInApp = Util.isInApp(),
+        tuanDetailModel = TuanModel.TuanDetailModel.getInstance(),
+        tuanDetailStore = TuanStore.TuanDetailsStore.getInstance(),
+        tuanAddFavorite = TuanModel.TuanAddFavorite.getInstance(),
+        tuanDelFavorite = TuanModel.TuanDelFavorite.getInstance(),
+
+        geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
+        userStore = CommonStore.UserStore.getInstance(), //用户信息
+        orderInfo = TuanStore.TuanOrderInfoStore.getInstance(),
+        invoiceStore = TuanStore.TuanInvoiceStore.getInstance(),
+        Member = WidgetFactory.create('Member'),
+        Guider = WidgetFactory.create('Guider'),
+        getQuery = Lizard.P;
+
+    /**
+    * 获取yyyy-mm-dd格式时间
+    * @param {Date} date
+    * @returns {string}
+    */
+    function formatDate(date) {
+        return date.toISOString().substring(0, 10).replace(/-/g, '');
+    }
+    var PageView = CommonPageFactory.create("TuanBaseView");
+    View = PageView.extend({
+        pageid: '214008',
+        hpageid: '215008',
+        hasAd: false,
+        backHome: function () {
+            TuanApp.tHome();
+        },
+        events: {
+            'click #J_submit': 'submit',
+            'click .J_relatedProducts': 'gotoRelatedProducts',
+            'click .J_tips': 'showTips',
+            'click .J_viewMoreBtn': 'ctrlInfoTip',
+            'click #J_pic': 'showImages',
+            'click #J_branch': 'showBranch', //分店
+            'click .J_showDetailMap': 'showMap', //地图
+            'click #J_comment': 'showComment', //点评
+            'click #J_service': 'showService', //服务优势
+            'click #J_morehotel': 'showMorehotel',
+            'click #J_expandInvalid': 'toggleInvalidDateInfo',
+            'click #J_recommendNearby': 'recommendNearby',
+            'click #J_gotoHotelDetail': 'onHotelDetailClick',
+            'click .J_nearProducts': 'gotoNearProduct',
+            'click #J_groupContain': 'gotoGroupContent'
+        },
+        onCreate: function () {
+            this.htmlfun = _.template(html);
+
+            this.cityId = getQuery('cityid');
+            this.productId = getQuery('pid') || getQuery('productID');
+            this.externalReferURL = getQuery('url');
+        },
+        //数据加载阶段
+        _onLoad: function () {
+            //from中可能含有querystring，用getQuery获取不到完整的带querystring的URL
+            this.fromUrl = Util.getUrlParam(location.href, 'from');
+            //如果没有fromUrl或者来自微信
+            if(!this.fromUrl || this.isFromWeChat()){
+                this.fromUrl = '';
+            }
+
+            this.removeOrderData();
+            this.getTuanDetail();
+        },
+        /**
+         * 是否从微信分享跳转过来的链接，微信中为自动添加from=singlemessage，导致详情页back跳转404
+         * 如果分享到朋友圈会有from=timeline,导致详情页back跳转404
+         * @param {String} fromUrl
+         * @returns {*|boolean}
+         */
+        isFromWeChat: function(){
+            // return fromUrl && (/singlemessage|timeline/.test(fromUrl.toLowerCase()));
+            return typeof WeixinJSBridge !== 'undefined';
+        },
+        recommendNearby: function(){
+            var cityId = this.cityId;
+            this.forwardJump('nearlist','/webapp/tuan/nearlist?pid=' + this.productId + (cityId ? '&cityid=' + cityId : ''));
+        },
+        setHeader: function (favorited) {
+            var self = this,
+                headerData;
+
+            headerData = {
+                title: MSG.pageTitle,
+                back: true,
+                view: this,
+                favorited: !!favorited, //Hybrid配置
+                favorite: !favorited,   //Hybrid配置
+                share: true, //分享，图片-native预置
+                events: {
+                    returnHandler: function () {
+                        self.$el.html('');
+                        self.backAction();
+                    }
+                }
+            };
+            if(!isInApp){//如果是H5则配置对应的收藏按钮，hybrid不能配置
+                var cls = favorited ? 'icon_fav i_bef' : 'icon_unfav i_bef';
+                headerData.events.commitHandler = function(){
+                    self.favorite();    
+                };
+                headerData.btn = {
+                    title: '',
+                    id: 'favorite',
+                    classname: cls
+                };
+            }
+            this.header.set(headerData);
+
+            this.header.show();
+        },
+        /**
+         * 收藏操作
+         */
+        favorite: function(){
+            var self = this,
+                favorInfo = self.favorInfo;
+
+            if(self.checkLogin()){
+                //如果已经收藏
+                if(favorInfo && favorInfo.isFavor){
+                    self._delFavorite();
+                }else{
+                    self._addFavorite();
+                }
+            }
+        },
+        /**
+        * 获取分享配置
+        * @returns {{imageUrl: string, text: string, title: string, linkUrl: string, isIOSSystemShare: boolean}}
+        */
+        prepareShareData: function (callback) {
+            var self = this,
+                data,
+                cid = self.cityId,
+                shareInfo = ShareToSNSInfo,
+                detailData = self.detailData,
+                productUrl = 'http://m.ctrip.com/webapp/tuan/detail/' + self.productId+'.html' + (cid ? '?cityid=' + cid : ''),
+                hotelInfo = detailData.hotels[0] || detailData.recommendHotel.hotel || {name: detailData.name}, //如果多店酒店，则显示推荐酒店信息
+                images = detailData.images,
+                imgUrl = images && images.length && images[0].small,
+                shareTitle = detailData.name || hotelInfo.name;
+
+            data =  {
+                imgUrl: imgUrl,
+                text: _.template(shareInfo.content)({
+                    price: detailData.price && detailData.price.dPrice || '',
+                    name: shareTitle,
+                    score: hotelInfo.score,
+                    addr: hotelInfo && hotelInfo.addr || '',
+                    link: productUrl
+                }),
+                title: hotelInfo.name,
+                linkUrl: productUrl,
+                isIOSSystemShare: false
+            };
+            if (isInApp) {
+                //如果有图片链接则下载到本地再进行分享
+                imgUrl && Guider.downloadData({
+                    url: imgUrl,
+                    callback: function(ret){
+                        data.imgUrl = ret.savedPath;
+                        callback && callback.call(self, data);
+                    }
+                });
+            } else {
+                callback && callback.call(self, data);
+            }
+        },
+        /**
+        * 分享按钮事件
+        */
+        bindShareEvent: function () {
+            var self = this;
+
+            Guider.apply({
+                callback: function () {
+                    //h5暂不支持
+                },
+                hybridCallback: function () {
+                    Guider.register({
+                        tagname: Facade.METHOD_SHARE, callback: function () {
+                            self.prepareShareData(function(data){
+                                Guider.shareToVendor(data);
+                            });
+                        }
+                    });
+                }
+            });
+        },
+        /**
+         * 更新收藏状态
+         * @param {boolean} status 是否收藏
+         * @param {int} favorId 收藏ID
+         */
+        updateFavorStatus: function(status, favorId){
+            var self = this;
+
+            self.updateFavorButton(status);
+            self.favorInfo = {
+                isFavor: !!status,
+                favorId: favorId
+            };
+            tuanDetailStore.setAttr('favorInfo', self.favorInfo);
+        },
+        /**
+         * 更新收藏按钮
+         */
+        updateFavorButton: function(status){
+            var self = this;
+
+            self.setHeader(status);
+            Guider.apply({
+                callback: function(){
+                },
+                hybridCallback: function(){
+                    Guider.register({
+                        tagname: Facade.METHOD_FAVORITE, callback: function () {
+                            self.favorite();
+                        }
+                    });
+                    Guider.register({
+                        tagname: Facade.METHOD_FAVORITED, callback: function () {
+                            self.favorite();
+                        }
+                    });
+                }
+            });
+        },
+        /**
+         * 添加收藏
+         * @private
+         */
+        _addFavorite: function(){
+            var self = this;
+
+            tuanAddFavorite.setParam({
+                pid: self.productId, //产品ID
+                type: self.productInfo.pcId //团购类型，字段名称和屎一样难认
+            });
+
+            tuanAddFavorite.excute(function(ret){
+                if(ret && ret.ResponseStatus.Ack.toLowerCase() === SUCCESS_STATUS){
+                    self.updateFavorStatus(true, ret.favorId);
+                    self.showToast(MSG.addFavoriteSuccess);
+                }
+            }, function(){
+                self.showToast(MSG.addFavoriteError);
+            });
+        },
+        /**
+         * 取消收藏
+         * @private
+         */
+        _delFavorite: function(){
+            var self = this;
+
+            tuanDelFavorite.setParam({
+                favorId: self.favorInfo.favorId
+            });
+            tuanDelFavorite.excute(function(ret){
+                if(ret && ret.ResponseStatus.Ack.toLowerCase() === SUCCESS_STATUS){
+                    self.updateFavorStatus(false);
+                    self.showToast(MSG.delFavoriteSuccess);
+                }
+            }, function(){
+                self.showToast(MSG.delFavoriteError);
+            });
+        },
+        /**
+         * 登录行为
+         */
+        checkLogin: function () {
+            var self = this,
+                port = location.port;
+            //若未登录，则点击按钮就进行登录
+            if (!userStore.isLogin()) {
+                !isInApp && self.showLoading();
+                Member.memberLogin({
+                    domain: '//' + document.domain + (port && port == 80 ? '' : (':'+port)),
+                    param: '?t=1&from=' + encodeURIComponent('/webapp/tuan/detail/' + self.productId + '.html' + (this.cityId ? '?cityid=' + this.cityId : '')),
+                    callback: function () {
+                        self._onLoad(self.referer);
+                    }
+                });
+                return false;
+            }
+            return true;
+        },
+        onShow: function () {
+            this.hideLoading();
+            this._onLoad();
+        },
+        onHide: function () {
+            this.timer && clearInterval(this.timer);
+            this.hideLoading();
+            this.hideWarning404();
+            this.mask && this.mask.hide();
+            this.CallPhone && this.CallPhone.hideMask();
+        },
+        /**
+         * 判断是否从hybrid的公共收藏列表页过来
+         * @returns {*|boolean}
+         */
+        isFromHybridFavorPage: function(){
+            return isInApp && getQuery('from_native_page')==1;
+        },
+        isFromHotel: function(url){
+            return url.indexOf('/hotel/')>-1;         
+        },
+        backAction: function () {
+            if(this.isFromHybridFavorPage()){
+                Guider.backToLastPage({'param': JSON.stringify({"biz":"tuan","refresh": "1"})});
+                return;
+            }
+            var url = decodeURIComponent(this.fromUrl || '');
+            //如果url中指定了from
+            if (url) {
+                var history = this.getHistory();
+                history.stack.pop();
+                if (this.isFromHotel(url)) {
+                    location.href = url;
+                } else {
+                    TuanApp.jumpToPage(url, this);     
+                }
+            } else {
+                this.back();
+            }
+        },
+        /**
+         * 预订页之前先清除订单信息
+         */
+        removeOrderData: function(){
+            //清除发票信息
+            invoiceStore && invoiceStore.remove();
+            //清除订单信息
+            orderInfo && orderInfo.remove();
+        },
+        getTuanDetail: function () {
+            var self = this,
+                cityId = this.cityId,
+                param,
+                gpsInfo = geolocationStore.getAttr('gps')||{};
+
+            this.showLoading();
+            param = {
+                id: self.productId,
+                pos: {
+                    lon: gpsInfo.lng,
+                    lat: gpsInfo.lat,
+                    type: 3, //数据来源，默认3为高德
+                    name: gpsInfo.city//服务端用来判断是否同城
+                },
+                environment: TuanApp.environment
+            };
+            cityId && (param.cityid = cityId);//服务端用来判断是否同城
+            tuanDetailModel.setParam(param);
+
+            //获取详细信息
+            tuanDetailModel.excute(function (data) {
+                var favorInfo,
+                    channelInfo = data.channelInfo,
+                    isCorrectChannel = channelInfo && channelInfo.isCorrectChannel;
+
+                this.hideLoading();
+                if (!(data && data.hotels)) {
+                    this.showMessage('抱歉，数据加载失败，请重试或返回!');
+                    return;
+                }
+
+                if (!isCorrectChannel) {
+                    this.showMessage('该产品暂不支持手机售卖， 请在电脑端登录携程后购买。');
+                }
+                this.detailData = data;
+                this.renderData(data);
+                //收藏信息
+                favorInfo = data.favorInfo;
+                self.favorInfo = favorInfo;
+                self.productInfo = data;
+                //更新收藏状态
+                self.updateFavorStatus(favorInfo && favorInfo.isFavor, favorInfo && favorInfo.favorId);
+                //绑定分享
+                self.bindShareEvent();
+            }, function () {
+                var self = this;
+                this.showWarning404($.proxy(self.getTuanDetail, self));
+
+                this.hideLoading();
+            }, false, this);
+        },
+        renderData: function (data) {
+            var labelVal = data.labelVal,
+                labelText = '',
+                btnSubmit,
+                channelInfo = data.channelInfo,
+                isCorrectChannel = channelInfo && channelInfo.isCorrectChannel;
+
+            data.isInApp = isInApp;
+            this.$el.html($.trim(this.htmlfun({ data: data })));
+            btnSubmit = this.$el.find('#J_submit');
+            if (labelVal == 98) { //即将结束
+
+            } else if (labelVal == 99) {
+                labelText = "已售完";
+            } else if (labelVal == 100) {
+                labelText = "已结束";
+            }
+            if (labelText) {
+                btnSubmit.attr('class', disabledCls).text(labelText).removeAttr('id');
+            }
+
+            if (!isCorrectChannel) {
+                btnSubmit.attr('class', disabledCls);
+            }
+
+            //开启倒计时
+            this.showTimer(data.etime);
+            this.productData = data;
+
+            this.CallPhone = new CallPhone({
+                view: this
+            });
+
+            this.isFromWeChat() && this.initWechatShare();
+        },
+        initWechatShare: function () {
+            this.prepareShareData(function(data) {
+                try {
+                    var we = new WechatShare({
+                        data: {
+                            // "appid": appid, //只有发送好友信息才需要appid
+                            "img_url": data.imgUrl,
+                            "img_width": "200",
+                            "img_height": "200",
+                            "link": data.linkUrl,
+                            "desc": data.text,
+                            "title": data.title
+                        }
+                    });
+                } catch (e) {
+                }
+            });
+        },
+        //跳转至图文详情页
+        gotoGroupContent:function(){
+            this.forwardJump('lashou','/webapp/tuan/lashou/' + this.productId + '.html');
+        },
+        submit: function () {
+            if (!this.$el.find("#J_submit").hasClass(disabledCls)) {
+                this.forwardJump('booking','/webapp/tuan/booking' + (this.externalReferURL ? ('?from=' + this.externalReferURL) : ''));
+            }
+        },
+        gotoRelatedProducts: function (e) {
+            var id = $(e.currentTarget).data('id');
+            this.forwardJump('detail','/webapp/tuan/detail/' + id + '.html' + (this.cityId ? '?cityid=' + this.cityId : ''));
+        },
+        ctrlInfoTip: function (e) {
+            var btn = $(e.target);
+
+
+            var hidden = btn.parent().prev().find('.J_tipsHidden');
+
+            if (btn.attr("data-state") === "hide") {
+
+                hidden.show();
+                btn.attr({ "data-state": "show" }).html("收起").removeClass("view_unfold").addClass("view_fold");
+            } else {
+
+                btn.attr({ "data-state": "hide" }).html("查看全部").removeClass("view_fold").addClass("view_unfold");
+                hidden.hide();
+            }
+        },
+        showTips: function () {
+            this.forwardJump('detailtips', "/webapp/tuan/detailtips");
+        },
+        showImages: function () {
+            var images = this.productData.images;
+
+            //有图片才往后跳
+            if(images && images.length){
+                this.forwardJump('hotelimages','/webapp/tuan/hotelimages/' + this.productId + '.html', { viewName: 'hotelimages' });
+            }
+        },
+        showBranch: function () {
+            var cityId = this.cityId;
+            this.forwardJump('hotelsubbranch','/webapp/tuan/hotelsubbranch' + (cityId ? '?cityid=' + cityId : ''));
+        },
+        showMap: function (e) {
+            var target = $(e.currentTarget),
+                coords = target.attr('data-coords').split(','),
+                lng = coords[0],
+                lat = coords[1],
+                hotelName = target.attr('data-hotel-name');
+
+            this.showCommonMap(hotelName, lng, lat);
+        },
+        showComment: function () {
+            this.forwardJump('hotelcomments', '/webapp/tuan/hotelcomments');
+        },
+        showService: function () {
+            this.forwardJump('hotelservice', '/webapp/tuan/hotelservice');
+        },
+        showMorehotel: function (e) {
+            var moreLinks = this.$el.find(".J_relatedRest"),
+                btn = $(e.target),
+                expanded = btn.data('expanded');
+
+            moreLinks.css({ "display": expanded?'none':'' }).removeClass('no_bb');
+            btn.data('expanded', !expanded)
+                .html(expanded?'更多':'收起')
+                .attr('class', expanded?'view_unfold':'view_fold');
+
+        },
+        showTimer: function (couponEdate) {
+            var dayTemp = Date.parse(couponEdate.replace(/\-/g, '/')); //ios safari can not parse '2014-01-01';
+            var dayNow = this.getServerDate();
+            this.dateDiff = (dayTemp - dayNow);
+            //单位时间长度
+            var day = 24 * 60 * 60 * 1000;
+            //如果小于三天，则开始倒计时
+            if ((this.dateDiff / day) < 3) {
+                this.timer = setInterval(_.bind(this.updateTimer, this), 600);
+
+            }
+        },
+        updateTimer: function () {
+            if (this.dateDiff > 0) {
+                var day = 24 * 60 * 60 * 1000;
+                var hour = 60 * 60 * 1000;
+                var min = 60 * 1000;
+                var second = 1000;
+                //余下的时间
+                var remainTime = this.dateDiff;
+                var diffDay = Math.floor(remainTime / day);
+                remainTime = remainTime % day;
+                var diffHour = Math.floor(remainTime / hour);
+                remainTime = remainTime % hour;
+                var diffMin = Math.floor(remainTime / min);
+                remainTime = remainTime % min;
+                var diffSec = Math.floor(remainTime / second);
+                this.$el.find(".tuan_hotel_time").text("剩余  " + diffDay + "天" + diffHour + "小时" + diffMin + "分" + diffSec + "秒");
+                this.dateDiff = this.dateDiff - 1000;
+            } else {
+                this.endTimer();
+            }
+        },
+        endTimer: function () {
+            clearInterval(this.timer);
+            this.$el.find(".tuan_hotel_time").text("0天0小时0分0秒");
+            this.$el.find("#J_submit").addClass(disabledCls);
+        },
+        getAppUrl: function () {
+            var productId = getQuery('pid');
+            return "ctrip://wireless/hotel_groupon_detail?c1=" + productId;
+        },
+        /**
+        * 控制无效日期展开收起
+        */
+        toggleInvalidDateInfo: function (e) {
+            var target = $(e.target),
+                isFolded = target.hasClass(UNFOLD_CLS),
+                viewPanel = target.parent().prev();
+
+            viewPanel[isFolded ? 'show' : 'hide']();
+            if (isFolded) {
+                target.removeClass(UNFOLD_CLS).addClass(FOLD_CLS).text('收起');
+            } else {
+                target.removeClass(FOLD_CLS).addClass(UNFOLD_CLS).text('查看不适用日期');
+            }
+        },
+        onHotelDetailClick: function(e){
+            var hotelId = $(e.target).attr('data-hotel-id');
+            this.gotoHotelDetail(hotelId);
+        },
+        /*附近团购跳转至明细页*/
+        gotoNearProduct:function(e){
+            var pid= $(e.currentTarget).data("id");
+            this.forwardJump("detail","/webapp/tuan/detail/" + pid + ".html" + (this.cityId ? "?cityid=" + this.cityId : ""));
+        },
+        /**
+         * 点击跳转跳转到国内酒店详情页
+         * @param {int} 国内酒店ID
+         */
+        gotoHotelDetail: function(hotelId){
+            var today = new Date(),
+                tomorrow = new Date(today.setDate(today.getDate()+1)),
+                fromUrl = encodeURIComponent(location.href),
+                url = isInApp ?
+                'ctrip://wireless/InlandHotel?hotelDataType=1&checkInDate='+formatDate(new Date())+'&checkOutDate='+formatDate(tomorrow)+'&hotelId='+hotelId+'&from='+fromUrl :
+                'http://m.ctrip.com/webapp/hotel/hoteldetail/' + hotelId + '.html?from=' + fromUrl;
+
+            TuanApp.jumpToPage(url, this);
+        }
+    });
+    return View;
+});

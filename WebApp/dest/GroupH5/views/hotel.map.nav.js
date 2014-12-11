@@ -1,1 +1,50 @@
-define(["TuanApp","libs","TuanBaseView","cCommonPageFactory","cUtility","text!MapNavTpl"],function(e,t,a,i,n,s){var l,h="0b895f63ca21c9e82eb158f46fe7f502",r="http://mo.amap.com/navi/?dest=<%=dest%>&destName=<%=destName %>&key="+h,o=i.create("TuanBaseView");return l=o.extend({tpl:s,events:{},onShow:function(){var e=this,t=Lizard.P,a=_.template(r,{dest:t("lng")+","+t("lat"),destName:t("title")});this.$el.attr("style","height:100%"),this.$el.html(_.template(this.tpl,{url:a})),this.$el.find("#J_hotelMapIframe").css("height",this.$el.height()-45+"px"),this.header.set({title:"导航页面",view:this,back:!0,events:{returnHandler:function(){e.back()}}})},onHide:function(){this.$el.removeAttr("style")},onCreate:function(){}})});
+/**
+ * Created by li.xx on 14-11-14.
+ * @contact li.xx@ctrip.com
+ * @description 导航页面
+ * @since tuan v2.6
+ */
+define(['TuanApp', 'libs', 'TuanBaseView', 'cCommonPageFactory', 'cUtility', 'text!MapNavTpl'],
+function (TuanApp, libs, TuanBaseView, CommonPageFactory, Util, html) {
+    
+    var View,
+        MAP_KEY = '0b895f63ca21c9e82eb158f46fe7f502',
+        urlTpl = 'http://mo.amap.com/navi/?dest=<%=dest%>&destName=<%=destName %>&key='+MAP_KEY;
+
+    var PageView = CommonPageFactory.create("TuanBaseView");
+
+    View = PageView.extend({
+        tpl: html,
+        events: {},
+        onShow: function() {
+            var self = this,
+                p = Lizard.P,
+                url = _.template(urlTpl, {dest: (p('lng')+','+p('lat')), destName: p('title')});
+            this.$el.attr('style', 'height:100%');
+            this.$el.html(_.template(this.tpl, {url: url}));
+            this.$el.find('#J_hotelMapIframe').css('height', (this.$el.height() - 45) + 'px');
+            //Util.isInApp() && this.$el.find('#J_hotelMapIframe').css('top', '0px');
+            
+            this.header.set({
+                title: '导航页面',
+                view: this,
+                back: true,
+                events: {
+                    returnHandler: function () {
+                         self.back();
+//                        self.forwardJump('hotelmap','/webapp/tuan/hotelmap?lon=' + p('lng') + '&lat=' + p('lat') + '&hotelName=' + p('title'));
+                    }
+                }
+            });
+        },
+        onHide: function() {
+            this.$el.removeAttr('style');
+        },
+        onCreate: function() {
+
+        }
+    });
+
+
+    return View;
+});

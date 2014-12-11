@@ -1,1 +1,205 @@
-define(["TuanApp","libs","c","cUtility","cUserModel","CommonStore","TuanStore","TuanModel","TuanBaseView","cCommonPageFactory","text!CouponTpl"],function(e,o,t,n,i,s,a,u,p,c,r){function d(e){return new t.base.Date(e).format("Y-m-d")}var l,h=a.TuanDetailsStore.getInstance(),g=u.TuanValidateCouponModel.getInstance(),C=u.TuanCouponListModel.getInstance(),f=a.TuanSelectedCouponStore.getInstance(),T=s.UserStore.getInstance(),v=n.isInApp(),m="choosed",I={pageTitle:"使用优惠券",invaildCoupon:"优惠券代码无效，请更换优惠券",codeNotEmpty:"请输入团购优惠券码",errorTry:"发生错误，请重试"},w=c.create("TuanBaseView");return l=w.extend({tpl:r,events:{"click #J_useCouponToggle":"useCouponToggle","click #J_clearCoupon":"clearCoupon","input #J_couponInput":"showClearIcon","focus #J_couponInput":"adjustInputPosition","click #J_validateCoupon":"validateCoupon","click #J_couponList>li":"selectedCoupon"},render:function(e){e=e||[];var o=this.$el,t=f.get(),n={coupons:e,dateFormat:d,notUse:t&&t.pid==this.pid&&t.isNotUse};if(this.coupons=e,o.html($.trim(_.template(this.tpl,n))),this.els={useCouponToggle:o.find("#J_useCouponToggle"),couponInput:o.find("#J_couponInput"),clearCoupon:o.find("#J_clearCoupon"),couponWrap:o.find("#J_couponList"),couponList:o.find("#J_couponList>li"),enterWrap:o.find("#J_enterWrap")},e.length&&t&&t.pid==this.pid){var i=this.els.couponWrap.find('[data-code="'+t.code+'"]');i&&(i.addClass(m),i.remove().prependTo("#J_couponList"))}},onCreate:function(){},onLoad:function(){this.pid=h.getAttr("id"),this._setPageView(),T.isLogin()?this.getCouponList():this.render()},_setPageView:function(){var e=this;this.header.set({title:I.pageTitle,back:!0,home:!0,view:this,tel:4000086666,events:{returnHandler:function(){e.back()},homeHandler:function(){e.redirectToIndex()}}}),this.header.show()},onShow:function(){this.setTitle(I.pageTitle)},onHide:function(){},redirectToIndex:function(){e.tHome()},useCouponToggle:function(e){var o=$(e.target);o.hasClass(m)||(this.els.couponList.removeClass(m),f.remove(),f.set({pid:this.pid,isNotUse:!0}),this.back())},adjustInputPosition:function(){this.els.enterWrap[0].scrollIntoView(),v||(document.body.scrollTop=document.body.scrollTop-48)},getCouponList:function(){var e=this;this.showLoading(),C.setParam({pid:this.pid,head:C.getHead().get()}),C.execute(function(o){e.render(o.coupons),e.hideLoading()},function(){e.render(),e.hideLoading()},!1,this)},showClearIcon:function(e){$(e.target).val()?this.els.clearCoupon.show():this.els.clearCoupon.hide()},clearCoupon:function(){this.els.couponInput.val(""),this.els.clearCoupon.hide()},validateCoupon:function(){var e=this,o=this.els.couponInput.val();return o?(g.setParam({code:o,pid:this.pid}),void g.execute(function(t){if(1===t.res){var n=t.couponInfo;n.pid=e.pid,n.isInput=!0,n.code=o;var i=e.$el.find('li[data-code="'+o+'"]');i&&(i.siblings("."+m).removeClass(m),i.addClass(m),i.remove().prependTo("#J_couponList")),e.els.useCouponToggle.removeClass(m),f.set(n),e.back("booking")}else e.showToast(t.msg||I.invaildCoupon)},function(){e.showToast(I.errorTry)},!1,this)):void this.showToast(I.codeNotEmpty)},selectedCoupon:function(e){var o=$(e.currentTarget),t=o.data("index"),n=this.coupons[t];o.siblings("."+m).removeClass(m),o.toggleClass(m),this.els.useCouponToggle.removeClass(m),o.hasClass(m)?(n&&(n.pid=this.pid,f.set(n)),this.back("booking"),o.remove().prependTo("#J_couponList")):f.remove()}})});
+/**
+ * 优惠券页面
+ * @url: m.ctrip.com/webapp/tuan/coupon
+ * @author: junyizhang
+ * @date: 2014-07-04
+ */
+define(['TuanApp', 'libs', 'c', 'cUtility', 'cUserModel', 'CommonStore', 'TuanStore', 'TuanModel', 'TuanBaseView', 'cCommonPageFactory', 'text!CouponTpl'],
+function (TuanApp, libs, c, Util, UserModel, CStore, TStore, TModel, TuanBaseView, CommonPageFactory, html) {
+    
+
+    var tuanDetailStore = TStore.TuanDetailsStore.getInstance(); //产品相关信息
+    var validateCouponModel = TModel.TuanValidateCouponModel.getInstance(); //验证优惠券
+    var couponListModel = TModel.TuanCouponListModel.getInstance(); //获取优惠券列表
+    var selectedCouponStore = TStore.TuanSelectedCouponStore.getInstance(); //选择的优惠券
+    var userStore = CStore.UserStore.getInstance(); //用户信息
+    var isInApp = Util.isInApp();
+    var CHOOSED = 'choosed';
+    var MSG = {
+        pageTitle: '使用优惠券',
+        invaildCoupon: '优惠券代码无效，请更换优惠券',
+        codeNotEmpty: '请输入团购优惠券码',
+        errorTry: '发生错误，请重试'
+    };
+
+    function dateFormat(date) {return new c.base.Date(date).format('Y-m-d');}
+    var PageView = CommonPageFactory.create("TuanBaseView"),
+        View;
+    View = PageView.extend({
+        tpl: html,
+        events: {
+            'click #J_useCouponToggle': 'useCouponToggle',
+            'click #J_clearCoupon': 'clearCoupon',
+            'input #J_couponInput': 'showClearIcon',
+            'focus #J_couponInput': 'adjustInputPosition',
+            'click #J_validateCoupon': 'validateCoupon',
+            'click #J_couponList>li': 'selectedCoupon'
+        },
+        render: function (coupons) {
+            coupons = coupons || [];
+            var wrap = this.$el;
+            var usedCoupon = selectedCouponStore.get();
+            var data = {
+                coupons: coupons,
+                dateFormat: dateFormat,
+                notUse: usedCoupon && (usedCoupon.pid == this.pid) && usedCoupon.isNotUse
+            };
+            this.coupons = coupons;
+            wrap.html($.trim(_.template(this.tpl, data)));
+            this.els = {
+                useCouponToggle: wrap.find('#J_useCouponToggle'),
+                couponInput: wrap.find('#J_couponInput'),
+                clearCoupon: wrap.find('#J_clearCoupon'),
+                couponWrap: wrap.find('#J_couponList'),
+                couponList: wrap.find('#J_couponList>li'),
+                enterWrap: wrap.find('#J_enterWrap')
+            };
+
+            if (coupons.length && usedCoupon && usedCoupon.pid == this.pid) {
+                var curr = this.els.couponWrap.find('[data-code="' + usedCoupon.code + '"]');
+                if (curr) {
+                    curr.addClass(CHOOSED);
+                    curr.remove().prependTo('#J_couponList');
+                }
+            }
+        },
+        onCreate: function () {
+        },
+        onLoad: function () {
+            this.pid = tuanDetailStore.getAttr('id');
+            this._setPageView();
+            if (userStore.isLogin()) {
+                this.getCouponList();
+            } else {
+                this.render();
+            }
+        },
+        _setPageView: function () {
+            var self = this;
+            this.header.set({
+                title: MSG.pageTitle,
+                back: true,
+                home: true,
+                view: this,
+                tel: 4000086666,
+                events: {
+                    returnHandler: function () {
+                        self.back();
+                    },
+                    homeHandler: function () {
+                        self.redirectToIndex();
+                    }
+                }
+            });
+            this.header.show();
+        },
+        onShow: function () {
+            this.setTitle(MSG.pageTitle);
+        },
+        onHide: function () {
+        },
+        redirectToIndex: function () {
+            TuanApp.tHome();
+        },
+        useCouponToggle: function (e) {
+            var $t = $(e.target);
+            if ($t.hasClass(CHOOSED)) {
+                //
+            } else {
+                this.els.couponList.removeClass(CHOOSED);
+                selectedCouponStore.remove();
+                selectedCouponStore.set({pid: this.pid, isNotUse: true});
+                this.back();
+            }
+        },
+        adjustInputPosition: function () {
+            this.els.enterWrap[0].scrollIntoView();
+            if (!isInApp) {
+                document.body.scrollTop = document.body.scrollTop - 48;
+            }
+        },
+        getCouponList: function () {
+            var self = this;
+            this.showLoading();
+            couponListModel.setParam({
+                pid: this.pid,
+                head: couponListModel.getHead().get()
+            });
+            couponListModel.execute(function (data) {
+                self.render(data.coupons);
+                self.hideLoading();
+            }, function () {
+                self.render();
+                self.hideLoading();
+            }, false, this);
+        },
+        showClearIcon: function (e) {
+            if ($(e.target).val()) {
+                this.els.clearCoupon.show();
+            } else {
+                this.els.clearCoupon.hide();
+            }
+        },
+        clearCoupon: function () {
+            this.els.couponInput.val('');
+            this.els.clearCoupon.hide();
+        },
+        validateCoupon: function () {
+            var self = this;
+            var code = this.els.couponInput.val();
+            if (!code) {
+                this.showToast(MSG.codeNotEmpty);
+                return;
+            }
+
+            validateCouponModel.setParam({ code: code, pid: this.pid });
+            validateCouponModel.execute(function (data) {
+                if (data.res === 1) {
+                    var coupon = data.couponInfo;
+                    coupon.pid = self.pid;
+                    coupon.isInput = true;
+                    coupon.code = code;
+
+                    var curr = self.$el.find('li[data-code="' + code + '"]');
+                    if (curr) {
+                        curr.siblings('.' + CHOOSED).removeClass(CHOOSED);
+                        curr.addClass(CHOOSED);
+                        //将选择的优惠券移到列表最前
+                        curr.remove().prependTo('#J_couponList');
+                    }
+
+                    self.els.useCouponToggle.removeClass(CHOOSED);
+                    selectedCouponStore.set(coupon);
+                    self.back('booking');
+                } else {
+                    self.showToast(data.msg || MSG.invaildCoupon);
+                }
+            }, function () {
+                self.showToast(MSG.errorTry);
+            }, false, this);
+        },
+        selectedCoupon: function (e) {
+            var curr = $(e.currentTarget);
+            var index = curr.data('index');
+            var coupon = this.coupons[index];
+
+            curr.siblings('.' + CHOOSED).removeClass(CHOOSED);
+            curr.toggleClass(CHOOSED);
+            this.els.useCouponToggle.removeClass(CHOOSED);
+            if (!curr.hasClass(CHOOSED)) {
+                selectedCouponStore.remove();
+            } else {
+                if (coupon) {
+                    coupon.pid = this.pid;
+                    selectedCouponStore.set(coupon);
+                }
+                this.back('booking');
+
+                //将选择的优惠券移到列表最前
+                curr.remove().prependTo('#J_couponList');
+            }
+        }
+    });
+
+    return View;
+});

@@ -1,1 +1,60 @@
-define(["TuanApp","libs","TuanBaseView","cCommonPageFactory","TuanStore","text!DetailTipsTpl"],function(e,t,n,i,a,o){var c={pageTitle:"团购温馨提示"},s=a.TuanDetailsStore.getInstance(),r=i.create("TuanBaseView"),u=r.extend({pageid:"214013",events:{},onCreate:function(){this.htmlfun=_.template(o)},onLoad:function(){var e=s.get();if(e){var t=e.contents.filter(function(e){return 4==e.type});this.$el.html($.trim(this.htmlfun({data:t[0]})))}else this.backAction();this.setHeader()},setHeader:function(){var e=this;this.header.set({title:c.pageTitle,back:!0,home:!0,view:this,tel:4000086666,events:{returnHandler:function(){e.backAction()},homeHandler:function(){e.backHome()}}}),this.header.show()},onShow:function(){},onHide:function(){},backAction:function(){this.back()},backHome:function(){e.tHome()}});return u});
+/**
+ * 温馨提示页面
+ * @url: m.ctrip.com/webapp/tuan/detailtips
+ */
+define(['TuanApp', 'libs', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'text!DetailTipsTpl'], function (TuanApp, libs, TuanBaseView, CommonPageFactory, TuanStore, html) {
+    var MSG = {
+        pageTitle: '团购温馨提示'
+    };
+    var tuanDetailsStore = TuanStore.TuanDetailsStore.getInstance();
+    var PageView = CommonPageFactory.create("TuanBaseView");
+    var View = PageView.extend({
+        pageid: '214013',
+        events: {
+        },
+        onCreate: function () {
+            this.htmlfun = _.template(html);
+        },
+        onLoad: function () {
+            var detailData = tuanDetailsStore.get();
+            if (detailData) {
+                var tips = detailData.contents.filter(function (d) {
+                    return d.type == 4;
+                });
+                this.$el.html($.trim(this.htmlfun({ data: tips[0] })));
+            } else {
+                this.backAction();
+            }
+            this.setHeader();
+        },
+        setHeader: function () {
+            var self = this;
+            this.header.set({
+                title: MSG.pageTitle,
+                back: true,
+                home: true,
+                view: this,
+                tel: 4000086666,
+                events: {
+                    returnHandler: function () {
+                        self.backAction();
+                    },
+                    homeHandler: function () {
+                        self.backHome();
+                    }
+                }
+            });
+            this.header.show();
+        },
+        onShow: function () { },
+        onHide: function () { },
+        backAction: function () {
+            this.back();
+        },
+        backHome: function () {
+            TuanApp.tHome();
+        }
+    });
+
+    return View;
+});

@@ -5,8 +5,8 @@
     jshint: false,
     channel: "tuan",
     hybridChannel: "tuan",
-    pageTitle: "团购",
-    zip: "tuan",
+    pageTitle: "携程旅行网触屏版-酒店团购",
+    zip: "zip",
     buEnv: "dev",
     host: "172.16.189.130",
     viewsExclude: [
@@ -27,10 +27,13 @@
             '@Tuan.ConfigManager.IncludeStaticFile()': '/webapp/tuan/dest/GroupH5/'
         }
     },
+    //内部资源
     jsExclude: [
+        "res/**/*.{png,gif,jpg}"
     ],
+    //外部链接
     resourceExclude: [
-
+        "http://pic.c-ctrip.com/h5/tuan/layer_index_sale.png"
     ]
 };
 

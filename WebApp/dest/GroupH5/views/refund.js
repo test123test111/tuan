@@ -1,1 +1,357 @@
-define(["TuanApp","libs","c","cUtility","cWidgetFactory","CommonStore","cWidgetGuider","cWidgetMember","TuanModel","TuanBaseView","cCommonPageFactory","text!RefundTpl","NumberStep"],function(e,t,n,o,i,s,r,a,u,c,d,h,l){var p,f=d.create("TuanBaseView"),m=i.create("Member"),C={confirmContent:"退款一旦提交，团购券将不能恢复。请问您是否需要继续退款？",confirmNoLabel:"取消",confirmYesLabel:"继续退款",timeoutTip:"加载超时，请重试"},g=o.isInApp(),v=u.TuanOrderDetailModel.getInstance(),b=s.UserStore.getInstance(),T=u.TuanRefundlTicketModel.getInstance(),x=function(e,t){var n=parseFloat(e)*t;return Math.round(100*n)/100},y=i.create("Guider"),_="choosed",w="errorli";return p=f.extend({pageid:"260004",hpageid:"261004",render:function(){this.$el.html(h),this.els={productName:this.$el.find("#J_productName"),iscCount:this.$el.find("#J_iscCount"),refundCount:this.$el.find("#J_refundCount"),refundAmount:this.$el.find("#J_refundAmount"),refundCouponWrap:this.$el.find("#J_refundCouponWrap"),refundCouponAmount:this.$el.find("#J_refundCouponAmount"),refundInvoiceWrap:this.$el.find("#J_refundInvoiceWrap"),refundInvoiceAmount:this.$el.find("#J_refundInvoiceAmount"),btnMinus:this.$el.find("#J_minus"),btnPlus:this.$el.find("#J_plus"),$types:this.$el.find(".J_refundType"),$numStep:this.$el.find(".J_numberStep")}},onCreate:function(){this.render()},events:{"click .J_btnSubmit":"onSubmitRefund","click .apply_refund_reason>li":"onRefundReasonChange","click .J_refundType":"selectRefundType"},_createNumberStep:function(){var e=this,t=this.maxCoupons,n=1,o=1;this.numberStep=new l({max:t,min:n,initialVal:n>o?n:o,wrap:e.els.$numStep,html:'<i class="minus <%if(initialVal <= min ){ %>num_invalid<%} %>" data-flag="-"></i><span id="J_curNum" class="numtext"><%=initialVal %></span><i data-flag="+" class="plus <%if(initialVal >= max ){ %>num_invalid<%} %>"></i>',onChange:function(){var n=e.tuanCouponPrice,o=e.promoCouponPrice,i=e.couponType,s=parseInt(this.getCurrentNum());n=o?2===i?Math.round(s===t?n*s-o:n*s):x(n-o>0?n-o:0,s):x(n,s),e.refundable&&(s>=t&&o?e.showCouponLabel(o):e.els.refundCouponWrap.hide(),e.invoiceAmt>0&&(s>=t?e.showInvoiceLabel(e.invoiceAmt):e.els.refundInvoiceWrap.hide())),e.els.refundAmount.text(n)}})},showCouponLabel:function(e){this.els.refundCouponWrap.show(),this.els.refundCouponAmount.text(e)},showInvoiceLabel:function(){this.els.refundInvoiceWrap.show(),this.els.refundInvoiceAmount.text(this.invoiceAmt)},onRefundReasonChange:function(e){var t=$(e.currentTarget),n=t.text();t.parent().find("li").removeClass("choosed"),t.addClass("choosed"),"其他"==n?this.$el.find(".reason_other_text").show():this.$el.find(".reason_other_text").hide()},loadDetail:function(){this.showLoading(),v.setParam({oid:this.orderId,head:v.getHead().get()}),v.execute(function(e){this.createPage(e),this.hideLoading()},function(e){this.hideLoading(),e&&"timeout"==e.statusText&&this.showToast(C.timeoutTip)},this,!0)},checkLogin:function(){var e=this,t=b.isLogin();return t||(this.showLoading(),m.memberLogin({domain:"//"+document.domain,param:"?t=1&from="+encodeURIComponent("/webapp/tuan/refund"+this.orderId+".html"),callback:function(){e.onLoad()}})),t},createPage:function(e){if(this.invoiceAmt=e.invoiceAmt,this.maxCoupons=0,this.tuanCouponList=[],this.tuanCouponPrice=0,this.refundable=!0,e.orderCoupons&&(this.promoCouponPrice=e.orderCoupons.price,this.couponType=e.orderCoupons.couponType),e.coupons&&e.coupons.length>0)for(var t=0;t<e.coupons.length;t++)e.coupons[t].isc===!0&&(this.maxCoupons++,this.tuanCouponPrice=e.coupons[t].amt,this.tuanCouponList.push(e.coupons[t].val)),2===e.coupons[t].status&&(this.refundable=!1);e.product&&e.product.category&&6===e.product.category.ctgoryid&&2===e.product.category.subctgory&&this.$el.find(".J_needHideInTicket").remove(),this.maxCoupons<=0?this.alertErrorMsg("","此订单不支持退款！"):(this.els.productName.text(e.pname),this.els.iscCount.text(this.maxCoupons),this._createNumberStep(),e.couponAmt>0?this.numberStep.triggerChange():this.els.refundAmount.text(this.tuanCouponPrice),this.refundable&&1==this.maxCoupons&&(this.els.refundInvoiceWrap.show(),this.els.refundInvoiceAmount.text(this.invoiceAmt))),this.els.$types.filter('[data-type="1"]')[e.isFastRefund?"show":"hide"]()},alertErrorMsg:function(e,t){var n=this;this.alert.setViewData({title:e,message:t,buttons:[{text:"知道了",click:function(){this.hide(),n.back()}}]}),this.alert.show()},onLoad:function(){this.orderId=Lizard.P("orderid"),this.header.set({title:"申请退款",view:this,back:!0,home:!0,events:{returnHandler:function(){this.back()},homeHandler:function(){e.tHome()}}}),this.from=decodeURIComponent(Lizard.P("from")||""),this.checkLogin()&&this.loadDetail()},selectRefundType:function(e){var t=$(e.target);this.els.$types.removeClass(w).removeClass(_),t.closest(".J_refundType").addClass(_)},onSubmitRefund:function(){var e,t=this;return this.els.$types.filter("."+_).length?(e=new n.ui.Alert({title:C.alertTitle,message:C.confirmContent,buttons:[{text:C.confirmNoLabel,click:function(){this.hide()}},{text:C.confirmYesLabel,click:function(){this.hide(),t.submitRefund()}}]}),void e.show()):(this.showToast("请选择退款方式",3,function(){t.els.$types.addClass(w)}),!1)},submitRefund:function(){var e,t=this,n="",o=[],i=this.numberStep.getCurrentNum(),r=this.els.$types.filter("."+_).attr("data-type");if(0>=+i)return void this.showToast("请输入需要退回的数量！");if(!(this.maxCoupons<=0||this.tuanCouponList.length<=0)){var a=this.$el.find(".apply_refund_reason").find(".choosed");if(a&&(n=a.text(),"其他"==n)){var u=this.$el.find(".reason_other_text>textarea");u&&""!==u.val()&&(n=u.val())}for(var c=0;+i>c;c++)e={TicketNO:this.tuanCouponList[c],OrderType:1,Trmk:n||""},r&&(e.PayBackType=parseInt(r,10)),o.push(e);T.setParam({head:s.HeadStore.getInstance().get(),AllianceInfo:null,Operator:null,CancelTicketList:o}),T.execute(function(e){if(e&&"failure"==e.ResponseStatus.Ack.toLowerCase())return void t.showToast("退款失败请重试！");if(t.from){var n=decodeURIComponent(t.from);g?y.cross({path:"myctrip",param:n.replace(/^\/webapp\/myctrip\//i,"")}):location.href=location.protocol+"//"+location.host+n}else t.back({orderid:t.orderId})},function(){this.showToast("申请退款失败！")},this,!0)}},onShow:function(){},onHide:function(){}})});
+/*jshint -W030*/
+/**
+ * 申请退款
+ * @url: m.ctrip.com/webapp/tuan/refund/{orderid}.html
+ */
+define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cWidgetGuider', 'cWidgetMember', 'TuanModel', 'TuanBaseView', 'cCommonPageFactory', 'text!RefundTpl', 'NumberStep'], function (TuanApp, libs, c, Util, WidgetFactory, CStore, WidgetGuider, WidgetMember, TuanModels, TuanBaseView, CommonPageFactory, html, NumberStep) {
+    
+    var PageView = CommonPageFactory.create("TuanBaseView");
+    var Member = WidgetFactory.create('Member'),
+        MSG = {
+            confirmContent: '退款一旦提交，团购券将不能恢复。请问您是否需要继续退款？',
+            confirmNoLabel: '取消',
+            confirmYesLabel: '继续退款',
+            timeoutTip: '加载超时，请重试'
+        },
+        //NUM_INVALID_CLS = 'num_invalid',
+        isInApp = Util.isInApp(),
+        detailModel = TuanModels.TuanOrderDetailModel.getInstance(),
+        //订单详情信息
+        userStore = CStore.UserStore.getInstance(),
+        //用户信息
+        refundTicketModel = TuanModels.TuanRefundlTicketModel.getInstance(),
+        customMult = function (num, int) {
+            var ret = parseFloat(num) * int;
+            return Math.round(ret * 100) / 100;
+        },
+        Guider = WidgetFactory.create('Guider'),
+        chooseCls = 'choosed',
+        errorCls = 'errorli',
+        View;
+
+        View = PageView.extend({
+            pageid: '260004',
+            hpageid: '261004',
+            render: function () {
+                this.$el.html(html);
+                this.els = {
+                    productName: this.$el.find('#J_productName'),
+                    iscCount: this.$el.find('#J_iscCount'),
+                    refundCount: this.$el.find('#J_refundCount'),
+                    refundAmount: this.$el.find('#J_refundAmount'),
+                    refundCouponWrap: this.$el.find('#J_refundCouponWrap'),
+                    refundCouponAmount: this.$el.find('#J_refundCouponAmount'),
+                    refundInvoiceWrap: this.$el.find('#J_refundInvoiceWrap'),
+                    refundInvoiceAmount: this.$el.find('#J_refundInvoiceAmount'),
+                    btnMinus: this.$el.find('#J_minus'),
+                    btnPlus: this.$el.find('#J_plus'),
+                    $types: this.$el.find('.J_refundType'),
+                    $numStep: this.$el.find('.J_numberStep')
+                };
+            },
+            onCreate: function () {
+                this.render();
+            },
+            events: {
+                'click .J_btnSubmit': 'onSubmitRefund',
+                'click .apply_refund_reason>li': 'onRefundReasonChange',
+                'click .J_refundType': 'selectRefundType'
+            },
+            _createNumberStep: function() {
+                var self = this,
+                    max = this.maxCoupons,
+                    min = 1,
+                    curNum = 1;
+                this.numberStep = new NumberStep({
+                    max: max,
+                    min: min,
+                    initialVal: curNum < min ? min : curNum,
+                    wrap: self.els.$numStep,
+                    html: '<i class="minus <%if(initialVal <= min ){ %>num_invalid<%} %>" data-flag="-"></i><span id="J_curNum" class="numtext"><%=initialVal %></span><i data-flag="+" class="plus <%if(initialVal >= max ){ %>num_invalid<%} %>"></i>',
+                    onChange: function () {
+                        var tmpPrice = self.tuanCouponPrice,
+                            promoCouponPrice = self.promoCouponPrice,
+                            couponType = self.couponType,
+                            num = parseInt(this.getCurrentNum());
+
+                        if (promoCouponPrice) {
+                            if (couponType === 2) {
+                                if (num === max) {
+                                    //单次券，退最后一张的时候需要减去优惠券的价格
+                                    tmpPrice = Math.round(tmpPrice * num - promoCouponPrice);
+                                } else {
+                                    tmpPrice = Math.round(tmpPrice * num);
+                                }
+                            } else{
+                                tmpPrice = customMult(tmpPrice - promoCouponPrice > 0 ? tmpPrice - promoCouponPrice : 0, num);
+                            }
+                        } else {
+                            tmpPrice = customMult(tmpPrice, num);
+                        }
+                        if (self.refundable) {
+                            if (num >= max && promoCouponPrice) {
+                                self.showCouponLabel(promoCouponPrice);
+                            } else {
+                                self.els.refundCouponWrap.hide();
+                            }
+                            if (self.invoiceAmt > 0) {
+                                if (num >= max) {
+                                    self.showInvoiceLabel(self.invoiceAmt);
+                                } else {
+                                    self.els.refundInvoiceWrap.hide();
+                                }
+                            }
+                        }
+
+                        self.els.refundAmount.text(tmpPrice);
+                    }
+                });
+            },
+            showCouponLabel: function(price) {
+                this.els.refundCouponWrap.show();
+                this.els.refundCouponAmount.text(price);
+            },
+            showInvoiceLabel: function() {
+                this.els.refundInvoiceWrap.show();
+                this.els.refundInvoiceAmount.text(this.invoiceAmt);
+            },
+            onRefundReasonChange: function (e) {
+                var cur = $(e.currentTarget),
+                reasontext = cur.text();
+                cur.parent().find("li").removeClass("choosed");
+                cur.addClass("choosed");
+                if (reasontext == "其他") {
+                    this.$el.find(".reason_other_text").show();
+                } else {
+                    this.$el.find(".reason_other_text").hide();
+                }
+            },
+            loadDetail: function () {
+                this.showLoading();
+                detailModel.setParam({
+                    oid: this.orderId,
+                    head: detailModel.getHead().get() //head丢掉了，重新设置
+                });
+                detailModel.execute(function (data) {
+                    this.createPage(data);
+                    this.hideLoading();
+                }, function (error) {
+                    this.hideLoading();
+                    if (error && error.statusText == 'timeout') {
+                        this.showToast(MSG.timeoutTip);
+                    }
+                }, this, true);
+            },
+            checkLogin: function () {
+                var self = this,
+                isLogin = userStore.isLogin();
+
+                //若未登录，则点击按钮就进行登录
+                if (!isLogin) {
+                    this.showLoading();
+                    Member.memberLogin({
+                        domain: '//' + document.domain,
+                        param: '?t=1&from=' + encodeURIComponent('/webapp/tuan/refund' + this.orderId + '.html'),
+                        callback: function () {
+                            self.onLoad();
+                        }
+                    });
+                }
+                return isLogin;
+            },
+            createPage: function (data) {
+                this.invoiceAmt = data.invoiceAmt;
+                this.maxCoupons = 0;  //可退券的数量
+                this.tuanCouponList = [];
+                this.tuanCouponPrice = 0; //团购券单价
+                this.refundable = true; //优惠券、快递费用是否可退
+
+                //优惠券单价,@tuan v2.6 修改为从orderCoupons取数据
+                if (data.orderCoupons) {
+                    this.promoCouponPrice = data.orderCoupons.price;
+                    this.couponType = data.orderCoupons.couponType;
+                }
+
+                if (data.coupons && data.coupons.length > 0) {
+                    for (var i = 0; i < data.coupons.length; i++) {
+                        if (data.coupons[i].isc === true) {
+                            this.maxCoupons++;
+                            this.tuanCouponPrice = data.coupons[i].amt;
+                            this.tuanCouponList.push(data.coupons[i].val);
+                        }
+                        if (data.coupons[i].status === 2) {
+                            //如果有已使用的团购券，则优惠券、快递费用不再可退
+                            this.refundable = false;
+                        }
+                    }
+                }
+
+                //如果是门票对接产品
+                if (data.product && data.product.category &&
+                    data.product.category.ctgoryid === 6 &&
+                    data.product.category.subctgory === 2) {
+                    this.$el.find('.J_needHideInTicket').remove();
+                }
+
+                if (this.maxCoupons <= 0) {
+                    this.alertErrorMsg("", "此订单不支持退款！");
+                } else {
+                    this.els.productName.text(data.pname);
+                    this.els.iscCount.text(this.maxCoupons);
+
+                    this._createNumberStep();
+                    //优惠券总额
+                    if (data.couponAmt > 0) {
+                        this.numberStep.triggerChange();
+                    } else {
+                        this.els.refundAmount.text(this.tuanCouponPrice);
+                    }
+                    //显示快递费用
+                    if (this.refundable && this.maxCoupons == 1) {
+                        this.els.refundInvoiceWrap.show();
+                        this.els.refundInvoiceAmount.text(this.invoiceAmt);
+                    }
+                }
+
+                //是否支持急速退
+                this.els.$types.filter('[data-type="1"]')[!!data.isFastRefund ? 'show' : 'hide']();
+
+            },
+            alertErrorMsg: function (title, message) {
+                var self = this;
+                this.alert.setViewData({
+                    title: title,
+                    message: message,
+                    buttons: [{
+                        text: '知道了',
+                        click: function () {
+                            this.hide();
+                            self.back();
+                        }
+                    }]
+                });
+                this.alert.show();
+            },
+            onLoad: function () {
+                this.orderId = Lizard.P('orderid');
+                this.header.set({
+                    title: '申请退款',
+                    view: this,
+                    back: true,
+                    home: true,
+                    events: {
+                        returnHandler: function () {
+                            this.back();
+                        },
+                        homeHandler: function () {
+                            TuanApp.tHome();
+                        }
+                    }
+                });
+
+                this.from = decodeURIComponent(Lizard.P('from') || '');
+                this.checkLogin() && this.loadDetail();
+            },
+            selectRefundType: function(e) {
+                var $this = $(e.target);
+                this.els.$types.removeClass(errorCls)
+                    .removeClass(chooseCls);
+                $this.closest('.J_refundType').addClass(chooseCls);
+            },
+            onSubmitRefund: function () {
+                var self = this,
+                    confirmAlert;
+
+                if (!this.els.$types.filter('.' + chooseCls).length) {
+                    this.showToast('请选择退款方式',3, function() {
+                        self.els.$types.addClass(errorCls);
+                    });
+                    return false;
+                }
+
+                confirmAlert = new c.ui.Alert({
+                        title: MSG.alertTitle,
+                        message: MSG.confirmContent,
+                        buttons: [{
+                            text: MSG.confirmNoLabel,
+                            click: function () {
+                                this.hide();
+                            }
+                        }, {
+                            text: MSG.confirmYesLabel,
+                            click: function () {
+                                this.hide();
+                                self.submitRefund();
+                            }
+                        }]
+                    });
+
+                confirmAlert.show();
+            },
+            submitRefund: function () {
+                var self = this;
+                var reasonText = "";
+                var ticketlist = [];
+                var num = this.numberStep.getCurrentNum(); //退回数量
+                var refundType = this.els.$types.filter('.'+chooseCls).attr('data-type'),
+                    ticket;
+
+                if (+num <= 0) {
+                    this.showToast("请输入需要退回的数量！");
+                    return;
+                }
+                if (this.maxCoupons <= 0 || this.tuanCouponList.length <= 0) {
+                    return;
+                }
+
+                var reason = this.$el.find(".apply_refund_reason").find(".choosed");
+                if (reason) {
+                    reasonText = reason.text();
+                    if (reasonText == "其他") {
+                        var reasonother = this.$el.find(".reason_other_text>textarea");
+                        if (reasonother && reasonother.val() !== '') {reasonText = reasonother.val();}
+                    }
+                }
+                for (var i = 0; i < +num; i++) {
+                    ticket = {
+                        TicketNO: this.tuanCouponList[i],
+                        OrderType: 1,
+                        Trmk: reasonText || ''
+                    };
+                    if (refundType) {
+                        ticket.PayBackType = parseInt(refundType, 10);
+                    }
+                    ticketlist.push(ticket);
+                }
+                refundTicketModel.setParam({
+                    head: CStore.HeadStore.getInstance().get(),
+                    AllianceInfo: null,
+                    Operator: null,
+                    CancelTicketList: ticketlist
+                });
+                refundTicketModel.execute(function (data) {
+                    if (data && data.ResponseStatus.Ack.toLowerCase() == 'failure') {
+                        self.showToast('退款失败请重试！');
+                        return;
+                    }
+                    if (self.from) {
+                        var url = decodeURIComponent(self.from);
+                        if (isInApp) {
+                            Guider.cross({ path: 'myctrip', param: url.replace(/^\/webapp\/myctrip\//i, '') });
+                        } else {
+                            location.href = (location.protocol + '//' + location.host + url);
+                        }
+                    } else {
+                        self.back({orderid: self.orderId});
+                    }
+                }, function () {
+                    this.showToast("申请退款失败！");
+                }, this, true);
+            },
+            onShow: function () { },
+            onHide: function () { }
+        });
+
+    return View;
+});
+

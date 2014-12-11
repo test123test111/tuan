@@ -1,1 +1,299 @@
-define(["TuanApp","libs","c","TuanBaseView","cWidgetFactory","cCommonPageFactory","cUtility","TuanModel","cDataSource","TuanStore","StoreManage","StringsData","FilterXss","text!KeywordSearchTpl","HttpErrorHelper","TabSlide"],function(e,t,i,r,s,o,a,n,d,h,l,c,u,y,p){var w,g=i.ui,f=h.GroupSearchStore.getInstance(),k=h.TuanHistoryKeySearchStore.getInstance(),S=h.GroupSearchStore.getInstance(),m=s.create("TabSlide"),T=o.create("TuanBaseView");return w=T.extend({pageid:"214001",hpageid:"215001",tuankeyWordList:n.TuanKeyWordListModel.getInstance(),tuanHotKeywords:n.TuanHotWordsNewModel.getInstance(),dateSource:new d,selectItem:null,isComplete:!1,isLoading:!1,isScrolling:!1,render:function(){this.$el.html($.trim(y)),this.els={keywordSuggestBox:this.$el.find("#J_keywordSuggestWrap"),keywordSuggestTpl:this.$el.find("#J_keywordSuggestTpl"),keywordSuggestWrap:this.$el.find("#js_historykeysearch"),hotKeywordsTpl:this.$el.find("#J_hotKeywordsTpl"),hotKeywordsWrap:this.$el.find("#js_hotkeyword"),keywordInput:this.$el.find("#J_keywordInput"),keywordSearch:this.$el.find("#J_keywordSearch")},this.cityListTplfun=_.template(this.els.keywordSuggestTpl.html()),this.hotKeywordsTplfun=_.template(this.els.hotKeywordsTpl.html()),a.isInApp()&&e.isOverOS7()&&(this.els.keywordSearch.css("border-top","20px solid #b3b3b3"),this.els.keywordSearch.css("padding-top","10px"),this.els.keywordSuggestBox.css("padding-top","20px"))},events:{"input #J_keywordInput":"tuanKeyWordInput","submit .search_wrap>form":"onSubmitSearch","click .J_resultItem":"onKeywordItemClick","click #J_cancel":"onCancelInput","click .J_clearhistory":"onClearHistory","click #js_hotkeyword .sw_con>li":"goHotSearch"},onCancelInput:function(){l.clearSpecified(!0),l.setCurrentKeyWord(!1),this.back()},onClearHistory:function(){k.remove(),this.createPage({}),this.els.keywordInput.val("")},doSubmit:function(){var e=l.getGroupQueryParam(),t=this;f.setAttr("qparams",e),setTimeout(_.bind(function(){t.forwardJump("list","/webapp/tuan/list")},this),100)},onKeywordItemClick:function(e){l.clearSpecified(!0);var t=$(e.currentTarget),i=t.attr("data-id"),r=t.attr("data-name"),s=t.attr("data-type");l.addHistoryKeyWord(i,r,s),"markland"===(s||"").toLocaleLowerCase()&&(S.setAttr("sortRule",8),S.setAttr("sortType",1)),this.doSubmit()},onSubmitSearch:function(){var e,t=u.filterXSS(this.els.keywordInput.val());return"undefined"==typeof t||""===t||null===t?!1:(l.clearSpecified(!0),e=this.els.keywordSuggestWrap.find('[data-name="'+t+'"]'),e.length&&"markland"===e.attr("data-type")?e[0].click():(l.addHistoryKeyWord(t,t,7),this.doSubmit()),!1)},tuanKeyWordInput:function(e){var t=$(e.currentTarget),i=u.filterXSS(t.val()),r=this.els.keywordSuggestWrap,s=this.els.hotKeywordsWrap,o=t.attr("inputwait")||300;t.attr("waitsend",(new Date).getTime()),i?setTimeout(_.bind(function(e,t){if(e){var i=e.attr("waitsend");i&&(new Date).getTime()-parseInt(i)>parseInt(t)-10&&(r.find(".J_historykeysearch").hide(),r.find(".J_clearhistory").hide(),s.hide(),this.doQueryData(u.filterXSS(e.val())))}},this,t,o),o):(r.find(".J_historykeysearch").show(),r.find(".J_clearhistory").show(),r.find(".city_list.searchresult>li[data-filter]").hide(),r.find(".city_noresult").hide(),s.show())},buildEvent:function(){g.InputClear(this.els.keywordInput),this.onBodyChange=$.proxy(function(){this.els.keywordInput[0].blur()},this)},doQueryData:function(e){try{if("undefined"==typeof e||""===e||null===e)return;var t=f.get();e=e.replace(/\.|\{|\}|\[|\]|\*|\^|\'/gim,""),e=e.toLowerCase().trim(),this.lastinputkey=e,this.$el.find(".s_city_loading").show(),this.getKeywordListData(e,t.ctyId,function(){this.$el.find(".s_city_loading").hide()})}catch(i){}},isVisible:function(){return"none"!=this.$el.css("display").toLowerCase()},getKeywordListData:function(e,t,i){var r=this;r.tuankeyWordList.setParam("cityid",t),r.tuankeyWordList.setParam("keyword",e),r.tuankeyWordList.setParam("itemType",S.getAttr("ctype")),r.tuankeyWordList.excute(function(e){r.createPage(e),i.call(this)},function(e){var t=p.getMessage(e);r.isVisible()&&this.showToast(t),i.call(this)},!1,this)},createPage:function(e){try{var t,i,r=l.getHistoryKeyWord();r.length>0&&(t=r[0].id,!e.history&&(e.history=[]),e.history=e.history.concat.apply(e.history,r));var s=this.lastinputkey;e.Results&&e.Results.length&&_.each(e.Results,function(e){e.word&&(e.wordNew=e.word.replace(new RegExp(s.toLocaleLowerCase(),"g"),"<em>"+s.toLocaleLowerCase()+"</em>").replace(new RegExp(s.toLocaleUpperCase(),"g"),"<em>"+s.toLocaleUpperCase()+"</em>")),e.typeNew=c.typeToName[e.type&&e.type.toLocaleLowerCase()]||""}),i=this.cityListTplfun({data:e,keyid:t}),this.els.keywordSuggestWrap.html(i),e.Results&&(this.els.keywordSuggestWrap.find(".J_historykeysearch").hide(),this.els.keywordSuggestWrap.find(".J_clearhistory").hide())}catch(o){}},onCreate:function(){this.render(),this.buildEvent()},onLoad:function(e){this._refer=e,this.turning(),this.els.keywordInput.val(l.getCurrentKeyWord()?l.getCurrentKeyWord().word:""),setTimeout(_.bind(function(){this.els.keywordInput[0].focus()},this),1e3),this.renderHotkeyword(),this.createPage({}),this.header&&this.header.rootBox&&(this.header.set({title:"",view:this,tel:null,events:{returnHandler:function(){this.back()}}}),this.header.show(),this.header.rootBox.hide()),this.hideLoading(),this.$el.bind("focus",this.onBodyChange),this.$el.bind("touchstart",this.onBodyChange)},onShow:function(){this.header.hide(),setTimeout(function(){this.els.keywordInput&&this.els.keywordInput[0].focus()}.bind(this),10)},onHide:function(){this.header.show(),this.hotkeywordsSlide&&this.hotkeywordsSlide.destroy(),this.tuankeyWordList.abort(),this.$el.unbind("focus",this.onBodyChange),this.$el.unbind("touchstart",this.onBodyChange)},renderHotkeyword:function(){var e=this,t=f.get();this.tuanHotKeywords.setParam("CityID",t.ctyId),this.tuanHotKeywords.excute(_.bind(function(t){var i=[];t&&t.hotkey&&t.hotkey.length>0&&(_.each(t.hotkey,function(e){_.each(e.KeyWords,function(t){t.ItemType=e.ItemType,i.push(t)})}),e.hotkeywordsSlide=new m({container:e.els.hotKeywordsWrap,source:i,tpl:e.els.hotKeywordsTpl.html()}))},this))},goHotSearch:function(e){var t=$(e.currentTarget),i=decodeURIComponent(t.attr("data-json"));i=this._parseJSON(i),i&&i.Val&&(l.parseHotkeyJson(this._parseJSON(i.Val)),this.forwardJump("list","/webapp/tuan/list"))},_parseJSON:function(e){try{e=JSON.parse(e)}catch(t){}return e}})});
+/*jshint -W030*/
+/**
+ * 订单详情页
+ * @url: m.ctrip.com/webapp/tuan/keywordsearch
+ */
+define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cWidgetFactory', 'cCommonPageFactory', 'cUtility', 'TuanModel', 'cDataSource', 'TuanStore', 'StoreManage', 'StringsData', 'FilterXss', 'text!KeywordSearchTpl', 'HttpErrorHelper', 'TabSlide'],
+ function (TuanApp, libs, c, TuanBaseView, cWidgetFactory, CommonPageFactory, Util, TuanModel, CDataSource, TuanStore, StoreManage, StringsData, FilterXss, html, HttpErrorHelper) {
+     var cui = c.ui,
+        tuanSearchStore = TuanStore.GroupSearchStore.getInstance(),
+        historyKeySearchtore = TuanStore.TuanHistoryKeySearchStore.getInstance(),
+        searchStore = TuanStore.GroupSearchStore.getInstance(),
+        TabSlide = cWidgetFactory.create('TabSlide'),
+        View;
+     var BasePage = CommonPageFactory.create("TuanBaseView");
+     View = BasePage.extend({
+         pageid: '214001',
+         hpageid: '215001',
+         tuankeyWordList: TuanModel.TuanKeyWordListModel.getInstance(),
+         tuanHotKeywords: TuanModel.TuanHotWordsNewModel.getInstance(),
+         dateSource: new CDataSource(),
+         selectItem: null,
+         isComplete: false, //是否完成
+         isLoading: false,
+         isScrolling: false,
+         render: function () {
+             this.$el.html($.trim(html));
+
+             this.els = {
+                 keywordSuggestBox: this.$el.find('#J_keywordSuggestWrap'),
+                 keywordSuggestTpl: this.$el.find('#J_keywordSuggestTpl'),
+                 keywordSuggestWrap: this.$el.find('#js_historykeysearch'),
+                 hotKeywordsTpl: this.$el.find('#J_hotKeywordsTpl'),
+                 hotKeywordsWrap: this.$el.find('#js_hotkeyword'),
+                 keywordInput: this.$el.find('#J_keywordInput'),
+                 keywordSearch: this.$el.find('#J_keywordSearch')
+             };
+             this.cityListTplfun = _.template(this.els.keywordSuggestTpl.html());
+             this.hotKeywordsTplfun = _.template(this.els.hotKeywordsTpl.html());
+
+             if (Util.isInApp() && TuanApp.isOverOS7()) {
+                 this.els.keywordSearch.css('border-top', '20px solid #b3b3b3');
+                 this.els.keywordSearch.css('padding-top', '10px');
+                 this.els.keywordSuggestBox.css('padding-top', '20px');
+             }
+         },
+         events: {
+             'input #J_keywordInput': 'tuanKeyWordInput',
+             'submit .search_wrap>form': 'onSubmitSearch',
+             'click .J_resultItem': 'onKeywordItemClick',
+             'click #J_cancel': 'onCancelInput',
+             'click .J_clearhistory': 'onClearHistory',
+             'click #js_hotkeyword .sw_con>li': 'goHotSearch'
+         },
+         onCancelInput: function () {
+             StoreManage.clearSpecified(true);
+             StoreManage.setCurrentKeyWord(false);
+             this.back();
+         },
+         onClearHistory: function () {
+             historyKeySearchtore.remove();
+             this.createPage({});
+             this.els.keywordInput.val('');
+         },
+         doSubmit: function () {
+             var qparams = StoreManage.getGroupQueryParam();
+             var self = this;
+             tuanSearchStore.setAttr('qparams', qparams);
+             //返回列表页
+             setTimeout(_.bind(function () {
+                 self.forwardJump("list", '/webapp/tuan/list');
+             }, this), 100);
+         },
+         onKeywordItemClick: function (e) {
+             StoreManage.clearSpecified(true);
+
+             var cur = $(e.currentTarget),
+                id = cur.attr('data-id'),
+                name = cur.attr('data-name'),
+                keytype = cur.attr('data-type');
+             //历史搜索 处理start----------
+             StoreManage.addHistoryKeyWord(id, name, keytype);
+             //历史搜索 处理end-------------
+             //团购6.1新增， 根据地标查询时， 产品列表按照距离最近排序
+             if ((keytype || '').toLocaleLowerCase() === 'markland') {
+                searchStore.setAttr('sortRule', 8);
+                searchStore.setAttr('sortType', 1);
+             }
+             this.doSubmit();
+         },
+         onSubmitSearch: function () {
+             var keywordValue = FilterXss.filterXSS(this.els.keywordInput.val()), item;
+             if (typeof keywordValue === "undefined" || keywordValue === "" || keywordValue === null) {return false;}
+             StoreManage.clearSpecified(true);
+             //团购6.1 新增，关键字若完全匹配为地标，按距离最近排序
+             item = this.els.keywordSuggestWrap.find('[data-name="'+keywordValue+'"]');
+             if (item.length && item.attr('data-type') === 'markland') {
+                 item[0].click();
+             } else {
+                 StoreManage.addHistoryKeyWord(keywordValue, keywordValue, 7);
+                 this.doSubmit();
+             }
+
+             return false;
+         },
+         tuanKeyWordInput: function (e) {
+             var cur = $(e.currentTarget),
+                keyword = FilterXss.filterXSS(cur.val()),
+                keywordSuggestWrap = this.els.keywordSuggestWrap,
+                hotKeywordsWrap = this.els.hotKeywordsWrap,
+                inputwait = cur.attr("inputwait") || 300;
+
+             cur.attr("waitsend", new Date().getTime());
+             if (keyword) {
+                 setTimeout(_.bind(function (target, inputwait) {
+                     if (target) {
+                         var waitsend = target.attr("waitsend");
+                         if (waitsend && (new Date().getTime() - parseInt(waitsend)) > (parseInt(inputwait) - 10)) {
+                             keywordSuggestWrap.find('.J_historykeysearch').hide();
+                             keywordSuggestWrap.find('.J_clearhistory').hide();
+                             hotKeywordsWrap.hide();
+                             this.doQueryData(FilterXss.filterXSS(target.val()));
+                         }
+                     }
+
+                 }, this, cur, inputwait), inputwait);
+             } else {
+                 keywordSuggestWrap.find('.J_historykeysearch').show();
+                 keywordSuggestWrap.find('.J_clearhistory').show();
+                 keywordSuggestWrap.find('.city_list.searchresult>li[data-filter]').hide();
+                 keywordSuggestWrap.find('.city_noresult').hide();
+                 hotKeywordsWrap.show();
+             }
+         },
+         buildEvent: function () {
+             cui.InputClear(this.els.keywordInput);
+             this.onBodyChange = $.proxy(function () {
+                 this.els.keywordInput[0].blur();
+             }, this);
+         },
+         doQueryData: function (keyword) {
+             try {
+                 if (typeof keyword == "undefined" || keyword === "" || keyword === null) {return;}
+                 var searchData = tuanSearchStore.get();
+                 keyword = keyword.replace(/\.|\{|\}|\[|\]|\*|\^|\'/img, '');
+                 keyword = keyword.toLowerCase().trim();
+                 this.lastinputkey = keyword;
+                 this.$el.find('.s_city_loading').show();
+                 this.getKeywordListData(keyword, searchData.ctyId, function () {
+                     this.$el.find('.s_city_loading').hide();
+                 });
+             } catch (ex) { }
+         },
+         isVisible: function () {
+             return this.$el.css('display').toLowerCase() != 'none';
+         },
+         getKeywordListData: function (keyword, ctyId, callback) {
+             var self = this;
+
+             self.tuankeyWordList.setParam('cityid', ctyId);
+             self.tuankeyWordList.setParam('keyword', keyword);
+             self.tuankeyWordList.setParam('itemType', searchStore.getAttr('ctype'));
+             self.tuankeyWordList.excute(function (data) {
+                 self.createPage(data);
+                 callback.call(this);
+             }, function (e) {
+                 var msg = HttpErrorHelper.getMessage(e);
+
+                 self.isVisible() && this.showToast(msg); // ('抱歉! 加载失败,请稍后再试!');
+                 callback.call(this);
+             }, false, this);
+
+         },
+         createPage: function (data) {
+             try {
+                 var keyId,
+                    html,
+                    hcitylist = StoreManage.getHistoryKeyWord();
+
+                 if (hcitylist.length > 0) {
+                     keyId = hcitylist[0].id;
+                     (!data.history) && (data.history = []);
+                     data.history = data.history.concat.apply(data.history, hcitylist);
+                 }
+
+                 //团购6.1新增关键字高亮
+                 var inpuKey = this.lastinputkey;
+                 if (data.Results && data.Results.length) {
+                     _.each(data.Results, function(t) {
+                         if (t.word) {
+                             t.wordNew = t.word.replace(new RegExp(inpuKey.toLocaleLowerCase(), 'g'), '<em>' + inpuKey.toLocaleLowerCase() + '</em>')
+                                .replace(new RegExp(inpuKey.toLocaleUpperCase(), 'g'), '<em>' + inpuKey.toLocaleUpperCase() + '</em>');
+                         }
+                         t.typeNew = StringsData.typeToName[t.type && t.type.toLocaleLowerCase()] || '';
+                     });
+                 }
+
+                 html = this.cityListTplfun({ data: data, keyid: keyId });
+
+                 this.els.keywordSuggestWrap.html(html);
+
+                 if (data.Results) {
+                     this.els.keywordSuggestWrap.find('.J_historykeysearch').hide();
+                     this.els.keywordSuggestWrap.find('.J_clearhistory').hide();
+                 }
+             } catch (ex) { }
+         },
+         //首次记载view，创建view
+         onCreate: function () {
+             this.render();
+             this.buildEvent();
+         },
+         //加载数据时
+         onLoad: function (refer) {
+             this._refer = refer;
+             this.turning();
+             //@since v2.6 在搜索框中保留搜索关键词
+             this.els.keywordInput.val(StoreManage.getCurrentKeyWord() ? StoreManage.getCurrentKeyWord().word : '');
+             //this.els.keywordInput[0].focus();
+             setTimeout(_.bind(function () {
+                 this.els.keywordInput[0].focus();
+             }, this), 1000);
+             this.renderHotkeyword();
+             this.createPage({});
+             if (this.header && this.header.rootBox) {
+                 /** 必须设置事件，否则会回退到全站首页 */
+                 this.header.set({
+                     title: '',
+                     view: this,
+                     tel: null,
+                     events: {
+                         returnHandler: function () {
+                             this.back();
+                         }
+                     }
+                 });
+                 this.header.show();
+                 /** 必须设置事件，否则会回退到全站首页 */
+                 this.header.rootBox.hide();
+             }
+             this.hideLoading();
+             this.$el.bind('focus', this.onBodyChange);
+             this.$el.bind('touchstart', this.onBodyChange);
+         },
+         onShow: function () {
+             this.header.hide();
+             setTimeout(function() {this.els.keywordInput && this.els.keywordInput[0].focus();}.bind(this), 10);
+         },
+         onHide: function () {
+             this.header.show();
+             this.hotkeywordsSlide && this.hotkeywordsSlide.destroy();
+             this.tuankeyWordList.abort(); //停止请求
+             this.$el.unbind('focus', this.onBodyChange);
+             this.$el.unbind('touchstart', this.onBodyChange);
+         },
+         /*
+         * 渲染 热门关键字
+         */
+         renderHotkeyword: function () {
+             var self = this,
+                 searchData = tuanSearchStore.get();
+             this.tuanHotKeywords.setParam('CityID', searchData.ctyId);
+             this.tuanHotKeywords.excute(_.bind(function (data) {
+                 var hotkeys = [];
+                 if (data && data.hotkey && data.hotkey.length > 0) {
+                     _.each(data.hotkey, function(t) {
+                         _.each(t.KeyWords, function(v) {
+                             v.ItemType = t.ItemType;
+                             hotkeys.push(v);
+                         });
+                     });
+                     self.hotkeywordsSlide = new TabSlide({
+                         container: self.els.hotKeywordsWrap,
+                         source: hotkeys,
+                         tpl: self.els.hotKeywordsTpl.html()
+                     });
+                 }
+             }, this));
+         },
+         goHotSearch: function (e) {
+             var cur = $(e.currentTarget);
+             var data = decodeURIComponent(cur.attr('data-json'));
+             data = this._parseJSON(data);
+             if (data && data.Val) {
+                StoreManage.parseHotkeyJson(this._parseJSON(data.Val));
+                this.forwardJump('list', '/webapp/tuan/list');
+             }
+         },
+         _parseJSON: function (s) {
+             try{s = JSON.parse(s);}catch(e) {}
+
+             return s;
+         }
+     });
+     return View;
+ });
+
+/*
+changelog:  @date: 20141128   1. 团购6.1新增关键字高亮 2. 地标查询按距离最近展示；
+ */

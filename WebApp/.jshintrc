@@ -15,6 +15,7 @@
         "require",
         //浏览器全局变量
         "window",
+        "module",
         "location",
         "localStorage",
         "sessionStorage",
