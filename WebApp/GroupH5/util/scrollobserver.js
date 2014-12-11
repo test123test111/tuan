@@ -1,8 +1,7 @@
-var i=0;
 define(['c'], function () {
     var WIN = window,
         DOC = WIN.document,
-        SCROLL_ACCURACY = 800, //50 ms
+        SCROLL_ACCURACY = 500, //50 ms
         SCROLL_TOLERANCE = 0, //滚动方法判断的误差系数，1px
         SCROLL_EVENT = 'scroll',
         SCROLL_STATUS = {
@@ -10,10 +9,7 @@ define(['c'], function () {
             SCROLLING: 1,
             END: 2
         },
-        SCROLL_EVENTS = {
-            START: 'customScrollStart',
-            END: 'customScrollEnd'
-        },
+        NOOP = function(){},
         lastX = 0,
         lastY = 0,
         timer = null,
@@ -32,7 +28,12 @@ define(['c'], function () {
 
         //if(currentY === lastY && currentX ===  lastX){
         self.status = SCROLL_STATUS.END;
-        WIN.trigger(SCROLL_EVENTS.END, {
+        /*WIN.trigger(SCROLL_EVENTS.END, {
+            direction: self.direction,
+            y: currentY,
+            x: currentX
+        });*/
+        self._onScrollEnd.call(self, {
             direction: self.direction,
             y: currentY,
             x: currentX
@@ -44,23 +45,41 @@ define(['c'], function () {
     function updateStatus() {
         var self = this,
             body = DOC.body,
+            currentDirection,
             currentX = body.scrollLeft,
             currentY = body.scrollTop;
-        //滚动开始
-        i= new Date().getTime();
 
         //console.log((self.status+"/"+SCROLL_STATUS.END)+'---'+(typeof self.status)+'/'+(typeof SCROLL_STATUS.END)+'--START----'+(self.status === SCROLL_STATUS.END));
+        currentDirection = scrollDirection(lastX, currentX, lastY, currentY);
         if(self.status === SCROLL_STATUS.END){
             self.status = SCROLL_STATUS.START;
 
-            self.direction = scrollDirection(lastX, currentX, lastY, currentY);
-            WIN.trigger(SCROLL_EVENTS.START, {
+            self.direction = currentDirection;
+            /*WIN.trigger(SCROLL_EVENTS.START, {
+                direction: self.direction,
+                y: currentY,
+                x: currentX
+            });*/
+            self._onScrollStart.call(self, {
                 direction: self.direction,
                 y: currentY,
                 x: currentX
             });
         } else {
             self.status = SCROLL_STATUS.SCROLLING;
+        }
+        if(currentDirection!=self.direction){
+            self.direction = currentDirection;
+            /*WIN.trigger(SCROLL_EVENTS.CHANGE,{
+                direction: self.direction,
+                y: currentY,
+                x: currentX
+            });*/
+            self._onDirectionChange.call(self, {
+                direction: self.direction,
+                y: currentY,
+                x: currentX
+            });
         }
         clearTimeout(timer);
         timer = setTimeout($.proxy(testScrollEnd, self), SCROLL_ACCURACY);
@@ -69,9 +88,12 @@ define(['c'], function () {
         updateStatus.call(this);
     }
     observer = {
-        init: function () {
+        init: function (options) {
             this.status = SCROLL_STATUS.END;
-
+            this.options = options;
+            this._onScrollStart = options.onScrollStart || NOOP;
+            this._onScrollEnd = options.onScrollEnd || NOOP;
+            this._onDirectionChange = options.onDirectionChange || NOOP;
             this.__scrollHandler = $.proxy(scrollHandler, this);
             return this;
         },
