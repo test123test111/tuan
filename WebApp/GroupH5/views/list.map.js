@@ -592,11 +592,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                             pos: pos
                         });
                         var qparams = searchStore.getAttr('qparams') || [];
-                        //清除qparams里面已有的商业区、行政区、地铁线、距离等参数
+                        //清除qparams里面已有的商业区、行政区、地铁线、距离、关键词等参数
                         for (var i = 0, l = qparams.length; i < l; i++) {
                             var t = qparams[i].type;
-                            if (t == 5 || t == 4 || t == 19 || t == 9) {
+                            if (t == 5 || t == 4 || t == 19 || t == 9 || t == 7) {
                                 qparams.splice(i, 1);
+                                t == 7 && StoreManage.removeCurrentKeyWord();//清除关键词
                                 break;
                             }
                         }

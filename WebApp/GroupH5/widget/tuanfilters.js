@@ -602,6 +602,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     }
 
                     self.updatePositionName(name || MSG.weizhiquyu);
+                    self.page.updateTitle(searchStore.getAttr('ctyName'), true);
 
                     //地铁站、机场车站、景点、大学周边按经纬度查询， 默认1公里，故放出"距离"筛选条件
                     var ctype = searchStore.getAttr('ctype');
