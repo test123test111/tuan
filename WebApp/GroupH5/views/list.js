@@ -430,7 +430,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     down: '<i class="i_tri"></i>',
                     returnico: '<i id="js_return" class="returnico"></i>'
                 };
-                var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
+                //var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
+                var hasKeyword = StoreManage.getCurrentKeyWord();
                 //if (!hasKeyword) {
                 headerData.moreRightMenus = [{
                     tagname: 'tuan_keyword_search',  //点击之后callback给H5的事件名字,
@@ -492,7 +493,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     isOneYuan = this.isOneYuan(),
                     keywordData = StoreManage.getCurrentKeyWord();
 
-                if (!(this.isFromKeywordSearch() && keywordData)) {
+                //if (!(this.isFromKeywordSearch() && keywordData)) {
+                if (!keywordData) {
                     if (isOneYuan) {
                         this.updateTitle('一元团购', false);
                     } else {
@@ -655,7 +657,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     if (this.isOneYuan()) {
                         this.updateTitle('一元团购', false);
                     } else {
-                        this.updateTitle(searchStore.getAttr('ctyName'), true);
+                        var keywordData = StoreManage.getCurrentKeyWord();
+                        if (keywordData) {
+                            this.updateTitle(keywordData.word, true, MemCache.getItem('resultCount') || 0);
+                        } else {
+                            this.updateTitle(searchStore.getAttr('ctyName'), true);
+                        }
                     }
                     this._restoreScrollPos();
                 }
@@ -737,7 +744,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 if (data.count > 0 && data.pageIdx >= this.totalPages) {
                     this.listWrap.append('<p class="sec-waiting" style="display:block;">没有更多结果了</p>');
                 }
-                var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
+                //var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
+                var hasKeyword = StoreManage.getCurrentKeyWord();
                 if (!hasKeyword && data.hotkey && data.pageIdx <= 1) {
                     this.renderHotWord(data.hotkey);
                 } else {
@@ -810,7 +818,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     notClearAll && self.hideBottomLoading();
                     if (data && data[key] && data[key].length && data.count && +data.count > 0) {
                         var keywordData = StoreManage.getCurrentKeyWord();
-                        if (self.isFromKeywordSearch() && keywordData) {
+                        //if (self.isFromKeywordSearch() && keywordData) {
+                        if (keywordData) {
                             self.updateTitle(keywordData.word, false, data.count);
                         }
                         this.isDataReady = true;
@@ -833,7 +842,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                                 this.getConditionData(cityid);
                             }
                         }
-                        MemCache.setItem('hasListData', true);
+                        //MemCache.setItem('hasListData', true);
+                        MemCache.setItem('resultCount', data.count);
                         if (searchStore.getAttr('pageIdx') <= 1 && !isNearBy) {
                             self.displayGPSInfo(data.curpos || {}, isNearBy);
                         }
@@ -865,7 +875,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
             },
             renderNoResult: function (msg, key, customdata) {
                 var keywordData = StoreManage.getCurrentKeyWord();
-                if (this.isFromKeywordSearch() && keywordData) {
+                //if (this.isFromKeywordSearch() && keywordData) {
+                if (keywordData) {
                     this.updateTitle(keywordData.word, false, 0);
                 }
                 var lst = {
