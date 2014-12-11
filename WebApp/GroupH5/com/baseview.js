@@ -1,4 +1,4 @@
-/*jshint -W030 */
+﻿/*jshint -W030 */
 define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cHybridFacade', 'cCommonPageFactory', 'PageHistory', 'cWidgetFactory', 'cWidgetGuider'],
 function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPageFactory, History, WidgetFactory) {
 
@@ -172,6 +172,7 @@ function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPa
                 this.forwardJump('hotelmap','/webapp/tuan/hotelmap?lon=' + lng + '&lat=' + lat + '&hotelName=' + title);
             }
         }
+
     };
     var TuanBaseView = BasePageView.extend(options);
 

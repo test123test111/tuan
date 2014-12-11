@@ -156,10 +156,9 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         prepareShareData: function (callback) {
             var self = this,
                 data,
-                cid = self.cityId,
                 shareInfo = ShareToSNSInfo,
                 detailData = self.detailData,
-                productUrl = 'http://m.ctrip.com/webapp/tuan/detail/' + self.productId+'.html' + (cid ? '?cityid=' + cid : ''),
+                productUrl = 'http://m.ctrip.com/webapp/tuan/detail/' + self.productId+'.html?cityid='+self.cityId,
                 hotelInfo = detailData.hotels[0] || detailData.recommendHotel.hotel || {name: detailData.name}, //如果多店酒店，则显示推荐酒店信息
                 images = detailData.images,
                 imgUrl = images && images.length && images[0].small,
