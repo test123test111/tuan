@@ -55,6 +55,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 //this.hotkeyTpl = _.template($('#J_hotkey').html()),
                 //当前位置容器
                 this.gpsInfoWrap = wrap.find('#J_gpsInfoWrap');
+                this.infoSpan = wrap.find('#J_gpsInfo');
                 this.quickOpBar = wrap.find('#J_quickOpBar');
                 this.quickWrapper = wrap.find('#J_quickWrapper');
                 this.toolbar = wrap.find('#J_toolbar');
@@ -161,7 +162,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
              */
             getGeolocation: function (callback) {
                 var self = this,
-                    infoWrap = this.$el.find('#J_gpsInfo'),
+                    //infoWrap = this.$el.find('#J_gpsInfo'),
                     successFn, errorFn;
 
                 successFn = function (gpsInfo) {
@@ -169,7 +170,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 };
                 errorFn = function () {
                     positionStore.set(null);
-                    infoWrap.parent().find('.' + REFRESH_GPS_LOADING_CLS).removeClass(REFRESH_GPS_LOADING_CLS);
+                    self.infoSpan.parent().find('.' + REFRESH_GPS_LOADING_CLS).removeClass(REFRESH_GPS_LOADING_CLS);
                     self.showToast('抱歉，获取不到当前位置，请打开GPS后重试!');
                 };
 
@@ -189,7 +190,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
              * @param isNearBy 是否是附近的团购
              */
             displayGPSInfo: function (gpsInfo, isNearBy, callback) {
-                var infoWrap = this.gpsInfoWrap,
+                var infoSpan = this.infoSpan,
                     reloadBtn = this.gpsReloadBtn,
                     cityName = searchStore.getAttr('ctyName') || '',
                     positionData = positionfilterStore.get(),
@@ -214,7 +215,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                         }
                     }
                 }
-                infoWrap.html(text);
+                infoSpan.html(text);
 
                 if (isNearBy) {
                     gpsInfo.city = gpsInfo.city && gpsInfo.city.replace('市', ''); //不显示"市";
@@ -597,7 +598,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 this.referUrl = refer || this.getLastViewName();
                 this.parseSEOPostData();
                 //定位提示容
-                this.infoWrap = this.$el.find('#J_gpsInfo');
+                //this.infoWrap = this.$el.find('#J_gpsInfo');
                 this.gpsReloadBtn = this.$el.find('#J_reloadGPS');
                 //this.setQuickScroll();
 
@@ -629,14 +630,14 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                         //调整代码执行，原先位置会导致从攻略过来，一直显示定位中
                         var gpsInfo = geolcationStore.getAttr('gps');
                         if (isNearBy && gpsInfo) {
-                            var infoWrap = self.infoWrap,
+                            var //infoWrap = self.infoWrap,
                                 reloadBtn = self.gpsReloadBtn,
                                 gps = geolocationStore.getAttr('gps'),
                                 text = '距离: ';
 
                             reloadBtn.show();
                             text += (MSG.youAreHere + gps.address);
-                            infoWrap.html(text);
+                            self.infoSpan.html(text);
                         }
 
                         //我的附近默认按距离最近排序
@@ -809,6 +810,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     model.param.ctyId = 0;
                     model.param.ctyName = '';
                 }
+                this.totalPages = 0;
                 var currPageIndex = model.param.pageIdx;
                 model.excute(function (data) {
                     var list = data;
