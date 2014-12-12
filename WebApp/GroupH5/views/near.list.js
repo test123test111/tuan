@@ -5,6 +5,7 @@
 /*jshint -W030*/
 define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore', 'TuanModel', 'text!NearListTpl'], function (TuanApp, TuanBaseView, CommonPageFactory, LazyLoad, TuanStore, TuanModel, html) {
     var tuanNearListModel = TuanModel.TuanNearListModel.getInstance();
+    var searchStore = TuanStore.GroupSearchStore.getInstance();
     var pageTitle = '周边团购';
     var PageView = CommonPageFactory.create("TuanBaseView");
     var View;
@@ -76,6 +77,7 @@ define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore'
             false, this);
         },
         renderList: function(data) {
+            data.ctype = searchStore.getAttr('ctype');
             var item = this.itemRenderFn(data);
             this.$el.html($.trim(item));
             this.LazyLoad && this.LazyLoad.updateDom();
