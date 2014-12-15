@@ -1265,6 +1265,8 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-ms-animation:op
 .layer_list_search .icon_search_w:after{content: ''; position: absolute; left: 0; top: 0; -webkit-border-radius: 50%; border-radius: 50%; background: -webkit-radial-gradient(rgba(9,159,222,1) 0%,rgba(10,73,99,1) 100%); z-index: 1; -webkit-filter:blur(6px);}
 .layer_list_search .icon_search_w:before{z-index: 2;}
 
+.shadow{-webkit-mask: -webkit-gradient(linear,0 84, 0 bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));-webkit-mask-position: 0px 0px;}
+
 
 /* 把列表页头部的ICON放入CSS，方便Hybrid打包(junyizhang@ctrip.com) */
 .list_header_map_icon {background: url(http://pic.c-ctrip.com/h5/tuan/icon_map_w.png) no-repeat 0 0;}

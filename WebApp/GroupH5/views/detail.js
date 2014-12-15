@@ -32,7 +32,8 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         invoiceStore = TuanStore.TuanInvoiceStore.getInstance(),
         Member = WidgetFactory.create('Member'),
         Guider = WidgetFactory.create('Guider'),
-        getQuery = Lizard.P;
+        getQuery = Lizard.P,
+        LINE_CONFIG = 4;
 
     /**
     * 获取yyyy-mm-dd格式时间
@@ -47,6 +48,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         pageid: '214008',
         hpageid: '215008',
         hasAd: false,
+        lineHeight: 21,
         backHome: function () {
             TuanApp.tHome();
         },
@@ -420,6 +422,9 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
 
             data.isInApp = isInApp;
             this.$el.html($.trim(this.htmlfun({ data: data })));
+
+            this.hideMoreContent();
+
             btnSubmit = this.$el.find('#J_submit');
             if (labelVal == 98) { //即将结束
 
@@ -445,6 +450,19 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             });
 
             this.isFromWeChat() && this.initWechatShare();
+        },
+        hideMoreContent: function () {
+            var panel = this.$el.find('.J_moreOrLessPanel'),
+                h = this.lineHeight,
+                t;
+            $.each(panel, function() {
+                t = $(this);
+                if (t.height() <= LINE_CONFIG * h) {
+                    t.next().remove();
+                } else {
+                    t.css({overflow: 'hidden', height: LINE_CONFIG * h + 'px'}).removeClass('shadow');
+                }
+            });
         },
         initWechatShare: function () {
             this.prepareShareData(function(data) {
@@ -479,18 +497,14 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         },
         ctrlInfoTip: function (e) {
             var btn = $(e.target);
-
-
-            var hidden = btn.parent().prev().find('.J_tipsHidden');
+            var panel = btn.parent().prev();
 
             if (btn.attr("data-state") === "hide") {
-
-                hidden.show();
+                panel.removeAttr('style');
                 btn.attr({ "data-state": "show" }).html("收起").removeClass("view_unfold").addClass("view_fold");
             } else {
-
+                panel.css({overflow:'hidden', height: this.lineHeight*LINE_CONFIG + 'px'});
                 btn.attr({ "data-state": "hide" }).html("查看全部").removeClass("view_fold").addClass("view_unfold");
-                hidden.hide();
             }
         },
         showTips: function () {

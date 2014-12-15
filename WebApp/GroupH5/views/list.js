@@ -814,7 +814,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 var currPageIndex = model.param.pageIdx;
                 model.excute(function (data) {
                     var list = data;
-
                     this.isLoading = false;
                     self.hideLoading();
                     notClearAll && self.hideBottomLoading();
@@ -864,13 +863,19 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                         }
                     }
                     this.LazyLoad && this.LazyLoad.updateDom();
-                }, function (err) {
+                }, function (err, st) {
                     this.hideLoading();
                     this.isLoading = false;
                     this.isComplete = true;
+
                     if (this.totalPages <= 0) {
                         this.listWrap.empty();
-                        this.renderNoResult(err.msg, key);
+                        //
+                        if (st && st === 'timeout') {
+                            this.showWarning404($.proxy(self.reloadPage, self));
+                        } else {
+                            this.renderNoResult(err.msg, key);
+                        }
                     }
                     searchStore.setAttr('pageIdx', 1);
                     $(window).unbind('scroll', this.onWindowScroll);

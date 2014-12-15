@@ -211,18 +211,8 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
         <div class="hot_tit">团购包含</div>
     </div>
     <nav class="tuan_content">
-        <%
-            project = stripTags(project);
-            var nonWordNum = getNonWordNum(project, MAX_WORDS);
-        %>
-        <p><%=(replaceBrTag(project.substr(0, nonWordNum)) || "暂无相关信息")%>
-            <%if (project.length > nonWordNum) {%>
-                <span style="display:none" class="J_tipsHidden"><%=replaceBrTag(project.substr(nonWordNum))%></span>
-            <%}%>
-        </p>
-        <%if (project.length > nonWordNum) {%>
+        <p class="J_moreOrLessPanel shadow"><%=(replaceBrTag(stripTags(project)) || "暂无相关信息")%></p>
         <p class="tac"><a href="javascript:;" class="view_unfold J_viewMoreBtn" data-state="hide">查看全部</a></p>
-        <%}%>
     </nav>
     <%}%>
     <div class="neg_mb10">
@@ -230,18 +220,10 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
     </div>
     <nav class="tuan_content" data-id="2">
         <%if(prompt && prompt.length > 0){%>
-            <%
-                prompt = stripTags(prompt);
-                var nonWordNum = getNonWordNum(prompt, MAX_WORDS);
-            %>
-            <div class="tipsPanel"><%=replaceBrTag(prompt.substr(0, nonWordNum))%>
-                <%if (prompt.length > nonWordNum) {%>
-                <span style="display:none" class="J_tipsHidden"><%=replaceBrTag(prompt.substr(nonWordNum))%></span>
-                <%}%>
+            <div class="tipsPanel J_moreOrLessPanel shadow">
+                <%=replaceBrTag(stripTags(prompt)) %>
             </div>
-            <%if (prompt.length > nonWordNum) {%>
             <p class="tac"><a href="javascript:;" class="view_unfold J_viewMoreBtn" data-state="hide">查看全部</a></p>
-            <%}%>
         <%}else{%>暂无相关信息<%}%>
     </nav>
     <!--拉手产品的详情需要展示在特别提示的后面 @since v2.6-->
