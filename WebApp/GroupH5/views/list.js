@@ -844,7 +844,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                                 this.getConditionData(cityid);
                             }
                         }
-                        //MemCache.setItem('hasListData', true);
+                        //修复列表页锚点问题
+                        MemCache.setItem('hasListData', true);
                         MemCache.setItem('resultCount', data.count);
                         if (searchStore.getAttr('pageIdx') <= 1 && !isNearBy) {
                             self.displayGPSInfo(data.curpos || {}, isNearBy);

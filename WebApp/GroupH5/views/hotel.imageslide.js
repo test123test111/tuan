@@ -2,10 +2,11 @@
  * 酒店图片轮播页面
  * @url: m.ctrip.com/webapp/tuan/hotelimageslide
  */
-define(['TuanApp', 'TuanBaseView', 'TuanStore', 'text!HotelImageSlideTpl', 'cWidgetFactory', 'cCommonPageFactory', 'SmoothSlide'],
-function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFactory) {
+define(['TuanApp', 'TuanBaseView', 'TuanModel', 'TuanStore', 'text!HotelImageSlideTpl', 'cWidgetFactory', 'cCommonPageFactory', 'SmoothSlide'],
+function (TuanApp, TuanBaseView, TuanModel, TuanStore, html, WidgetFactory, CommonPageFactory) {
     var tuanDetailsStore = TuanStore.TuanDetailsStore.getInstance(),
         tuanImagesListStore = TuanStore.TuanImagesListStore.getInstance(),
+        imagesListModel = TuanModel.TuanImagesListModel.getInstance(),
         imageSlide,
         Slide = WidgetFactory.create('SmoothSlide'),
         View;
@@ -19,10 +20,29 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
         },
         onCreate: function() {},
         onLoad: function() {
-            var images = tuanImagesListStore.getAttr('images') || tuanDetailsStore.getAttr('images');
+            var self = this;
+            this.pid = Lizard.P('pid');
+            var images = tuanDetailsStore.getAttr('images');
+            var imageList = tuanImagesListStore.getAttr('images');
 
-            if (images) {
+            //有缓存则读缓存
+            if(images && +tuanDetailsStore.getAttr('id') === +this.pid) {
                 this.createSlide(images);
+            } else if (imageList && +tuanImagesListStore.getAttr('id') === +this.pid) {
+                this.createSlide(imageList);
+            } else {
+                self.showLoading();
+                imagesListModel.setParam({id: this.pid});
+
+                imagesListModel.excute(function(data){
+                    data = data && data.images;
+                    self.hideLoading();
+                    if(!data||!data.length) {return;}
+                    self.createSlide(data);
+                }, function(){
+                    self.hideLoading();
+                    self.showToast('图片数据获取失败！');
+                });
             }
         },
         setHeader: function(current, total) {
@@ -47,7 +67,7 @@ function (TuanApp, TuanBaseView, TuanStore, html, WidgetFactory, CommonPageFacto
         onHide: function() {
         },
         backAction: function() {
-            this.back();
+            this.back({pid: this.pid});
         },
         backHome: function() {
             TuanApp.tHome();

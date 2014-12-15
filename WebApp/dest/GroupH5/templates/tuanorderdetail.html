@@ -28,7 +28,8 @@
         </div>
     <%}else{%>
         <!--产品名称、信息-->
-        <%var hasAddrOrPhone = ContactInfo.hotelAddr||ContactInfo.splitphone%>
+        <%  var cplist = ContactInfo.phoneList;
+            var hasAddrOrPhone = ContactInfo.hotelAddr||(cplist && cplist.length)%>
         <div class="order_htl_info arr_r<%if(!hasAddrOrPhone){%> order_mid_autumn<%}%> <%=isTicket?'order_htl_ticket':'' %>" id="J_tuanDetail">
             <div class="order_htl_info_t"><%=pname %></div>
             <!-- 门票对接去除使用有效期  -->
@@ -43,8 +44,9 @@
                 <i class="icon_txt">地图</i>
             </li>
             <%}%>
-            <%if (ContactInfo.phoneList && ContactInfo.phoneList.length) {
-                var phones = _.map(ContactInfo.phoneList, function(p) {return p.phone;});
+            <!--门票对接隐藏预约咨询-->
+            <%if (!isTicket && cplist && cplist.length) {
+                var phones = _.map(cplist, function(p) {return p.phone;});
             %>
                 <li class="arr_r wrap_phone" id="J_hotelTel" data-phone="<%=phones.join(',')%>">
                     <span class="subb_phone i_bef"><%_.each(phones, function(t) {%><span><%=t %></span><%}); %></span>

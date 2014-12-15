@@ -5,6 +5,7 @@
 define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore', 'TuanModel', 'text!HotelImagesTpl'], function (TuanApp, libs, c, TuanBaseView, CommonPageFactory, TStore, TModel, html) {
     var tuanDetailsStore = TStore.TuanDetailsStore.getInstance();
     var imagesListModel = TModel.TuanImagesListModel.getInstance();
+    var tuanImagesListStore = TStore.TuanImagesListStore.getInstance();
     var PageView = CommonPageFactory.create("TuanBaseView");
     var View;
     View = PageView.extend({
@@ -16,15 +17,16 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
         getImagesList: function(){
             var self = this;
             var images = tuanDetailsStore.getAttr('images');
+            var imageList = tuanImagesListStore.getAttr('images');
 
             //有缓存则读缓存
-            if(images){
+            if(images && +tuanDetailsStore.getAttr('id') === +this.pid){
                 self.renderImagesList(images);
-            }else{ //没有缓存请求服务器
+            } else if (imageList && +tuanImagesListStore.getAttr('id') === +this.pid) {
+                self.renderImagesList(imageList);
+            } else{ //没有缓存请求服务器
                 self.showLoading();
-                imagesListModel.setParam({
-                    id: Lizard.P('pid')
-                });
+                imagesListModel.setParam({id: this.pid});
 
                 imagesListModel.excute(function(data){
                     data = data && data.images;
@@ -46,7 +48,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
         },
         gotoImageSlider: function(e) {
             var id = $(e.currentTarget).attr('data-index');
-            this.forwardJump('hotelimageslide','/webapp/tuan/hotelimageslide?index=' + id, { viewName: 'hotelimageslide' });
+            this.forwardJump('hotelimageslide','/webapp/tuan/hotelimageslide/' + this.pid + '?index=' + id, { viewName: 'hotelimageslide' });
         },
         isFromSlidePage: function (refer) {
             return refer && refer.match(/imageslide/i);
@@ -54,6 +56,7 @@ define(['TuanApp', 'libs', 'c', 'TuanBaseView', 'cCommonPageFactory', 'TuanStore
         onCreate: function () {
         },
         onLoad: function () {
+            this.pid = Lizard.P('pid');
             //如果从slide页返回，则不请求数据
             if(this.isFromSlidePage(this.referer)){
                 window.scrollTo(this.scrollPos.x, this.scrollPos.y);
