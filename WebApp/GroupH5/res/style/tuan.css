@@ -33,13 +33,13 @@ header .search_title .word{display: inline-block; vertical-align: top; -webkit-b
 header .search_title .num{opacity: 0.7; margin-left: -60px;}
 /* common class */
 /*border-top*/
-.border_t,.pro_list2 li.more,.hot_tit,.pro_list3
-{background:#fff -webkit-linear-gradient(bottom,transparent 50%,#ddd 50%) no-repeat left top; background-size:100% 1px;}
+.border_t,.pro_list2 li.more,.hot_tit,.pro_list3,.detail_around .tab_hd,.pro_list4
+{background:-webkit-linear-gradient(bottom,transparent 50%,#ddd 50%) no-repeat left top; background-size:100% 1px; background-color: #fff;}
 /*border-bottom*/
-.border_b,.pro_list li,.list_title,.btn_more,.quickOpBar
-{background:#fff -webkit-linear-gradient(top,transparent 50%,#ddd 50%) no-repeat left bottom; background-size:100% 1px;}
+.border_b,.pro_list li,.list_title,.btn_more,.quickOpBar,.tuan_detail_buy,.detail_list>li
+{background:-webkit-linear-gradient(top,transparent 50%,#ddd 50%) no-repeat left bottom; background-size:100% 1px; background-color: #fff;}
 /*border-top-bottom*/
-.border_t_b,.list_title_fixed
+.border_t_b,.list_title_fixed,.tuan_name,.subblist, .invoice_select,.detail_list,.entry_cate
 {background-image:-webkit-linear-gradient(bottom,transparent 50%,#ddd 50%),-webkit-linear-gradient(top,transparent 50%,#ddd 50%); background-position:left top,left bottom; background-repeat: no-repeat; background-color: #fff; background-size:100% 1px;}
 
 /* common area */
@@ -47,7 +47,7 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .tuan_hotline .desc{color: #666; line-height: 32px; padding-top: 10px; font-size: 13px;}
 .tuan_hotline .cont{color: #099FDE; line-height: 44px; font-size: 15px; font-weight: 600;}
 
-.wrapBottom{position: fixed; bottom: 0; left: 0; width: 100%;}
+.wrapBottom{position: fixed; bottom: 0; left: 0; width: 100%; -webkit-animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1);animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1);}
 /* icon */
 .icon{overflow: hidden; display: inline-block; background: url(http://pic.c-ctrip.com/h5/tuan/icon_tuan.png?v=1.1) no-repeat;  background-size: 50px 50px;}
 .icon_user{width: 21px; height: 21px; background-position: 0 0;}
@@ -128,15 +128,14 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .returnico{background:none;}
 .icon_map_w{width:42px;height:100%;top:0;position:relative;z-index:9;float:right;}
 .icon_map_w:before{background-position:-190px -60px;width:22px;height:24px;right:10px;top:12px;}
-.icon_search_w{height:48px;}
 .icon_search_w:before{background-position:-220px -60px; width: 22px; height: 22px; right: 10px; top: 13px;}
 /* 列表页搜索 */
 .list_s{position:relative;z-index:1;padding:8px;width:100%;-webkit-box-sizing:border-box;box-sizing:border-box;background-color:#e6f0f7;}
 .hybrid .list_s{padding:8px 48px 8px 8px;}
 .tuan-noresult {border-top:#ddd 1px solid;border-bottom:#ddd 1px solid;}
 .tuan-noresult .list_s{width:210px;margin:auto;background:transparent;}
-.list_s_fixed{position:fixed;z-index:1999;top:0;left:0;-webkit-animation:drop 350ms ease-out;animation:drop 350ms ease-out;}
-.list_s_input{padding-left:32px;background-color:#fff;height:28px;line-height:normal;border-radius:14px;}
+.list_s_fixed{position:fixed;z-index:9999;top:0;left:0;-webkit-transition:all .5s ease 0;-ms-transition:all .5s ease 0;transition:all .5s ease 0;}
+.list_s_input{padding-left:32px;background-color:#fff;height:28px;line-height:28px;border-radius:14px;}
 .list_s:before{display:block;position:absolute;z-index:1;left:14px;top:12px;width:12px;height:12px;border:2px solid #9a9a9a;content:'\20';border-radius:50%;}
 .list_s:after{display:block;position:absolute;z-index:2;width:8px;height:2px;top:26px;left:26px;content:'\20';background-color:#9a9a9a;-webkit-transform:rotateZ(40deg);-ms-transform:rotateZ(40deg);transform:rotateZ(40deg);}
 .btn_voice_s{display:none;position:absolute;z-index:3;top:0;right:4px;width:40px;height:45px;}
@@ -207,10 +206,10 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .order_htl_info{position:relative;z-index:1;margin-bottom:-10px;padding:0 20px 10px 15px; background-color:#efefef; background-image:-webkit-linear-gradient(top,transparent 50%,#ddd 50%); background-repeat:no-repeat; background-size:100% 1px; background-position:left bottom;}
 .order_htl_info_t{width:100%;height:22px;padding-top:10px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden; font-weight:600;}
 .order_htl_info_txt{color:#999; font-size: 13px;}
+.order_bg .order_htl_info{background-color: #fff;}
+/*门票订单详情title重置*/
 .order_htl_ticket{margin-bottom: 0; background: #fff;}
 .order_htl_ticket .order_htl_info_t{font-weight: 400; font-size: 15px;}
-
-.order_bg .order_htl_info{background-color: #fff;}
 /* 消费券 */
 .tips_tickets{padding-left:10px;background-color:#fcf6e2;color:#666;line-height:30px; background-image:-webkit-linear-gradient(top, #ddd 50%, transparent 50%); background-repeat:repeat-x; background-size:100% 1px; background-position:left top;}
 .btns_base01{margin-bottom:10px;font-size:14px;line-height:43px;color:#099fde;text-align:center;background-color:#fff; background-image:-webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat:repeat-x; background-size:100% 1px; background-position:left bottom;}
@@ -261,17 +260,17 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .icon_txt a { color: #099fde; }
 .hasborder .icon_txt { border: 1px solid #dbdbdb; border-radius: 3px; }
 
-.subblist, .invoice_select {position: relative; z-index: 1;  margin: 10px 0; background-color: #fff; background-image: -webkit-linear-gradient(top, #ddd 50%, transparent 50%), -webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat: repeat-x; background-position: left top, left bottom;background-size: 100% 1px;  }
-.subblist { padding-left: 10px; font-size: 13px;color: #666; }
+.subblist, .invoice_select {position: relative; z-index: 1; margin: 10px 0;}
+.subblist { padding-left: 15px; font-size: 13px;color: #666; }
 .subblist:last-child { background-image: none; }
 .invoice_select { margin: 0 0 10px; }
-.subblist li, .invoice_select li { position: relative; padding: 10px 85px 10px 0; font-size: 15px;line-height: 20px; color: #333; background-image: -webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat: repeat-x; background-position: left bottom; background-size: 100% 1px;  }
-.subblist li:last-child, .invoice_select li:last-child { border-bottom: none; }
-.subblist li:active { background-color: transparent; }
+.subblist>li, .invoice_select li { position: relative; padding: 10px 85px 10px 0; font-size: 15px;line-height: 20px; color: #333; background-image: -webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat: repeat-x; background-position: left bottom; background-size: 100% 1px;  }
+.subblist>li:last-child, .invoice_select li:last-child { border-bottom: none; }
+.subblist>li:active { background-color: transparent; }
 .subblist .hotelname {overflow: hidden;  width: 100%; height: 20px; white-space: nowrap; text-overflow: ellipsis; word-break: keep-all; }
 .subblist .li_info {padding: 10px 10px 10px 0; color: #999; }
 .subblist .i_bef:before {left: 0;}
-.subblist .subb_valid.i_bef:before {top: 20px;}
+.subblist .subb_valid.i_bef:before {top: 19px;}
 .subblist .list_tit2 {overflow: hidden; height: 40px;  padding: 0 10px; line-height: 50px; color: #828282;background: transparent;  }
 .subblist .subblist_hint { font-size: .86em; background: #fbf4da; }
 .subb_citylist .subblist { margin: 0 10px; }
@@ -289,11 +288,18 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .tuan_list_more:active{background-color:#f5f5f5;}
 
 /* 快捷操作栏 */
-.quickOpBar{overflow: hidden; width: 100%;}
+.quickOpBar{position: fixed; z-index: 10; left: 0; top: 78px; overflow: hidden; width: 100%; height: 45px;}
 .quickOpBar ul{padding: 10px 3px 10px 10px; white-space: nowrap;}
 .quickOpBar li{height: 25px; line-height: 26px; padding: 0 7px; color: #099fde; margin-right: 3px; font-size: 12px; float: none; display: inline-block; vertical-align: top;}
 .quickOpBar li:before{border-color: #099fde;}
 .quickOpBar .current{background-color: #099fde; color: #fefefe;}
+/* 高端美食入口 */
+.entry_cate{width: 100%; height: 45px; -webkit-box-sizing: border-box; box-sizing: border-box; padding-left: 53px; padding-right: 28px; margin-bottom: 5px; overflow: hidden;}
+.entry_cate .title,.entry_cate .desc{white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
+.entry_cate .title{margin-top: 4px; margin-bottom: -3px;}
+.entry_cate .desc{color: #999; font-size: 12px;}
+.icon_cate{display: inline-block; width: 26px; height: 25px; background-position: -210px -170px;}
+.entry_cate .icon_cate{position: absolute; left: 18px; top: 50%; margin-top: -13px;}
 /* 团购列表 */
 .pro_list_wrap { padding-bottom: 44px; position: relative; margin-left: 5px; margin-right: 5px;}
 .pro_list li { position: relative; z-index: 1;}
@@ -317,7 +323,7 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .pro_list_ext .pro_list_oldprice{float: left;}
 .pro_list_ext .split{margin: 0 3px; vertical-align: 1px;}
 .pro_list_rank,.font_blue{color: #099fde;}
-.pro_list1{margin-right: 3px;}
+.pro_list1{margin-right: 3px; margin-top: 5px;}
 .pro_list1 li { margin-bottom: 5px;}
 .pro_list1 li,.list_title{-webkit-box-shadow: 1px 1px 1px rgba(0,0,0,0.05); box-shadow: 1px 1px 1px rgba(0,0,0,0.05);}
 .pro_list1 li:before,.pro_list1 li:after,.pro_list5 li:before{content: '';position: absolute; z-index: 2;}
@@ -359,42 +365,161 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .near_detail {padding: 17px 12px; color: #5c5c5c; border-bottom: 2px solid #e4e4e4; background-color: #ebebeb;  }
 
 /*------------------tuandetail---------------*/
+.offer_service p i,.tuan_detail_buy .icon_rebate:before,.tuan_detail_buy .icon_rebate:after,.subblist_detail .btnphone:before,.detail_list .title i,.tuan_detail_buy .item2:before,.tuan_detail_buy .item2:after{background-image: url(http://pic.c-ctrip.com/h5/tuan/sprite_detail.png); background-size: 200px auto; background-repeat: no-repeat;}
 .tuan_pic { position: relative; z-index: 1; overflow: hidden; width: 100%; max-width: 100%; height: 180px; margin: 0; background-color: #e5e7e8; }
 .tuan_pic img {position: relative; z-index: 1;display: block;  width: 100%; height: 180px; margin: 0 auto;  }
 .tuan_pic .total_num{position:absolute;z-index:1;bottom:0;right:0;width:58px;line-height:28px;background-color:rgba(0,0,0,.3);color:#fff;text-align:center;}
 .tuan_pic:before{content:""; width:100%; height:100%; position:absolute; bottom:0; left:0;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAABzAgMAAAA5/JSTAAAADFBMVEXHx8fl5+jc3NzR0dLzEXoCAAACmElEQVR42u3VMW4TQRTG8U+amtnTpHBjn2IcxRRUUCxI5DLb0LtgmuQAiFjKGXwEF7iBerA8rGzitXlLYjO7bz6J/Z/gp2+e13CtlXffY93X4CuXozZWGRdoMjHMnXaS9X4D0SSojiZZsw3ai3qTSdbHBf7aVmkxyfqC5zLfnEKCNf2BFxr3PphkSZWsUHE1LKlqz6xcb0nWXsXjOrDuASLXE+sDzs70dV+S9RqHKO5+z5oucEnWiXph3eOyRk7UA+sNLq3vs4c7ekKes4c7/AqZzqtmXWMX1XnVrFugjuu8sB+L7RmxG4vuGXGNf80sXW/hFkD+Z7y5cSdhAZHy1b/z+94es0TKH9VPvqkSrExXP/MnzQUry9WX/s8ES//qp172uRMWVl2opAv6c8mzki6kdpWoks27YJlUlawLFkbpdyWfEcmZKlElqxyyzOWb2udCjrlK/0IVOuhV4rnL5uiiZeJhyVeE/lz+HJb6XKUey3byhJKl94/tNVk27QklS3euqddl2aQnlCzVuWbqLJvyhJKlOVeZgWUTnlCyFOfyWVg24QkFS22umc/EsslP2LC05irzsWzqEzYsnbmmPifLJh5Ww1KZq8zMsucclj4Lq1ZVdlbRdu75WbiS587AMkJFwcLoVFWSsEx1qiJhYXSiomFheaQiYtlGxcTC6knFxTK/vwxkrN3Vez6WqWaekAXrKVkInCzDycKYk4XAySo4WRhzshA4WWZNyULBycKWk2XWlCwUa0oWCk4WxpwsBE6WCZSs2kXJgllTsmoXJat2UbJgAiWrdlGygC0nCxNOFopAyQLiuS7oZs64sIe4gXrFs4vFhqSdiaFto4cYF8hbEWPzmnc/84OOe5zEzSOGhoaGhv67fgFpVB0aF/UhSwAAAABJRU5ErkJggg==) no-repeat; background-size: contain;background-position: center bottom;}
 .tuan_pic:after{content:""; background-image: url(//pic.c-ctrip.com/h5/tuan/loading.png);background-size: 76px 38px;background-repeat: no-repeat; background-position: -38px 0; width:38px; height:38px; position:absolute; top:25px; left:50%;margin-left:-19px; -webkit-transform: scale(2,2);}
 .tuan_pic .loading_rate{position:absolute; bottom:0; left:0; right:0; background-color:#099fde; height:5px;}
+.tuan_pic .cont,.tuan_pic .cont li{position: relative; width: 100%; height: 180px; overflow: hidden;}
+.tuan_pic .navitem{position: absolute; z-index: 1; left: 0; bottom: 8px; width: 100%; height: 9px; overflow: hidden; text-align: center;}
+.tuan_pic .navitem i{display: inline-block; width: 9px; height: 9px; overflow: hidden; vertical-align: top; margin: 0 1px; background-color: rgba(255,255,255,0.8); -webkit-border-radius: 50%; border-radius: 50%;}
+.tuan_pic .navitem .cur{background-color: rgba(9,159,222,0.7);}
+.tuan_pic .endinfo{position: absolute; right: 5px; top:45px; font-size: 12px; width: 12px; color: #fefefe; line-height: 1.25;}
+.tuan_pic .endinfo:before,.tuan_pic .endinfo:after{content: ''; position: absolute; top: 50%; margin-top: -4px; width: 5px; height: 5px; border-top: 2px solid #fff; border-left: 2px solid #fff; -webkit-transform: rotate(-45deg); transform: rotate(-45deg);}
+.tuan_pic .endinfo:before{ left: -7px; }
+.tuan_pic .endinfo:after{ left: -12px; }
+/**/
+.tuan_detail_buy{padding-bottom: 1px; margin-bottom: 10px; position: relative; -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.05); box-shadow: 0 1px 2px rgba(0,0,0,0.05);}
+.tuan_detail_buy .item1,.tuan_detail_buy .item2{padding-left: 15px; padding-right: 15px;}
+.tuan_detail_buy .item1{position: relative; height: 50px; background-color: #fff; margin-right: 2px; line-height: 50px;}
+.tuan_detail_buy .price_2{color: #ff9a14; font-size: 25px; vertical-align: -4px;}
+.tuan_detail_buy .price_2 i{font-size: 15px; margin-right: 2px;}
+.tuan_detail_buy del,.tuan_detail_buy .sold{color: #ccc; font-size: 12px;}
+.tuan_detail_buy .sold{position: absolute; right: 108px; top: 0;}
+.tuan_detail_buy .buybtn{font-size: 16px; font-weight: 600; color: #fefefe; background-color: #ff9a14; padding: 0 11px; height: 38px; line-height: 38px; text-align: center; -webkit-border-radius: 3px; border-radius: 3px; position: absolute; right: 15px; top: 5px; -webkit-box-shadow: 0 2px 0 #e47c15; box-shadow: 0 2px 0 #e47c15;}
+.tuan_detail_buy .item2{background-color: #fafafa; border-top: 1px dashed #e6e6e6; height: 33px; line-height: 34px; overflow: hidden; font-size: 12px;}
+.tuan_detail_buy .item2:before,.tuan_detail_buy .item2:after{content: ''; position: absolute; width: 8px; height: 15px; background-position: -30px 0; top: 50%;}
+.tuan_detail_buy .item2:before{left: 0; transform: rotate(180deg); -webkit-transform: rotate(180deg);}
+.tuan_detail_buy .item2:after{right: 0;}
+.tuan_detail_buy .icon_rebate{display: inline-block; color: #ff9a14; height: 18px; line-height: 18px; padding: 0 3px; border-top: 1px solid #ff9a14; border-bottom: 1px solid #ff9a14; margin-right: 14px; position: relative;}
+.tuan_detail_buy .icon_rebate:before,.tuan_detail_buy .icon_rebate:after{content: ''; position: absolute; width: 3px; height: 20px; background-position: 0 0; top: -1px;}
+.tuan_detail_buy .icon_rebate:before{left: -3px;}
+.tuan_detail_buy .icon_rebate:after{right: -3px; transform: rotate(180deg); -webkit-transform: rotate(180deg);}
+.tuan_detail_buy .icon_rebate i{margin-left: 4px;}
+.tuan_detail_buy .icon_rebate b{font-size: 14px;}
+.tuan_detail_buy .desc{color: #666;}
+/**/
 .cui-slide-nav-item{width:6px;height:6px;margin-right:6px;overflow:hidden;background-color:rgba(255,255,255,.6);}
 body .cui-slide-nav-item-current{background-color:#099fde;}
 .tuan_info {position: relative; width: 100%; height: 60px; border-bottom: 1px solid #e4e4e4; background-color: #fff;  }
 .tuan_buyfix { position: fixed; z-index: 999;top: 48px; left: 0;  }
 .disabled {color: #999; background: #f2f2f2;  }
+/**/
+.tuan_name{margin-bottom: 10px; padding: 3px 15px 1px; }
+.tuan_name .title,.tuan_name .title_desc{display: inline-block; -webkit-box-sizing: border-box; box-sizing: border-box; max-width:100%; vertical-align: top; overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tuan_name .title{font-size:17px;font-weight:600;line-height:40px; position: relative; padding-right: 45px;}
+.tuan_name .tuan_hotel_star,.tuan_name .title_desc{font-size: 12px; color: #999;}
+.tuan_name .tuan_hotel_star{ font-weight: 400; position: absolute; right: 0;}
+.tuan_name .title_desc{margin-top: -9px;}
+.tuan_name .subblist{padding-left:0;margin:0 -15px 0 0;}
+.tuan_name .subblist:nth-of-type(1){margin-top: -3px;}
+.tuan_name .subblist li{font-size: 13px;}
+.tuan_name .subblist .align_r{position: absolute; right: 15px; top: 10px;}
+.tuan_name .info_suit_not{margin:0 5px 0 20px; color: #666;}
 
-.tuan_name {margin-bottom: 10px;  padding: 3px 15px 1px; background-color: #fff; background-image: -webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat: repeat-x; background-position: left bottom; background-size: 100% 1px; }
-.tuan_name h5 {display: -webkit-box; overflow: hidden; max-height: 40px; padding: 5px 8px 5px 1px;  line-height: 22px; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.tuan_name .tuan_hotel_info{margin-right:-15px;margin-bottom:-1px;padding-right:15px;color: #999;font-size:13px;text-align:right;line-height:36px;background-image:-webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat:repeat-x; background-size:100% 1px; background-position:left bottom; overflow:hidden;}
-.tuan_name .title{font-size:18px;font-weight:600;padding: 9px 0;line-height:1.2;width:100%;height:22px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;word-break:keep-all;}
-.tuan_name .tuan_hotel_intro{font-size:15px;color:#666;line-height:18px;}
-.tuan_hotel_star{float:left;}
-.tuan_name .subblist{border:none;padding-left:0;margin:0 -15px 0 0;background-color:transparent;}
-.tuan_hotel_time{padding-left:15px;}
-.tuan_policy{position:relative;z-index:2;margin-right:-15px;margin-bottom:-1px;padding-right:15px;font-size:12px; background-image:-webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat:repeat-x; background-size:100% 1px; background-position:left bottom; overflow:hidden;}
-.tuan_policy:after{display:block;clear:both;height:0;overflow:hidden;visibility:hidden;content:'\20';}
+.tuan_policy{margin-right:-15px;padding-right:15px;font-size:12px;color: #666;}
 .tuan_policy li{width:33.3%;height:40px;line-height:40px;}
 .tuan_policy li:before{display:inline-block;margin-right:3px;width:17px;height:17px;content:'\20';vertical-align:-4px;}
-.no_tuan_policy li{width:50%; color:#ccc;}
 .ico_refund:before{background-position:0 0;}
 .ico_return:before{background-position:0 -24px;}
 .ico_free:before{background-position:0 -47px;}
 .ico_comments:before{background-position:0 -70px;}
+.no_tuan_policy li{width:50%; color:#ccc;}
 .no_tuan_policy .ico_refund:before{background-position:-20px 0;}
 .no_tuan_policy .ico_return:before{background-position:-20px -24px;}
-.tuan_title, .tuan_title02 { line-height: 32px; padding: 0 15px; font-size: 14px; font-weight: 600;}
+/**/
+.subblist_detail{padding-left: 15px;}
+.subblist_detail .btnphone{position: absolute; right: 15px; top: 50%; margin-top: -15px; height: 30px; line-height: 30px; text-align: center; overflow: hidden; padding: 0 6px 0 23px; background-color: #52bce8; color: #fefefe; font-size: 12px; -webkit-border-radius: 3px; border-radius: 3px;}
+.subblist_detail .btnphone:before{content: ''; width: 14px; height: 14px; background-position: -10px 0; position: absolute; left: 5px; top: 50%; margin-top: -7px;}
+.subblist_detail>li{padding: 11px 105px 11px 0; line-height: 18px;}
+.subblist_detail .subb_address{display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;}
+.subblist_detail .subb_address:before{margin-top: 0; top: 12px;}
+.subblist_detail .dist{font-size: 12px; color: #999; display: block; padding-left: 20px;}
+.bluetext{color: #099FDE;}
+.subblist_detail .comm_qr .comm_fen{margin-left: 20px; margin-right: 10px;}
+.subblist_detail .comm_fen_num{font-size: 12px; margin-top: 2px;}
+/**/
+.detail_list{margin-bottom: 10px; padding: 1px 0 0 15px;}
+.detail_list>li{}
+.detail_list .title{height: 42px; line-height: 42px; font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.detail_list .table_desc{padding: 5px 0;}
+.detail_list .table_desc table{width: 100%; text-align: center; font-size: 13px; color: #666;}
+.detail_list .table_desc td{border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; height: 26px;}
+.detail_list .table_desc td:nth-of-type(1){text-align: left; width: 126px;}
+.detail_list .table_desc td:nth-of-type(2){width: 55px;}
+.detail_list .table_desc td:nth-of-type(3){width: 60px;}
+.detail_list .table_desc td:nth-of-type(4){border-right: none;}
+.detail_list .table_desc tr:last-child td,.detail_list .table_desc td[rowspan]{border-bottom: none;}
+.detail_list .table_desc del{color: #999;}
+.detail_list .table_desc .price3{color: #ff9913;}
+.offer_service{overflow: hidden; font-size: 12px; color: #4d5d64; padding-top: 10px;}
+.offer_service p{float: left; width: 25%; text-align: center;}
+.offer_service p i{display: inline-block; vertical-align: top;}
+.offer_service p span{display: block; padding-top: 2px; padding-bottom: 8px;}
+.offer_service .icon_wifi{width: 20px; height: 17px; background-position: 0 -20px; margin-top: 2px; margin-bottom: 2px;}
+.offer_service .icon_net{width: 21px; height: 16px; background-position: -20px -20px; margin-top: 3px; margin-bottom: 2px;}
+.offer_service .icon_parking{width: 21px; height: 21px; background-position: -50px -20px;}
+.offer_service .icon_hotwater{width: 16px; height: 21px; background-position: -80px -20px;}
+.offer_service .icon_toiletries{width: 16px; height: 21px; background-position: -100px -20px;}
+.offer_service .icon_water{width: 20px; height: 20px; background-position: -120px -20px; margin-top: 1px;}
+.dotitem p{padding-left: 8px; position: relative; font-size: 13px; color: #666; line-height: 1.4; padding-bottom: 5px;}
+.dotitem p:before{content: ''; position: absolute; left: 0; top: 8px; width: 2px; height: 2px; background-color: #666;}
+.detail_list li.dotitem{padding-top: 10px; padding-bottom: 5px;}
+.detail_list .order_dl{background: none; font-size: 13px; line-height: 1.4; padding-top: 12px;}
+.detail_list .order_dl dt{padding-left: 0; padding-right: 15px; width: 65px; text-align: right; }
+.detail_list dd.dotitem{padding-bottom: 5px;}
+.detail_list .actmore{text-align: right; color: #099fde; margin-top: -20px; padding-bottom: 10px;}
+.detail_list .actmore:after{-webkit-transform: rotate(225deg); transform: rotate(225deg); margin: 0 15px 1px 5px;}
+/**/
+.detail_list_other li:not(.title){padding: 10px 100px 10px 0;}
+.detail_list_other .desc{color: #999; font-size: 12px; margin-top: -4px;}
+.detail_list_other .info{position: absolute; right: 28px; top: 50%; -webkit-transform: translate(0,-50%); transform: translate(0,-50%);}
+.detail_list_other .price3{display: block; text-align: right; color: #ff9913; font-size: 15px; line-height: 16px;}
+.detail_list_other .price3 i{font-size: 13px;}
+.detail_list_other+.tuan_list_more{margin-top: -10px; margin-bottom: 10px;}
+.detail_around .tab_hd{}
+.detail_around .tab_hd:after{content: ''; display: block; clear: both; visibility: hidden; height: 0;}
+.detail_around .tab_hd li{float: left; width: 25%; text-align: center; position: relative; margin-bottom: -1px; height: 42px; overflow: hidden; line-height: 44px;}
+.detail_around .tab_hd .cur{color: #099fde; font-weight: 600; border-bottom: 3px solid #099fde;}
+.detail_around .tab_hd .cur:before{content: ''; position: absolute; bottom: -3px; left: 50%; margin-left: -3px; width: 6px; height: 6px; background-color: #099fde; -webkit-transform: rotate(45deg); transform: rotate(45deg);}
+.detail_around .tab_hd_2 li{width: 50%;}
+.detail_around .tab_hd_3 li{width: 33.333%;}
+/**/
+.detail_list .title i{display: inline-block; width: 16px; height: 16px; vertical-align: -2px; margin-right: 7px;}
+.detail_list .icon_contain{background-position: -50px 0;}
+.detail_list .icon_info{background-position: -70px 0;}
+.detail_list .icon_other{background-position: -90px 0;}
+.detail_list .icon_around{background-position: -110px 0;}
+
+/**/
+.pro_list4{padding-top: 1px;}
+.pro_list4 .pro_list_imgbox, .pro_list4 .pro_list_imgbox img,.pro_list5 .pro_list_imgbox, .pro_list5 .pro_list_imgbox img{width: 70px; height: 70px;}
+.pro_list4 li{padding: 5px 0;}
+.pro_list4 .pro_list_info,.pro_list5 .pro_list_info{margin-left: 78px; min-height: 71px; margin-right: 20px;}
+.pro_list4 .pro_list_tit,.pro_list5 .pro_list_tit{font-weight: normal; margin-right: 0; padding-top: 5px;}
+.pro_list4 .pro_list_subtit,.pro_list5 .pro_list_subtit{color: #666; margin: 1px 70px 3px 0;}
+.pro_list4 .pro_list_dist,.pro_list5 .pro_list_dist{position: relative; right: auto; top: auto; display: block; padding-left: 15px;}
+.pro_list4 .pro_list_dist:before,.pro_list5 .pro_list_dist:before{left: 0;}
+.pro_list4 .pro_list_price,.pro_list5 .pro_list_price{position: absolute; right: 0; top: 50%; margin-top: -11px;}
+.pro_list4 .pro_list_price i,.pro_list5 .pro_list_price i{font-weight: normal; font-size: 15px; padding-left: 0;}
+.pro_list4 .wrap_label{position: absolute; right: 5px; top: 44px;}
+.pro_list4 .more {padding: 1px 0 0;line-height: 42px;text-align: center;}
+.pro_list5{margin-right: 8px; margin-left: 5px;}
+.pro_list5 li{margin-bottom: 5px;}
+.pro_list5 .wrap_label{position: absolute; right: 5px; top: 44px;}
+.cont_wrap .pro_list5:first-child{margin-top: 10px;}
+
+
+/**/
+.tuan_title, .tuan_title02 {line-height: 32px; padding: 0 15px; font-size: 14px; font-weight: 600;}
 .tuan_title02 {margin: 10px 0 -11px 0; padding-bottom: 10px; border-top: 1px solid #ccc; }
 .tuan_title .tuan_title_total { float: right; }
 .tuan_title .tuan_title_num { padding-left: 5px; color: #ff9913; }
+
 .cont_wrap .tuan_title:nth-child(1){margin-top: 10px;}
+
 .tuan_content {position: relative;  height: auto; margin: 10px 0; padding: 10px; background-color: #fff; background-image: -webkit-linear-gradient(top, transparent 50%, #ddd 50%), -webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat: repeat-x; background-position: left top, left bottom;background-size: 100% 1px;  }
 .tuan_content .item_list li{text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 .tuan_content .item_list li:last-child{position:relative; padding-right:50px;}
@@ -423,6 +548,7 @@ body .cui-slide-nav-item-current{background-color:#099fde;}
 .ico-text{background-color:#fff; display:inline-block; padding:0 3px; height:13px; line-height:13px; font-size:10px; border-radius:2px; color:#ff9a14; margin:0 3px; vertical-align:2px;}
 .ico-text i{font-style:normal; font-size:8px; margin-left:3px;}
 .jian{font-size:9px;}
+
 /*add by 0807 by pp -load*/
 .pop_load { position: absolute; z-index: 100; top: 150px; left: 10%; width: auto; padding: 10px 30px 10px 10px; font-size: 14px; line-height: 16px; color: #fff; -webkit-border-radius: 5px; -moz-border-radius: 5px;border-radius: 5px; background: rgba(0, 85, 163, .85); box-shadow: 0 0 5px rgba(0, 0, 0, .5); font-weibht: 700;  }
 .pop_close { position: absolute; top: 5px; right: 10px; width: 20px; height: 20px; }
@@ -620,7 +746,7 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .comm_title{float:left;margin-right:14px;}
 .comm_fen{float:left;width:68px;height:12px;margin:8px 14px 0 0;overflow:hidden;background:url(http://pic.c-ctrip.com/h5/tuan/dianping.png) 0 -16px repeat-x;background-size:14px 28px;}
 .comm_fen_in{display:block;width:0;height:12px;overflow:hidden;background:url(http://pic.c-ctrip.com/h5/tuan/dianping.png) 0 0 repeat-x;background-size:14px 28px;}
-.comm_fen_num{float:left;color:#099fde;font-size:16px;}
+.comm_fen_num{float:left;color:#099fde;font-size:15px;}
 .comm_fen_num:after{padding-left:3px;content:'\5206';color:#099fde;}
 .comm_recomm{float:right;}
 .comm_score{padding:0 10px 8px;color:#999;font-size:0.92857em;}
@@ -687,7 +813,7 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
     100% {transform:rotateZ(360deg);}
 }
 /*0404 page.index*/
-.ico_bed,.ico_dining,.ico_travel,.ico_attractions,.ico_location,.ico_edit,.subb_valid:before,.ico_net,.ico_breakfast,.ico_parking,.ico_meeting,.ico_share,.ico_slippers,.ico_water,.ico_toiletries,.ico_wifi_free,.ico_hotwater,.map_type li:after,.map_curpos_btn:after,.landmarks_hotel,.landmarks_dining,.landmarks_vacation,.landmarks_ticket,.landmarks_recreation,.i_landmarks,.bottom_filter li:after,.tuan_type:after,.tuan_default:after,.btn_voice_s:after,.map_btn_search:before,.map_curpos_rebtn:before,.at_link i,.pro_list_label,.icon_map_w:before,.icon_search_w:before {background-image:url(http://pic.c-ctrip.com/h5/tuan/spr_index_3.2.png); background-repeat:no-repeat; background-size:250px 250px;}
+.ico_bed,.ico_dining,.ico_travel,.ico_attractions,.ico_location,.ico_edit,.subb_valid:before,.ico_net,.ico_breakfast,.ico_parking,.ico_meeting,.ico_share,.ico_slippers,.ico_water,.ico_toiletries,.ico_wifi_free,.ico_hotwater,.map_type li:after,.map_curpos_btn:after,.landmarks_hotel,.landmarks_dining,.landmarks_vacation,.landmarks_ticket,.landmarks_recreation,.i_landmarks,.bottom_filter li:after,.tuan_type:after,.tuan_default:after,.btn_voice_s:after,.map_btn_search:before,.map_curpos_rebtn:before,.at_link i,.pro_list_label,.icon_map_w:before,.icon_search_w:before,.icon_share:before,.icon_unfav:before,.icon_fav:before,.icon_cate{background-image:url(http://pic.c-ctrip.com/h5/tuan/spr_index_3.4.png); background-repeat:no-repeat; background-size:250px 250px;}
 .ico_bed{background-position:0 -170px;}
 .ico_dining{background-position:-50px -170px;}
 .ico_travel{background-position:-100px -170px;}
@@ -697,6 +823,19 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .sec_foc{overflow:hidden;}
 .sec_foc .tuan_pic,.sec_foc .tuan_pic img{height:50px;}
 .sec_foc .list_s{background-color:#e6f0f7;background-image:-webkit-linear-gradient(top, transparent 50%, #ddd 50%); background-repeat:repeat-x; background-size:100% 1px; background-position:left bottom;}
+
+.icon_share:before{width: 17px; height: 23px; background-position: -220px -90px; top: 11px; right: 12px;}
+.icon_fav:before,.icon_unfav:before{width: 23px; height: 19px; top: 15px; right: 9px;}
+.icon_fav:before{background-position: -220px 0;}
+.icon_unfav:before{background-position: -190px -90px;}
+.returnico:before,.icon_share:before,.icon_fav:before,.icon_unfav:before{z-index: 2;}
+.headerview_detail{position: fixed; z-index: 100; left: 0; top: 0;}
+.headerview_detail header{background-color: transparent;}
+.headerview_detail .returnico:after,.headerview_detail .icon_share:after,.headerview_detail .icon_fav:after,.headerview_detail .icon_unfav:after{background-color: rgba(9,159,222,0.6); width: 30px; height: 30px; content: ''; position: absolute; left: 6px; top: 9px; z-index: 1; -webkit-border-radius: 50%; border-radius: 50%;}
+.headerview_detail .returnico:after{left: 16px;}
+.headerview_bgcolor header{background-color: rgba(9,159,222,0.8);}
+.headerview_bgcolor .returnico:after,.headerview_bgcolor .icon_share:after,.headerview_bgcolor .icon_fav:after,.headerview_bgcolor .icon_unfav:after{background-color: transparent;}
+
 /*首页入口*/
 .index_link{background: #fff no-repeat left bottom;background-image:-webkit-linear-gradient(top, transparent 50%, #ddd 50%);background-size:100% 1px; margin-bottom: 10px;}
 .qr_link{width: 86.875%; margin: 0 auto; overflow: hidden; text-align: center; color: #1a1a1a; padding-top: 10px;}
@@ -733,25 +872,6 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .pro_list3 .pro_list_dist{top: 5px;}
 .pro_list3 .pro_list_subtit{margin-top: -1px; margin-bottom: 4px;}
 .pro_list3 .pro_list_ext{bottom: 3px;}
-.index_hot .pro_list_tit{margin-right: 0;}
-
-/**/
-.pro_list4{padding-top: 1px;}
-.pro_list4 .pro_list_imgbox, .pro_list4 .pro_list_imgbox img,.pro_list5 .pro_list_imgbox, .pro_list5 .pro_list_imgbox img{width: 70px; height: 70px;}
-.pro_list4 li{padding: 5px 0;}
-.pro_list4 .pro_list_info,.pro_list5 .pro_list_info{margin-left: 78px; min-height: 71px; margin-right: 20px;}
-.pro_list4 .pro_list_tit,.pro_list5 .pro_list_tit{font-weight: normal; margin-right: 0; padding-top: 5px;}
-.pro_list4 .pro_list_subtit,.pro_list5 .pro_list_subtit{color: #666; margin: 1px 70px 3px 0;}
-.pro_list4 .pro_list_dist,.pro_list5 .pro_list_dist{position: relative; right: auto; top: auto; display: block; padding-left: 15px;}
-.pro_list4 .pro_list_dist:before,.pro_list5 .pro_list_dist:before{left: 0;}
-.pro_list4 .pro_list_price,.pro_list5 .pro_list_price{position: absolute; right: 0; top: 50%; margin-top: -11px;}
-.pro_list4 .pro_list_price i,.pro_list5 .pro_list_price i{font-weight: normal; font-size: 15px; padding-left: 0;}
-.pro_list4 .wrap_label{position: absolute; right: 5px; top: 44px;}
-.pro_list4 .more {padding: 1px 0 0;line-height: 42px;text-align: center;}
-.pro_list5{margin-right: 8px; margin-left: 5px;}
-.pro_list5 li{margin-bottom: 5px;}
-.pro_list5 .wrap_label{position: absolute; right: 5px; top: 44px;}
-.cont_wrap .pro_list5:first-child{margin-top: 10px;}
 
 /*v2.3.3*/
 .pop_bg{display:block; background-color:rgba(0,0,0,.7); width:100%; height:100%; position:fixed; top:0; z-index:1;}
@@ -801,7 +921,6 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .comm_qr .comm_fen{margin-top:4px;}
 .subblist .info_valid,.subblist .info_service{padding:10px 10px 10px 0; background-image:none; overflow: hidden;}
 .subb_valid:before{width:14px;height: 16px; background-position:-20px -30px;}
-.info_suit_not{margin:5px 5px 5px 20px;}
 .info_service span{float: left; box-sizing:border-box; min-width:25%; font-size:0.857em; padding-right:5px;}
 .info_service span b{margin-right:2px;}
 .ico_net,.ico_breakfast,.ico_parking,.ico_meeting,.ico_slippers,.ico_water,.ico_toiletries,.ico_wifi_free,.ico_hotwater{display:inline-block; width:12px; height:10px;}
@@ -829,7 +948,6 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .apply_refund .productName{font-weight: 600; color: #333;}
 .apply_refund_info{ color: #666;}
 .apply_refund .total_order_price{position:absolute;z-index:1;left:100px;top:14px;}
-
 .choose_list li{padding-right:30px;}
 .choose_list .choosed{position:relative;}
 .choose_list .choosed:after{position:absolute;z-index:1;top:50%;right:10px;margin-top:-8px;width:15px;height:7px;content:"\20";border-left:2px solid #099fde;border-bottom:2px solid #099fde;-webkit-transform:rotateZ(-45deg);-ms-transform:rotateZ(-45deg);transform:rotateZ(-45deg);}
@@ -903,10 +1021,10 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .detail_pics_in:after{display:block;clear:both;height:0;visibility:hidden;content:'\20';overflow:hidden;}
 .detail_pics_in li{float:left;width:150px;height:112px;margin-bottom:7px;overflow:hidden;margin-right:6px;}
 .detail_pics_in img{width:100%;height:100%;}
-.detail_pics_show{position:relative;z-index:1;width:100%;height:100%;margin-top:-48px;background-color:#efefef;}
-.pics_show_box{position:absolute;z-index:1;top:50%;margin-top:-150px;left:0;width:100%;color:#333;}
-.detail_pics_show p{padding-top:10px;text-align:center;}
-.pics_show_box_in{position:relative;z-index:1;width:999em;}
+.detail_pics_show{position:relative;z-index:1;width:100%;height:100%;margin-top:-48px;background-color:#0b0b0b;}
+.pics_show_box{position:absolute;z-index:1;top:50%;left:0;width:100%; -webkit-transform:translate(0,-50%); transform: translate(0,-50%);}
+.detail_pics_show p{padding-top:20px;text-align:center; color: #fefefe;}
+.pics_show_box_in{position:relative;z-index:1;width:100%;}
 .pics_show_box_items{width:100%; height: 100%; overflow:hidden;}
 .pics_show_box_items img{display:block;width:100%;}
 /* 城市、关键字词搜索历史 */
@@ -1227,6 +1345,10 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-ms-animation:op
 .box_list_ticketB .icon_user{position: absolute; right: -30px; top: -11px;}
 .box_list_ticketB .iptbox{margin-left: 80px; margin-right: 40px;}
 .box_list_ticketB li:last-child .iptbox{margin-right: 0;}
+/* 详情页附近交通 */
+.cont_wrap .box_list_traffic:first-child{margin-top: 10px;}
+.box_list_traffic .name{float: left;}
+.box_list_traffic .dist{float: right; font-size: 13px; color: #999; margin-right: 15px;}
 
 /* 日历 */
 .calendar_hd{position: fixed; left: 0; top: 48px; z-index: 9; display: table; width: 100%; height: 25px; font-size: 12px; background-color: #fafafa;}
@@ -1259,15 +1381,18 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-ms-animation:op
 .fadein_drop{-webkit-animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1),drop 650ms ease-out;animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1),drop 650ms ease-out;}
 .fadeout_raise{-webkit-animation:opacity-fade-out 550ms cubic-bezier(0.680,0,0.265,1),raise 650ms ease-out;animation:opacity-fade-out 550ms cubic-bezier(0.680,0,0.265,1),raise 650ms ease-out;}
 .fadeout{-webkit-animation:opacity-fade-out 550ms cubic-bezier(0.680,0,0.265,1);animation:opacity-fade-out 550ms cubic-bezier(0.680,0,0.265,1);}
+.fadein{-webkit-animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1);animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1);}
 /*列表页浮层*/
 .layer_list_search{position: fixed; width: 100%; height: 100%; left: 0; top: 0; z-index: 100; background: url(http://pic.c-ctrip.com/h5/tuan/layer_list_search.png) no-repeat 100% 35px; background-size: 320px auto; -webkit-animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1);animation:opacity-fade-in 550ms cubic-bezier(0.680,0,0.265,1);}
 .layer_list_search .icon_search_w,.layer_list_search .icon_search_w:after{width: 48px; height: 48px;}
 .layer_list_search .icon_search_w:after{content: ''; position: absolute; left: 0; top: 0; -webkit-border-radius: 50%; border-radius: 50%; background: -webkit-radial-gradient(rgba(9,159,222,1) 0%,rgba(10,73,99,1) 100%); z-index: 1; -webkit-filter:blur(6px);}
 .layer_list_search .icon_search_w:before{z-index: 2;}
-
-.shadow{-webkit-mask: -webkit-gradient(linear,0 84, 0 bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));-webkit-mask-position: 0px 0px;}
-
-
-/* 把列表页头部的ICON放入CSS，方便Hybrid打包(junyizhang@ctrip.com) */
-.list_header_map_icon {background: url(http://pic.c-ctrip.com/h5/tuan/icon_map_w.png) no-repeat 0 0;}
-.list_header_search_icon {background: url(http://pic.c-ctrip.com/h5/tuan/icon_search_w.png) no-repeat 0 0;}
+/*详情页浮层*/
+.layer_detail_notice{position: fixed; width: 100%; height: 100%; left: 0; top: 0; z-index: 100; background-color: rgba(0,0,0,0.8);}
+.layer_detail_notice .detail_list{background: none; padding-right: 15px;}
+.layer_detail_notice .detail_list li:not(:first-child){background: none;}
+.layer_detail_notice .detail_list li:first-child{background-color: transparent;}
+.layer_detail_notice .order_dl dt{color: #25b5ff;}
+.layer_detail_notice .dotitem p,.layer_detail_notice .bluetext{color: rgba(255,255,255,0.8);}
+.layer_detail_notice .dotitem p:before{background-color: rgba(255,255,255,0.8);}
+.layer_detail_notice .detail_list .title{color: #fefefe; text-align: center; font-size: 18px; padding-top: 30px; padding-bottom: 10px; margin-bottom: 10px;}
