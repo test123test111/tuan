@@ -73,11 +73,8 @@ define([], function () {
         'hotelimageslide': {
             'prev': 'hotelimages',
             'url': '/webapp/tuan/hotelimageslide/{pid}?index={imgindex}',
-            'range': ['hotelimages'],
-            'params': {
-                'imgindex': 1,
-                'pid': 0
-            }
+            'range': ['hotelimages', 'detail'],
+            'params': {}
         },
         //详情页图片列表
         'hotelcomments': {

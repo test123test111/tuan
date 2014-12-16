@@ -1,9 +1,9 @@
-﻿﻿/*jshint -W030 */
+﻿/*jshint -W030 */
 /**
  * 详情页
  * @url m.ctrip.com/webapp/tuan/detail/{pid}.html
  */
-define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'cWidgetFactory', 'CallPhone', 'WechatShare'],
+define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'cWidgetFactory', 'CallPhone', 'WechatShare', 'SmoothSlide'],
 function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, html, WidgetFactory, CallPhone, WechatShare) {
     var MSG = {
             pageTitle: '团购详情',
@@ -33,6 +33,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         Member = WidgetFactory.create('Member'),
         Guider = WidgetFactory.create('Guider'),
         getQuery = Lizard.P,
+        Slide = WidgetFactory.create('SmoothSlide'),
         LINE_CONFIG = 4;
 
     /**
@@ -57,7 +58,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             'click .J_relatedProducts': 'gotoRelatedProducts',
             'click .J_tips': 'showTips',
             'click .J_viewMoreBtn': 'ctrlInfoTip',
-            'click #J_pic': 'showImages',
+            'click .J_picItem': 'showImageSlide',
             'click #J_branch': 'showBranch', //分店
             'click .J_showDetailMap': 'showMap', //地图
             'click #J_comment': 'showComment', //点评
@@ -382,6 +383,8 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
 
             //获取详细信息
             tuanDetailModel.excute(function (data) {
+                //修复点击重试之后页面依然无法加载的bug
+                this.hideWarning404();
                 var favorInfo,
                     channelInfo = data.channelInfo,
                     isCorrectChannel = channelInfo && channelInfo.isCorrectChannel;
@@ -421,7 +424,9 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
 
             data.isInApp = isInApp;
             this.$el.html($.trim(this.htmlfun({ data: data })));
-
+            //初始化幻灯片
+            this.initImageSlider(data.images);
+            //隐藏多余的tips
             this.hideMoreContent();
 
             btnSubmit = this.$el.find('#J_submit');
@@ -456,17 +461,63 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 t;
             $.each(panel, function() {
                 t = $(this);
-                if (t.height() <= LINE_CONFIG * h) {
+                if (t.height() < LINE_CONFIG * h) {
                     t.next().remove();
+                    t.removeClass('shadow');
                 } else {
-                    t.css({overflow: 'hidden', height: LINE_CONFIG * h + 'px'}).removeClass('shadow');
+                    t.css({overflow: 'hidden', height: LINE_CONFIG * h + 'px'});
                 }
             });
         },
+        initImageSlider: function(images) {
+            var width = $('body').offset().width,
+                container = this.$el.find('#J_pic'),
+                currentIndex = tuanDetailStore.getAttr('imageIndex') | 0,
+                self = this;
+            images = images.slice(0, 5);
+            currentIndex = currentIndex >= 5 ? 4 : currentIndex < 0 ? 0 : currentIndex;
+            this.imageSlider = new Slide({
+                container: container,
+                source: _.map(images, function(t) {return {src: t.large, title: t.title};}),
+                itemCls: '.J_picItem',
+                autoplay: 0,
+                currentIndex: currentIndex,
+                prefetch: 5,
+                tpl: '<ul class="cont" style="height:180px;width:9999px;font-size:0;z-index: 1;">' +
+                    '<%_.each(data, function(t, i) {%>' +
+                '<li class="J_picItem" data-index="<%=i%>" style="display:inline-block"><img data-src="<%=t.src%>" data-img-title="<%=t.title%>"/>' +
+                '<%if (i === data.length-1) {%><span class="endinfo">滑动查看相册</span><%}%></li><%});%>' + '</ul>',
+                width: width,
+                onTouchEnd: function(index, direct, distance) {
+                    if (index === images.length-1 && direct === 'left' && distance > 10) {
+                        self.showImages();
+                    }
+                },
+                onSwitch: function(index) {
+                    //同步修改nav
+                    self.selectImageNav(index);
+                },
+                onInit: function() {
+                    //init nav
+                    self.initSlideNav(container, images.length, currentIndex);
+                }
+            });
+        },
+        initSlideNav: function(container, len, cur) {
+            var nav = container.find('.J_navItem');
+            if (!nav.length) {
+                nav = $(_.template('<div class="navitem J_navItem"><% for(var i=0;i<len;i++) {%><i class="<%if(cur === i){%> cur<%}%>"></i><%}%></div>', {len: len, cur: cur})).appendTo(container);
+            }
+            this.sliderNav = nav;
+        },
+        selectImageNav: function(index) {
+            this.sliderNav && this.sliderNav.length && this.sliderNav.find('i').removeClass('cur').eq(index).addClass('cur');
+        },
         initWechatShare: function () {
             this.prepareShareData(function(data) {
+                var we;
                 try {
-                    var we = new WechatShare({
+                    we = new WechatShare({
                         data: {
                             // "appid": appid, //只有发送好友信息才需要appid
                             "img_url": data.imgUrl,
@@ -499,10 +550,10 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             var panel = btn.parent().prev();
 
             if (btn.attr("data-state") === "hide") {
-                panel.removeAttr('style');
+                panel.removeAttr('style').removeClass('shadow');
                 btn.attr({ "data-state": "show" }).html("收起").removeClass("view_unfold").addClass("view_fold");
             } else {
-                panel.css({overflow:'hidden', height: this.lineHeight*LINE_CONFIG + 'px'});
+                panel.css({overflow:'hidden', height: this.lineHeight*LINE_CONFIG + 'px'}).addClass('shadow');
                 btn.attr({ "data-state": "hide" }).html("查看全部").removeClass("view_fold").addClass("view_unfold");
             }
         },
@@ -516,6 +567,11 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             if(images && images.length){
                 this.forwardJump('hotelimages','/webapp/tuan/hotelimages/' + this.productId + '.html', { viewName: 'hotelimages' });
             }
+        },
+        showImageSlide: function(e) {
+            var id = ($(e.currentTarget).attr('data-index') | 0);
+            tuanDetailStore.setAttr('imageIndex', id);
+            this.forwardJump('hotelimageslide','/webapp/tuan/hotelimageslide/' + this.productId + '?index=' + (id+1), { viewName: 'hotelimageslide' });
         },
         showBranch: function () {
             var cityId = this.cityId;

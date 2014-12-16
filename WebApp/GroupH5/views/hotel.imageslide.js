@@ -1,3 +1,4 @@
+/*jshint -W030*/
 /**
  * 酒店图片轮播页面
  * @url: m.ctrip.com/webapp/tuan/hotelimageslide
@@ -15,8 +16,7 @@ function (TuanApp, TuanBaseView, TuanModel, TuanStore, html, WidgetFactory, Comm
         pageid: '260003',
         hpageid: '261003',
         events: {
-            //'click #J_prev': 'prevImg',
-            //'click #J_next': 'nextImg'
+            'click article': 'clickHandler'
         },
         onCreate: function() {},
         onLoad: function() {
@@ -33,7 +33,6 @@ function (TuanApp, TuanBaseView, TuanModel, TuanStore, html, WidgetFactory, Comm
             } else {
                 self.showLoading();
                 imagesListModel.setParam({id: this.pid});
-
                 imagesListModel.excute(function(data){
                     data = data && data.images;
                     self.hideLoading();
@@ -45,46 +44,31 @@ function (TuanApp, TuanBaseView, TuanModel, TuanStore, html, WidgetFactory, Comm
                 });
             }
         },
-        setHeader: function(current, total) {
-            var self = this;
-            this.header.set({
-                title: current + '/' + total + '张',
-                back: true,
-                home: true,
-                view: this,
-                events: {
-                    returnHandler: function() {
-                        self.backAction();
-                    },
-                    homeHandler: function() {
-                        self.backHome();
-                    }
-                }
-            });
-        },
         onShow: function() {
+            this.header && this.header.hide();
         },
         onHide: function() {
+            if (!TuanApp.isInApp && this.header && this.header.rootBox) {this.header.rootBox.show();}
         },
         backAction: function() {
-            this.back({pid: this.pid});
+            this.back({did: this.pid});
         },
         backHome: function() {
             TuanApp.tHome();
         },
         createSlide: function(imgsData) {
             var self = this,
-            descContainer, currentIndex = Lizard.P('index'),
+                descContainer,
+                currentIndex = Lizard.P('index'),
             container = self.$el.find('#J_sliderWrap'),
             formattedData = [],
             len = imgsData && imgsData.length,
             updateTitleAndDesc = function(index, total, title) {
-                descContainer.html(title);
-                self.setHeader(index + 1, total);
+                descContainer.html(title + '<br/>' + (index + 1) + '/' +total);
             };
 
             currentIndex = currentIndex > 0 ? currentIndex - 1: 0;
-
+            self.storeIndex(currentIndex);
             if (len) {
                 for (var i = 0; i < len; i++) {
                     formattedData.push({
@@ -109,6 +93,7 @@ function (TuanApp, TuanBaseView, TuanModel, TuanStore, html, WidgetFactory, Comm
                     tpl: html,
                     onSwitchEnd: function() {},
                     onSwitch: function(index, data) {
+                        self.storeIndex(index);
                         updateTitleAndDesc(index, this.count(), data.title);
                     },
                     onInit: function(current) {
@@ -118,18 +103,16 @@ function (TuanApp, TuanBaseView, TuanModel, TuanStore, html, WidgetFactory, Comm
                 });
                 this.slider = imageSlide;
             }
-        }
-        /*
-        prevImg: function() {
-            if (window.imgIndex > 1) {
-                this.slider.pre();
+        },
+        clickHandler: function(e) {
+            if (e.target && e.target.tagName.toLocaleLowerCase() === 'article') {
+                this.backAction();
             }
         },
-        nextImg: function() {
-            if (window.imgIndex < images.length) {
-                this.slider.next();
-            }
-        }*/
+        storeIndex: function(index) {
+            tuanDetailsStore.setAttr('imageIndex', index);
+        }
+
     });
     return View;
 });

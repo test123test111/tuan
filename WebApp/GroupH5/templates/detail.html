@@ -47,10 +47,7 @@ var category = data.category;
 //是否在线订门票
 var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.subctgory == 2) : false;
 %>
-<nav class="tuan_pic" id="J_pic">
-    <img src="<%=imgSrc%>"/>
-    <div class="total_num">共<%=imgCount%>张</div>
-</nav>
+<nav class="tuan_pic" id="J_pic"></nav>
 <nav class="tuan_name">
     <div class="title"><%=data.name %></div>
     <% if (!isOnlineBookingTicket) {%>
@@ -282,6 +279,7 @@ var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.sub
         </div>
     </div>
     <%}%>
+
     <%if(tips&&tips.length>0){%>
         <a class="linktips J_tips" style="margin-bottom:0" href="javascript:;" data-id="4">点击马上团代表您已阅读并同意<span>携程团购温馨提示</span></a>
     <%}%>

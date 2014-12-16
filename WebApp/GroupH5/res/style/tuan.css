@@ -377,7 +377,7 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .tuan_pic .navitem{position: absolute; z-index: 1; left: 0; bottom: 8px; width: 100%; height: 9px; overflow: hidden; text-align: center;}
 .tuan_pic .navitem i{display: inline-block; width: 9px; height: 9px; overflow: hidden; vertical-align: top; margin: 0 1px; background-color: rgba(255,255,255,0.8); -webkit-border-radius: 50%; border-radius: 50%;}
 .tuan_pic .navitem .cur{background-color: rgba(9,159,222,0.7);}
-.tuan_pic .endinfo{position: absolute; right: 5px; top:45px; font-size: 12px; width: 12px; color: #fefefe; line-height: 1.25;}
+.tuan_pic .endinfo{position: absolute; right: 5px; top:45px; font-size: 12px; width: 12px; color: #fefefe; line-height: 1.25;z-index: 1;}
 .tuan_pic .endinfo:before,.tuan_pic .endinfo:after{content: ''; position: absolute; top: 50%; margin-top: -4px; width: 5px; height: 5px; border-top: 2px solid #fff; border-left: 2px solid #fff; -webkit-transform: rotate(-45deg); transform: rotate(-45deg);}
 .tuan_pic .endinfo:before{ left: -7px; }
 .tuan_pic .endinfo:after{ left: -12px; }

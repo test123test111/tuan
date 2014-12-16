@@ -120,6 +120,10 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
                  */
                 height: 0,
                 /**
+                 * 滑动的距离超过一半的时候触发
+                 */
+                onTouchEnd: NOOP,
+                /**
                  * @event 图片切换时触发
                  */
                 onSwitch: NOOP,
@@ -365,14 +369,21 @@ define(['cBase', 'cUICore', 'cWidgetFactory', 'libs'], function(cBase, cUICore, 
             };
         },
         __touchEndHandler: function(event){
-            var lastPos = this.__lastTouchStartPos,
+            var direct = '',
+                lastPos = this.__lastTouchStartPos,
                 swipeDirection = this._getSwipeDirection(lastPos.x, event.changedTouches[0].pageX);//touchEnd没有pageX
 
-            this[
-                    swipeDirection === Slide.LEFT ? 'next'  :
-                    swipeDirection === Slide.RIGHT? 'prev'  :
-                                                            'goto'
-                ]();
+            if (swipeDirection === Slide.LEFT) {
+                direct = 'left';
+                this.options.onTouchEnd.call(this, this._current, direct, Math.abs(event.changedTouches[0].pageX - lastPos.x));
+                this.next();
+            } else if (swipeDirection === Slide.RIGHT) {
+                direct = 'right';
+                this.options.onTouchEnd.call(this, this._current, direct, Math.abs(event.changedTouches[0].pageX - lastPos.x));
+                this.prev();
+            } else {
+                this.goto();
+            }
 
         },
         __transitionEndHandler: function(event){
