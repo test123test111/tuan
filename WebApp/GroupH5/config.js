@@ -35,6 +35,7 @@
             TuanBaseView:baseUrl +"com/baseview",
             ValidatorUtil: baseUrl +"util/form/validator",
             FieldUtil: baseUrl +"util/form/field",
+            PulldownDecorator: baseUrl+ "com/pulldown",
 
             //模版
             HomeTpl: baseUrl +"templates/home.html",

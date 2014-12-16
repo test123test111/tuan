@@ -62,7 +62,6 @@ function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPa
             History.addHistory(this.getViewName(), location.href, 2);
         },
         __onShow: function () {
-
         },
         __onHide: function (/*viewname*/) {
 

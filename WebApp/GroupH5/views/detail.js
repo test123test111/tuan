@@ -520,6 +520,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                     we = new WechatShare({
                         data: {
                             // "appid": appid, //只有发送好友信息才需要appid
+                            //"img_url": data.imageUrl, //暂不支持 app6.1 bug
                             "img_url": data.imgUrl,
                             "img_width": "200",
                             "img_height": "200",
