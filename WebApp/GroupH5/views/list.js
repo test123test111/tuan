@@ -3,8 +3,8 @@
  * 列表页面
  * @url: m.ctrip.com/webapp/tuan/list
  */
-define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', 'MemCache', 'StringsData', 'cUtility', 'cGeoService', 'cWidgetFactory', 'cUIToast', 'cUIScroll', 'TuanStore', 'TuanModel', 'TuanFilters', 'StoreManage', 'LazyLoad', 'ScrollObserver', 'text!ListTpl', 'cWidgetGeolocation'],
-    function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, StringsData, Util, GeoService, WidgetFactory, Toast, Scroll, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, html) {
+define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', 'MemCache', 'StringsData', 'cUtility', 'cGeoService', 'cWidgetFactory', 'cUIToast', 'cUIScroll', 'TuanStore', 'TuanModel', 'TuanFilters', 'StoreManage', 'LazyLoad', 'ScrollObserver', 'text!ListTpl', 'cWidgetGeolocation','Helper'],
+    function (TuanApp, c, TuanBaseView, CommonPageFactory, WidgetGuider, MemCache, StringsData, Util, GeoService,WidgetFactory, Toast, Scroll, TuanStore, TuanModels, TuanFilters, StoreManage, LazyLoad, ScrollObserver, html) {
 
         var REFRESH_GPS_LOADING_CLS = 'ani_rotation',
             PAGE_POSITION = 'PAGE_LIST_POSITION',

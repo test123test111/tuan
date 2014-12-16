@@ -13,6 +13,7 @@
             TabSlide: baseUrl +"widget/tabslide",
             Switch: baseUrl +"com/switch",
             VoiceSearch: baseUrl +"widget/voicesearch",
+            Helper: baseUrl +"util/helper",
             StoreManage: baseUrl +"util/storemanage",
             HttpErrorHelper: baseUrl +"util/httperrortpl",
             NumberStep: baseUrl +"com/numberstep",

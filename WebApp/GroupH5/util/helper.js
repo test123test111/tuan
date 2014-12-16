@@ -14,7 +14,7 @@ define(function(){
     function fakemd5(url){
         var rs = RE_IMG_URL.exec(url);
         return rs ? rs[3] : EMPTY;
-    };
+    }
     /**
      * 等有钱了用真的MD5加密
      * @param str
@@ -22,10 +22,10 @@ define(function(){
      */
     function md5(str){
         return fakemd5(str);
-    };
+    }
     function random(md5){
         return imgServers[md5.charCodeAt(0) % imgServersCount || 0];
-    };
+    }
     Helper = {
         imgShowering: function(url){
             return url.replace(RE_IMG_URL, '$1'+random(md5(url))+'$2');

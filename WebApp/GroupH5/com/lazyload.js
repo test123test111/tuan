@@ -10,7 +10,7 @@ define(['libs'], function () {
                 wrap: window,     //容器, DOM/Selector
                 container: window,
                 event: ['scroll', 'resize'],   //触发延迟加载的事件,
-                time: 100,              //延时,单位ms
+                time: 30,              //延时,单位ms
                 threshold: 180,          //一定距离， 单位px
                 vertical: true,
                 stateAttr: 'data-load-state',

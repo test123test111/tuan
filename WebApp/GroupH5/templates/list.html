@@ -12,7 +12,7 @@
         %>
             <li<%if(index>1){%> style="display: none" <%}%> data-id="<%=product.id%>" data-len="<%=len%>" data-count="<%=count%>">
                 <div class="pro_list_imgbox">
-                    <img data-img="<%=n++ %>" onerror="javascript:noPic(this);" data-lazy="<%=product.imgUrl?product.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" width="70" height="70" alt="<%=product.name%>" />
+                    <img data-img="<%=n++ %>" onerror="javascript:noPic(this);" data-lazy="<%=product.imgUrl?Helper.imgShowering(product.imgUrl):'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" width="70" height="70" alt="<%=product.name%>" />
                 </div>
                 <div class="pro_list_info">
                     <h4 class="pro_list_tit"><%=product.name%></h4>
@@ -51,6 +51,8 @@
     <li data-id="<%=p.id %>" data-len="<%=products.length %>" data-count="<%=count %>">
         <div class="pro_list_imgbox">
             <img data-img="<%=i %>" onerror="javascript:noPic(this);" data-lazy="<%=p.imgUrl?Helper.imgShowering(p.imgUrl):'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" />
+            <!--<img data-img="<%=i %>" onerror="javascript:noPic(this);" data-lazy="<%=p.imgUrl?p.imgUrl:'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" src="http://pic.c-ctrip.com/common/pic_alpha.gif" />-->
+
         </div>
         <div class="pro_list_info">
             <h4 class="pro_list_tit"><%=p.name%></h4>
