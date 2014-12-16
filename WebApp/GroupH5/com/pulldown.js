@@ -1,7 +1,7 @@
 /**
  * @author: xuweichen
  * @date: 2014/12/16 15:52
- * @descriptions
+ * @descriptions 下拉修饰模块
  */
 define(['cBase'],function (cBase) {
 
