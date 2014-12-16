@@ -79,24 +79,23 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         //数据加载阶段
         _onLoad: function () {
             //from中可能含有querystring，用getQuery获取不到完整的带querystring的URL
-            this.fromUrl = Util.getUrlParam(location.href, 'from');
+            var fromUrl = this.fromUrl = Util.getUrlParam(location.href, 'from');
+
+            /**
+             * 是否从微信分享跳转过来的链接，微信中为自动添加from=singlemessage，导致详情页back跳转404
+             * 如果分享到朋友圈会有from=timeline,导致详情页back跳转404
+             * @param {String} fromUrl
+             * @returns {*|boolean}
+             */
+            var isFromWeChat = this.isFromWeChat = fromUrl && (/singlemessage|timeline/.test(fromUrl.toLowerCase()));
+
             //如果没有fromUrl或者来自微信
-            if(!this.fromUrl || this.isFromWeChat()){
+            if(!fromUrl || isFromWeChat){
                 this.fromUrl = '';
             }
 
             this.removeOrderData();
             this.getTuanDetail();
-        },
-        /**
-         * 是否从微信分享跳转过来的链接，微信中为自动添加from=singlemessage，导致详情页back跳转404
-         * 如果分享到朋友圈会有from=timeline,导致详情页back跳转404
-         * @param {String} fromUrl
-         * @returns {*|boolean}
-         */
-        isFromWeChat: function(){
-            // return fromUrl && (/singlemessage|timeline/.test(fromUrl.toLowerCase()));
-            return typeof WeixinJSBridge !== 'undefined';
         },
         recommendNearby: function(){
             var cityId = this.cityId;
@@ -449,7 +448,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 view: this
             });
 
-            this.isFromWeChat() && this.initWechatShare();
+            this.isFromWeChat && this.initWechatShare();
         },
         hideMoreContent: function () {
             var panel = this.$el.find('.J_moreOrLessPanel'),

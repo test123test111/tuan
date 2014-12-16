@@ -178,7 +178,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 };
             },
             /*
-             * "我的附近"查询模式: 酒店、美食、门票、娱乐、附近团购
+             * "我的附近"查询模式: 酒店、美食、门票、娱乐、本周新单、一元团购、附近团购
              */
             goNearbyGroup: function (data, category) {
                 var searchData = searchStore.get(),
@@ -202,6 +202,17 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                         categoryfilterStore.setAttr('category', item.attr('data-category'));
                         categoryfilterStore.setAttr('name', item.attr('data-name'));
                         categoryfilterStore.setAttr('tuanTypeIndex', +index > 0 ? +index : 0);
+                    }
+
+                    if (category == 'onepaygroup') {
+                        searchStore.setAttr('ctype', 0);
+                        customFiltersStore.setAttr('price.val', '1|1');
+                        customFiltersStore.setAttr('price.txt', '一元团购');
+                    }
+
+                    if (category == 'weeknew') {
+                        searchStore.setAttr('sortRule', '1');
+                        searchStore.setAttr('sortType', '1');
                     }
                 }
                 historyCityListStore.setAttr('nearby', true);
@@ -312,7 +323,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
 
                 var category = item.attr('data-category');
 
-                if (category == 'hotel' || category == 'catering' || category == 'ticket' || category == 'entertainment' || category == 'nearby') {
+                if (category == 'hotel' || category == 'catering' || category == 'ticket' || category == 'entertainment' || category == 'weeknew' || category == 'onepaygroup' || category == 'nearby') {
                     this.geoCallback.type = category;
                     this.geoCallback.cancelNearby = 0;
                     this.showLoading();
@@ -480,8 +491,8 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
              */
             geoError: function () {
                 var type = this.geoCallback.type;
-                //定位失败时，酒店、美食、门票、娱乐按非同城查询
-                if (type && (type == 'hotel' || type == 'catering' || type == 'ticket' || type == 'entertainment')) {
+                //定位失败时，酒店、美食、门票、娱乐、本周新单、1元团购按非同城查询
+                if (type && (type == 'hotel' || type == 'catering' || type == 'ticket' || type == 'entertainment' || type == 'weeknew' || type == 'onepaygroup')) {
                     this.goList(type);
                     return;
                 }

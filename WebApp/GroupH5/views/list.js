@@ -25,6 +25,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
             positionStore = TuanStore.TuanPositionStore.getInstance(), //定位信息
             historyCityListStore = TuanStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
             geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
+            categoryfilterStore = TuanStore.GroupCategoryFilterStore.getInstance(), //团购类型
             View,
             MSG = {
                 youAreHere: '您的位置 '
@@ -488,13 +489,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
             },
             createPage: function () {
                 var searchData = searchStore.get(),
-                    //ctype = searchData.ctype,
                     cityId = searchData.ctyId || StringsData.defaultCity.id,
                     isNearby = this.isNearBy(),
                     isOneYuan = this.isOneYuan(),
+                    ctype = searchData.ctype,
                     keywordData = StoreManage.getCurrentKeyWord();
 
-                //if (!(this.isFromKeywordSearch() && keywordData)) {
                 if (!keywordData) {
                     if (isOneYuan) {
                         this.updateTitle('一元团购', false);
@@ -504,11 +504,10 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 } else {
                     this.updateTitle(keywordData.word, false);
                 }
-                //this.initKeywordSearch(); //初始化关键词搜索框
                 this.hideForbiddens(!isNearby, '.J_forbidden');
-                //this.keywordPanel = this.$el.find('#J_keywordSearchPanel');
 
-                if (isNearby) { //'我的附近'进入
+                //if (isNearby && ctype === 0) { //'我的附近'进入
+                if (categoryfilterStore.getAttr('category') === 'nearby') { //'我的附近'进入
                     this.getGroupListData();
 
                     //地图页可能更改了团购分类
@@ -598,9 +597,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 this.referUrl = refer || this.getLastViewName();
                 this.parseSEOPostData();
                 //定位提示容
-                //this.infoWrap = this.$el.find('#J_gpsInfo');
                 this.gpsReloadBtn = this.$el.find('#J_reloadGPS');
-                //this.setQuickScroll();
 
                 var self = this;
                 var isNearBy;
@@ -608,12 +605,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 // TODO: 补充注释
                 if (returnPageStore) { returnPageStore.remove(); }
 
-				if (searchStore.getAttr('from_feature')) {
-					this.updateTitle('城市诱惑', false);
-					this.renderNoResult('', 'hotels', {'feature': {val: '', txt: '城市诱惑'}});
-					this.gpsInfoWrap.text('距离：' + searchStore.getAttr('ctyName') + StringsData.CITY_CENTER);
-					return;
-				}
+                // if (searchStore.getAttr('from_feature')) {
+                    // this.updateTitle('城市诱惑', false);
+                    // this.renderNoResult('', 'hotels', {'feature': {val: '', txt: '城市诱惑'}});
+                    // this.gpsInfoWrap.text('距离：' + searchStore.getAttr('ctyName') + StringsData.CITY_CENTER);
+                    // return;
+                // }
 
                 //如果从详情页后退不请求数据
                 if (!this.isFromDetail() || !MemCache.getItem('hasListData')) {
@@ -640,17 +637,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                             self.infoSpan.html(text);
                         }
 
-                        //我的附近默认按距离最近排序
-                        if (sortStore.getAttr('sortTypeIndex') === null && self.isNearBy()) {
-                            searchStore.setAttr('sortRule', 8);
-                            sortStore.setAttr('sortTypeIndex', 1);
-
-                            //第二次进入list页面时，选中距离最近
-                            if (self.tuanfilters) {
-                                var item = $(self.tuanfilters.sort.getItemByIndex(1))[0];
-                                self.tuanfilters.sort.select(item, true);
-                            }
-                        }
+                        //设置排序方式
+                        self.setSortMethod();
                         //获取当前城市且请求数据
                         self.renderPageByCity();
                     });
@@ -678,9 +666,22 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 });
                 this.scrollObserver && this.scrollObserver.enable();
 
-                /*$(window).bind('customScrollStart', this._toolbarObserverHandler);
-                 $(window).bind('directionChange', this._toolbarObserverHandler);*/
                 !localStorage.getItem(IS_FIRST_IN_LIST) && this.initSearchGuider();
+            },
+            setSortMethod: function () {
+                if (categoryfilterStore.getAttr('category') !== 'weeknew') { 
+                    //我的附近默认按距离最近排序
+                    if (sortStore.getAttr('sortTypeIndex') === null && this.isNearBy()) {
+                        searchStore.setAttr('sortRule', 8);
+                        sortStore.setAttr('sortTypeIndex', 1);
+
+                        //第二次进入list页面时，选中距离最近
+                        if (this.tuanfilters) {
+                            var item = $(this.tuanfilters.sort.getItemByIndex(1))[0];
+                            this.tuanfilters.sort.select(item, true);
+                        }
+                    }
+                }
             },
             _onWindowScroll: function () {
                 var pos = c.ui.Tools.getPageScrollPos(),
@@ -766,6 +767,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 var cityInfo, cityId, key, model,
                     self = this,
                     isNearBy = self.isNearBy(),
+                    ctype = searchStore.getAttr('ctype') || 0,
                     gps = geolocationStore.getAttr('gps'),
                     sortRule = searchStore.getAttr('sortRule'),
                     pos = positionfilterStore.getAttr('pos'),
@@ -806,7 +808,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 model.param = searchStore.get();
 
                 //'附近团购'进入，不传cityID
-                if (isNearBy && searchStore.getAttr('ctype') === 0) {
+                //if (isNearBy && ctype === 0) {
+                if (categoryfilterStore.getAttr('category') === 'nearby') { //'我的附近'进入
                     model.param.ctyId = 0;
                     model.param.ctyName = '';
                 }
@@ -819,7 +822,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     notClearAll && self.hideBottomLoading();
                     if (data && data[key] && data[key].length && data.count && +data.count > 0) {
                         var keywordData = StoreManage.getCurrentKeyWord();
-                        //if (self.isFromKeywordSearch() && keywordData) {
                         if (keywordData) {
                             self.updateTitle(keywordData.word, false, data.count);
                         }
@@ -831,12 +833,14 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                         list.isNearBy = isNearBy;
                         !notClearAll && this.listWrap.empty();
                         this.renderList(list);
-                        if (isNearBy && sortRule == '8' && currPageIndex <= 1) { //如果是根据经纬度查询，开始时不知道城市ID的，所以通过返回的城市ID，初始化筛选项
+                        //if (isNearBy && sortRule == '8' && currPageIndex <= 1) { //如果是根据经纬度查询，开始时不知道城市ID的，所以通过返回的城市ID，初始化筛选项
+                        if (categoryfilterStore.getAttr('category') === 'nearby') {
                             var cityid = data && data.city && data.city.cityid,
                                 cityname = data && data.city && data.city.cityName;
                             if (cityid && cityname) {
                                 searchStore.setAttr('ctyId', cityid);
                                 searchStore.setAttr('ctyName', cityname);
+                                self.updateTitle(cityname, true);
                             }
                             //判断是否已经初始化过，底部筛选项， 如果没有初始化，执行初始化
                             if (cityid && cityname && !this.tuanfilters) {
@@ -883,7 +887,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
             },
             renderNoResult: function (msg, key, customdata) {
                 var keywordData = StoreManage.getCurrentKeyWord();
-                //if (this.isFromKeywordSearch() && keywordData) {
                 if (keywordData) {
                     this.updateTitle(keywordData.word, false, 0);
                 }
@@ -905,16 +908,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 lst.customFilter = customdata;
                 this.renderList(lst);
             },
-            /*
-             initKeywordSearch: function () {
-             var searchBox = this.$el.find('#J_keywordSearch'),
-             lastSearchKeyword = StoreManage.getCurrentKeyWord();
-
-             this.searchKeywordInput = searchBox;
-             CUI.InputClear(searchBox);
-             searchBox.val(lastSearchKeyword && lastSearchKeyword.word || ''); //关键词字段，TODO：转存到另一个localstorage
-             },
-             */
             detailHandler: function (e) {
                 var id = $(e.currentTarget).attr('data-id'),
                     cid = searchStore.getAttr('ctyId');
