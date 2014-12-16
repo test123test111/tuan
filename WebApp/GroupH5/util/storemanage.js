@@ -311,9 +311,11 @@ define(['TuanApp', 'TuanStore', 'CityListData', 'StringsData'], function (TuanAp
             }
 
             //品牌
-            var brand = customdata && customdata.brand && customdata.brand.val;
-            if (brand) {
-                qparams.push({ type: 3, value: brand });
+            var brand = customdata && customdata.brand && customdata.brand;
+            if (brand && !$.isEmptyObject(brand)) {
+                var arr = [], k;
+                for (k in brand) {arr.push(k);}
+                qparams.push({ type: 3, value: arr.join('|') });
             }
 
             //特色

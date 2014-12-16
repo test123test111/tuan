@@ -20,7 +20,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         customFiltersStore = TStore.GroupCustomFilters.getInstance(), //团购自定义筛选项
         historyCityListStore = TStore.TuanHistoryCityListStore.getInstance(), //历史选择城市
         positionfilterStore = TStore.GroupPositionFilterStore.getInstance(), //区域筛选条件
-        RADIO_ITEM = ['price', 'day', 'trait', 'distance', 'brand'], //单选查询条件
+        RADIO_ITEM = ['price', 'day', 'trait', 'distance'], //单选查询条件
         checkboxTpl = _.template([
             '<%if(["all", "hotel", "catering"].indexOf(category)!=-1){%>',
                 '<div class="pop_filter_chkitem" data-type="weekendsAvailable" data-text="周末可用">周末可用',
@@ -53,10 +53,10 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             '</ul>'
         ].join('')),
         brandTpl = _.template([
-            '<li data-filter="brand"<%if(!val){%> class="choosed"<%}%>><div class="txt01">不限</div></li>',
+            '<li data-filter="brand"><div class="txt01">不限</div><div class="pop_filter_label"><input class="J_brandItem" type="checkbox"<%if(!val){%> checked<%}%> id="brand-1"><label for="brand-1"></label></div></li>',
             '<%_.each(arr, function(a,i){%>',
-            '<li data-filter="brand" data-value="<%=a.val%>" data-text="<%=a.txt%>"<%if(a.val==val){%> class="choosed"<%}%>>',
-                '<div class="txt01"><%=a.txt%></div>',
+            '<li data-filter="brand" data-value="<%=a.val%>" data-text="<%=a.txt%>">',
+                '<div class="txt01"><%=a.txt%></div><div class="pop_filter_label"><input class="J_brandItem" type="checkbox"<%if(val && _.has(val, a.val)){%> checked<%}%> id="brand<%=a.val%>"><label for="brand<%=a.val%>"></label></div>',
             '</li>',
             '<%})%>'
         ].join('')),
@@ -70,15 +70,17 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         ].join('')),
         tuanTypeTpl = _.template([
             '<div class="pop_filter_lefttab">',
-                '<ul class="pop_filter_tabs">',
-                '<%_.each(tuanType, function(v){%>',
-                    '<li class="J_categoryTabLabel<%if(v.val==tuanTypeVal){%> choosed<%}%>"><%=v.txt%></li>',
-                '<%})%>',
-                '</ul>',
+                '<div id="J_cateWrapper" style="height:285px;overflow:hidden;max-height:285px;">',
+                    '<ul class="pop_filter_tabs" style="min-height:285px">',
+                    '<%_.each(tuanType, function(v){%>',
+                        '<li class="J_categoryTabLabel<%if(v.val==tuanTypeVal){%> choosed<%}%>"><%=v.txt%></li>',
+                    '<%})%>',
+                    '</ul>',
+                '</div>',
             '</div>',
             '<div class="pop_filter_righttab">',
                 '<%_.each(tuanType, function(v){%>',
-                    '<div class="J_categoryTabPanel" style="height:285px;<%if(v.val!=tuanTypeVal){%>display:none<%}%>">',
+                    '<div class="J_categoryTabPanel" style="height:285px;overflow:hidden;max-height:285px;<%if(v.val!=tuanTypeVal){%>display:none<%}%>">',
                         '<ul class="pop_filter_baselist" style="min-height:285px">',
                             '<li data-type="<%=v.val%>"<%if(v.val==tuanTypeVal && typeof subVal == "undefined"){%> class="choosed"<%}%>><div class="txt01"><%=v.val>0 ? "全部" : ""%><%=v.txt%></div><span class="txt02"><%=v.groupCount%></span></li>',
                             '<%_.each(subTuanType, function(s){%>',
@@ -93,14 +95,16 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         ].join('')),
         positionTpl = _.template([
             '<div class="pop_filter_lefttab">',
-                '<ul class="pop_filter_tabs">',
-                    '<%if(Zone.length){%><li class="J_positionTabLabel<%if(curr.type==5){%> choosed<%}%>">商业区</li><%}%>',
-                    '<%if(Location.length){%><li class="J_positionTabLabel<%if(curr.type==4){%> choosed<%}%>">行政区</li><%}%>',
-                    '<%if(tuanType!=7 && AirportStation.length){%><li class="J_positionTabLabel<%if(curr.type==-4){%> choosed<%}%>">机场车站</li><%}%>',
-                    '<%if(tuanType!=7 && SubwayLine.length){%><li class="J_positionTabLabel<%if(curr.type==-3){%> choosed<%}%>">地铁线</li><%}%>',
-                    '<%if(tuanType!=7 && Attraction.length){%><li class="J_positionTabLabel<%if(curr.type==-2){%> choosed<%}%>">景点</li><%}%>',
-                    '<%if(tuanType!=7 && College.length){%><li class="J_positionTabLabel<%if(curr.type==-1){%> choosed<%}%>">大学周边</li><%}%>',
-                '</ul>',
+                '<div id="J_posWrapper" style="height:285px;overflow:hidden;max-height:285px;">',
+                    '<ul class="pop_filter_tabs" style="min-height:285px">',
+                        '<%if(Zone.length){%><li class="J_positionTabLabel<%if(curr.type==5){%> choosed<%}%>">商业区</li><%}%>',
+                        '<%if(Location.length){%><li class="J_positionTabLabel<%if(curr.type==4){%> choosed<%}%>">行政区</li><%}%>',
+                        '<%if(tuanType!=7 && AirportStation.length){%><li class="J_positionTabLabel<%if(curr.type==-4){%> choosed<%}%>">机场车站</li><%}%>',
+                        '<%if(tuanType!=7 && SubwayLine.length){%><li class="J_positionTabLabel<%if(curr.type==-3){%> choosed<%}%>">地铁线</li><%}%>',
+                        '<%if(tuanType!=7 && Attraction.length){%><li class="J_positionTabLabel<%if(curr.type==-2){%> choosed<%}%>">景点</li><%}%>',
+                        '<%if(tuanType!=7 && College.length){%><li class="J_positionTabLabel<%if(curr.type==-1){%> choosed<%}%>">大学周边</li><%}%>',
+                    '</ul>',
+                '</div>',
             '</div>',
             '<div class="pop_filter_righttab">',
             '<%if(Zone.length){%>',
@@ -353,10 +357,11 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             });
         },
         renderCategory: function () {
-            var ret = {};
+            var ret = {}, scroller, wrapper;
             var conditionData = conditionStore.get();
             var categoryData = categoryfilterStore.get() || {};
             var categoryTrigger = this.options.categoryTrigger;
+            var categoryPanel = this.options.categoryPanel;
             ret.tuanTypeVal = categoryData.tuanType || searchStore.getAttr('ctype') || 0;
             categoryData.subVal && (ret.subVal = categoryData.subVal);
             categoryTrigger.html(categoryData.subName || StringsData.groupType[ret.tuanTypeVal].name);
@@ -367,6 +372,11 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     ret.tuanType = $.grep(groupCondition, function (v) { return v.type == 16; });
                     ret.subTuanType = $.grep(groupCondition, function (v) { return v.type == 32; });
                     this.options.categoryPanel.html(tuanTypeTpl(ret));
+                    wrapper = categoryPanel.find('#J_cateWrapper');
+                    scroller = new Scroll({
+                        wrapper: wrapper,
+                        scroller: wrapper.find('ul')
+                    });
                 }
             }
         },
@@ -642,6 +652,14 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             this.updatePositionName();
             tuanType = tuanType || searchStore.getAttr('ctype') || 0;
             ret.tuanType = tuanType;
+            function setPosScroll() {
+                var scroller, wrapper;
+                wrapper = positionPanel.find('#J_posWrapper');
+                scroller = new Scroll({
+                    wrapper: wrapper,
+                    scroller: wrapper.find('ul')
+                });
+            }
 
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var categroy = $.grep(conditionData.categroy, function (v) { return v.ctype == tuanType; });
@@ -668,6 +686,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     if (ret.Zone.length || ret.Location.length || ret.College.length) {
                         positionTrigger.show();
                         positionPanel.html(positionTpl(ret));
+                        setPosScroll();
                         callback && callback();
                     } else {
                         positionTrigger.hide();
@@ -676,6 +695,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     if (ret.Zone.length || ret.Location.length || ret.College.length || ret.AirportStation.length || ret.SubwayLine.length || ret.Attraction.length) {
                         positionTrigger.show();
                         positionPanel.html(positionTpl(ret));
+                        setPosScroll();
                         callback && callback();
                     } else {
                         positionTrigger.hide();
@@ -810,7 +830,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var viewWrap = this.page.$el;
             var label = viewWrap.find('#J_filterTabLabel');
             var panel = viewWrap.find('#J_filterTabPanel');
-            var stars = viewWrap.find('input[data-value]');
+            var stars = viewWrap.find('.J_starItem');
             var clearBtn = viewWrap.find('.pop_filter_clear');
 
             label.on('click', 'li', function (e) {
@@ -836,13 +856,13 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         customFiltersStore.removeAttr(filter);
                     }
                     label.find('li[data-tab="' + filter + '"]>i')[val ? 'show' : 'hide']();
-                } else if (filter == 'star') {//多选
+                } else if (filter == 'star') {//星级多选
                     if (!val) {//不限星级
                         stars.each(function (i, input) {
                             i > 0 && (input.checked = false);
                         });
                         customFiltersStore.removeAttr('star');
-                        label.find('li[data-tab="star"]>i').hide();
+                        label.find('li[data-tab="star"]>i').hide(); //隐藏小黄点
                     } else {
                         val = val.toString();
                         var star = customFiltersStore.getAttr('star') || {};
@@ -859,6 +879,31 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         customFiltersStore.setAttr('star', star);
                         label.find('li[data-tab="star"]>i')[!$.isEmptyObject(star) ? 'show' : 'hide']();
                     }
+                } else if (filter == 'brand') {//品牌多选
+                    var brands = viewWrap.find('.J_brandItem');
+                    if (!val) {//不限品牌
+                        brands.each(function (i, input) {
+                            i > 0 && (input.checked = false);
+                        });
+                        customFiltersStore.removeAttr('brand');
+                        label.find('li[data-tab="brand"]>i').hide(); //隐藏小黄点
+                    } else {
+                        val = val.toString();
+                        var brand = customFiltersStore.getAttr('brand') || {};
+                        if (item.parent().find('input:checked').length) {
+                            brands[0].checked = false;
+                        } else {
+                            brands[0].checked = true;
+                        }
+                        if (item.find('input:checked').length) {
+                            brand[val] = txt;
+                        } else {
+                            delete brand[val];
+                        }
+                        customFiltersStore.setAttr('brand', brand);
+                        label.find('li[data-tab="brand"]>i')[!$.isEmptyObject(brand) ? 'show' : 'hide']();
+                    }
+
                 }
                 clearBtn[self.customFilterSelectedCount() ? 'removeClass' : 'addClass']('sta-disabled');
             });
@@ -988,8 +1033,14 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             var ret = { val: '', arr: [] };
             var conditionData = conditionStore.get();
             var data = customFiltersStore.getAttr(typeKey);
-            if (data && data.val) {
-                ret.val = data.val;
+            if (typeKey === 'brand') {
+                if (data) {
+                    ret.val = data;
+                }
+            } else {
+                if (data && data.val) {
+                    ret.val = data.val;
+                }
             }
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var groupCondition = conditionData.categroy[0].groupCondition;
@@ -1031,7 +1082,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             searchStore.removeAttr('weekendsAvailable');
             customFiltersStore.removeAttr('multiShop');
             customFiltersStore.removeAttr('voucher');
-            var arr = RADIO_ITEM.concat(['star']);
+            var arr = RADIO_ITEM.concat(['star', 'brand']);
             if (isSwitchTuanType && isNearBy) {//我的附近查询时，切换团购类型，不清除距离筛选条件
                 arr.splice(arr.indexOf('distance'), 1);
             }
