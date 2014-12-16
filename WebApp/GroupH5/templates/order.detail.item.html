@@ -16,7 +16,7 @@
             <span class="items"><%=v.statusRmk%></span>
         </li>
 
-        <% if (!_.isEmpty(v.pwd)) { %>
+        <% if (!_.isEmpty(v.pwd) && v.pwd !== '此团购无需密码') { %>
             <li><span class="items">密码</span><span class="<%=v.pwd=== '此团购无需密码' ? 'items_desc' : 'items'%>"><%=v.pwd%></span></li>
         <% } %>
 

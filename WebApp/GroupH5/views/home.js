@@ -7,6 +7,8 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
     function (TuanApp, c, Crypt, UIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, HybridShell, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
         'use strict';
         var isInApp = Util.isInApp(),
+            Mask = c.ui.Mask,
+            IS_FIRST_IN_HOME = 'TUAN_FIRST_IN_HOME',
             listModel = TuanModels.TuanHotListModel.getInstance(),
             searchStore = TuanStore.GroupSearchStore.getInstance(),
             categoryfilterStore = TuanStore.GroupCategoryFilterStore.getInstance(), //团购类型
@@ -169,6 +171,8 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                     isInApp && Facade.request({ name: Facade.METHOD_SET_NAVBAR_HIDDEN, isNeedHidden: false });
                     //更新广告信息
                     self.updateAdInfo();
+
+                    !localStorage.getItem(IS_FIRST_IN_HOME) && self.initWelcomeLayer();
                 });
             },
             getSelectedCity: function () {
@@ -734,6 +738,18 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
             hideSwitchAlert: function() {
                 this.switchCity && this.switchCity.hide();
                 this.switchCity1 && this.switchCity1.hide();
+            },
+            initWelcomeLayer: function () {
+                var self = this;
+                var layer = this.$el.find('#J_welcomeLayer');
+                var mask = this.welcomeLayerMask = new Mask();
+                mask.show();
+                layer.show();
+                layer.find('.close').on('click', function() {
+                    mask.hide();
+                    layer.hide();
+                    localStorage.setItem(IS_FIRST_IN_HOME, 1);
+                });
             }
         });
         return View;
