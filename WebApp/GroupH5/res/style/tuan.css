@@ -128,14 +128,15 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .returnico{background:none;}
 .icon_map_w{width:42px;height:100%;top:0;position:relative;z-index:9;float:right;}
 .icon_map_w:before{background-position:-190px -60px;width:22px;height:24px;right:10px;top:12px;}
+.icon_search_w{height:48px;}
 .icon_search_w:before{background-position:-220px -60px; width: 22px; height: 22px; right: 10px; top: 13px;}
 /* 列表页搜索 */
 .list_s{position:relative;z-index:1;padding:8px;width:100%;-webkit-box-sizing:border-box;box-sizing:border-box;background-color:#e6f0f7;}
 .hybrid .list_s{padding:8px 48px 8px 8px;}
 .tuan-noresult {border-top:#ddd 1px solid;border-bottom:#ddd 1px solid;}
 .tuan-noresult .list_s{width:210px;margin:auto;background:transparent;}
-.list_s_fixed{position:fixed;z-index:9999;top:0;left:0;-webkit-transition:all .5s ease 0;-ms-transition:all .5s ease 0;transition:all .5s ease 0;}
-.list_s_input{padding-left:32px;background-color:#fff;height:28px;line-height:28px;border-radius:14px;}
+.list_s_fixed{position:fixed;z-index:1999;top:0;left:0;-webkit-animation:drop 350ms ease-out;animation:drop 350ms ease-out;}
+.list_s_input{padding-left:32px;background-color:#fff;height:28px;line-height:normal;border-radius:14px;}
 .list_s:before{display:block;position:absolute;z-index:1;left:14px;top:12px;width:12px;height:12px;border:2px solid #9a9a9a;content:'\20';border-radius:50%;}
 .list_s:after{display:block;position:absolute;z-index:2;width:8px;height:2px;top:26px;left:26px;content:'\20';background-color:#9a9a9a;-webkit-transform:rotateZ(40deg);-ms-transform:rotateZ(40deg);transform:rotateZ(40deg);}
 .btn_voice_s{display:none;position:absolute;z-index:3;top:0;right:4px;width:40px;height:45px;}
@@ -1396,3 +1397,10 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-ms-animation:op
 .layer_detail_notice .dotitem p,.layer_detail_notice .bluetext{color: rgba(255,255,255,0.8);}
 .layer_detail_notice .dotitem p:before{background-color: rgba(255,255,255,0.8);}
 .layer_detail_notice .detail_list .title{color: #fefefe; text-align: center; font-size: 18px; padding-top: 30px; padding-bottom: 10px; margin-bottom: 10px;}
+
+.shadow{-webkit-mask: -webkit-gradient(linear,0 84, 0 bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));-webkit-mask-position: 0px 0px;}
+
+
+/* 把列表页头部的ICON放入CSS，方便Hybrid打包(junyizhang@ctrip.com) */
+.list_header_map_icon {background: url(http://pic.c-ctrip.com/h5/tuan/icon_map_w.png) no-repeat 0 0;}
+.list_header_search_icon {background: url(http://pic.c-ctrip.com/h5/tuan/icon_search_w.png) no-repeat 0 0;}
