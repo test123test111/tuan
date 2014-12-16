@@ -105,7 +105,7 @@
         </div>
         <ul class="ui-result-tar" id="J_deleteFilter">
             <%_.each(customFilter, function(item, key) {%>
-                <%if(key=='star'){%>
+                <%if(key=='star' || key=='brand'){%>
                     <%_.each(item, function(v, i) {%>
                     <li data-type="<%=key%>" data-value="<%=i%>"><%=v%></li>
                     <%})%>

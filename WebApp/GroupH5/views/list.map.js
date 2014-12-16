@@ -29,7 +29,11 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 '<%if(count>0){%>',
                     '共<%=count%>家商户<%if(count>50){%>，展示前<%=length%>家<%}%>',
                 '<%}else{%>',
-                    '无<%=ctext%>，请滑动地图后查询',
+                    '<%if(!isKeyword){%>',
+                        '无<%=ctext%>，请滑动地图后查询',
+                    '<%}else{%>',
+                        '无符合条件的结果',
+                    '<%}%>',
                 '<%}%>',
             ].join('')),
             markerTpl = _.template([
@@ -128,6 +132,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
             },
             onPoiSuccess: function (data) {
                 var btnSearch = this.btnSearch;
+                var keywordData = StoreManage.getCurrentKeyWord();
                 if (!data.count || !data.products.length) {
                     btnSearch.hide();
                 } else {
@@ -149,6 +154,8 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 var place = '';
                 if (this.isScreenQuery) {
                     place = this.distance + '公里内';
+                } else if (keywordData) {
+                    place = keywordData.word;
                 } else {
                     var pos = positionfilterStore.get();
                     if (pos && pos.type) {
@@ -166,6 +173,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                 var infoText = infoTpl({
                     place: place,
                     count: data.count,
+                    isKeyword: !!keywordData,
                     ctext: GROUP_TEXT[this.category],
                     length: data.products.length
                 });
