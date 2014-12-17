@@ -974,7 +974,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         traitWrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
                         traitScroller.html(traitTpl(this.getDataFromCondition('trait', 8192)));
                         traitScroll = new Scroll({
-                            traitWrapper: traitWrapper,
+                            wrapper: traitWrapper,
                             scroller: traitScroller
                         });
                     }

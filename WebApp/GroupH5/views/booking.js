@@ -24,6 +24,7 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
             Guider = WidgetFactory.create('Guider'),
             Member = WidgetFactory.create('Member'),
             MSG, //提示信息
+            rPhoneNum = /^1[3458]\d{9}$/, //手机号正则表达式
             ORDER_NUM = {
                 max: 9,
                 min: 1
@@ -85,8 +86,19 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     store.max = store.max < ORDER_NUM.max ? store.max: ORDER_NUM.max;
 
                     store.curNum = (order && order.curNum) || store.min;
-                    //优先取用户选择的手机号或最后填写的手机号，次取用户绑定的手机号，再取用户未绑定的手机号
-                    store.tel = (order && order.tel) || (userInfo && (userInfo.BMobile || userInfo.Mobile)) || '';
+                    /*
+                    * 优先取用户选择的手机号或最后填写的手机号，次取用户绑定的手机号，再取用户未绑定的手机号
+                    * 未登录用户
+                    *  • 优先带入该用户最近一次手动修改的手机号（关闭APP后不清空）
+                    *  • 如果未修改，则带入该用户最近一张携程订单中填写的手机号（关闭APP后不清空）
+                    *  • 如果以上两点均不满足，则不带入任何手机号
+                    * 已登录用户
+                    *  • 优先带入该用户最近一次手动修改的手机号（关闭APP后不清空）
+                    *  • 如果未修改，则带入该用户最近一张携程订单中填写的手机号（关闭APP后不清空）
+                    *  • 如果以上两点均不满足，则带入该用户已绑定的手机号
+                    *  • 如果以上三条均不满足，则不带入任何手机号
+                    */
+                    store.tel = localStorage.getItem('TUAN_USER_MOBILE') || (order && order.tel) || (userInfo && (userInfo.BMobile || userInfo.Mobile)) || '';
                     store.retainTwoDecimal = retainTwoDecimal;
                     store.user = userInfo;
                     store.isLogin = userStore.isLogin();
@@ -158,6 +170,12 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     this.forwardJump('coupon', '/webapp/tuan/coupon');
                 },
                 'click .J_loginBtn': 'loginAction',
+                'input #J_tel': function (e) {
+                    var v = e.target && e.target.value;
+                    if (rPhoneNum.test(v)) {
+                        localStorage.setItem('TUAN_USER_MOBILE', v);
+                    }
+                },
                 'click #J_selectContact': 'selectContactNew',
                 'click .J_selectDate': 'selectDate'   //门票选择日期
             },
@@ -278,7 +296,9 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                     //android also has this problem
                     //this.isIOS7() &&
                     this._fixIOS7Bug();
-                    inputClear(this.els.telDom);
+                    inputClear(this.els.telDom, '', function () {
+                        localStorage.removeItem('TUAN_USER_MOBILE');
+                    });
                 }
             },
 
@@ -652,7 +672,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                         bustype = 11, //类型，11代表团购
                         auth = headStore.getAttr('auth'),
                         totalPrice,
-	                    //tmpPrice,
                         invoice = invoiceStore.get(),
                         token = {},
                         isLogin;
@@ -661,7 +680,6 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
 
                     if (data.Status.toLowerCase() === 'success') {
                         oid = data.GOrder.OID;
-                        //tmpPrice = data.GOrder.Price;
                         totalPrice = data.GOrder.Price.TotalAmount.Price;
                         token = {
                             oid: oid,
@@ -724,11 +742,9 @@ define(['TuanApp', 'c', 'cUIInputClear', 'TuanBaseView', 'cCommonPageFactory', '
                 notUserLoginModel.excute(function () {
                     callback && callback.call(self);
                 }, function () {
-//                    self.hideLoading();
                     self.hideLoadingLayer();
                     self.showToast('自动登录失败');
                 }, false, self, function () {
-//                    self.hideLoading();
                     self.hideLoadingLayer();
                 });
             },
