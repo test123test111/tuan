@@ -299,12 +299,17 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
             /**
              * 因地图上只能按商户展示团购产品，所以只能和列表页的商户聚合模式保持
              * 同步，对于列表页产品聚合模式，这里统一改成商户聚合模式，即传经纬度
-             * 参数(pos)
+             * 参数(pos)，以下是2.8新增需求：
+             *  • 列表查询无数据（或者有团购数据但团购无有效经纬度），进入地图时候：
+             *  1，按经纬度查询，地图显示经纬度+半径4km；
+             *  2，按城市查询，获取到城市中心经纬度，则显示城市中心点+半径为15km
+             *  3，按城市查询，未获取到城市中心经纬度：显示中国地图
              */
             getParams: function() {
                 var searchData = searchStore.get();
                 var positionData = positionfilterStore.get();
                 var cityId = searchData.ctyId;
+                var hasListResult = MemCache.getItem('resultCount');
                 var cityInfo, gps;
                 if (positionData && positionData.name) {//选择了位置区域
                     if (positionData.ctyId == cityId && searchData.sortRule != 8) {
@@ -322,6 +327,16 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                                 name: cityInfo.name + StringsData.CITY_CENTER
                             };
                         }
+                        if (!hasListResult) {
+                            var qparams = searchData.qparams;
+                            _.each(qparams, function(item, index) {
+                                if (item.type === 9) {
+                                    qparams.splice(index, 1);
+                                }
+                            });
+                            qparams.push({type: 9, val:4});
+                            searchData.qparams = qparams;
+                        }
                     }
                 } else {//没有选择位置区域，则传市中心的经纬度
                     cityInfo = StoreManage.findCityInfoById(cityId); //取市中心的经纬度
@@ -332,6 +347,9 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'StringsData', 'Tu
                         lat: gps.lat || 0,
                         name: cityInfo.name + StringsData.CITY_CENTER
                     };
+                    if (!hasListResult) {
+                        searchData.pos.distance = 15;
+                    }
                 }
                 return searchData;
             },

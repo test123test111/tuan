@@ -820,6 +820,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     this.isLoading = false;
                     self.hideLoading();
                     notClearAll && self.hideBottomLoading();
+                    MemCache.setItem('resultCount', data && data.count || 0);
                     if (data && data[key] && data[key].length && data.count && +data.count > 0) {
                         var keywordData = StoreManage.getCurrentKeyWord();
                         if (keywordData) {
@@ -849,7 +850,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                         }
                         //修复列表页锚点问题
                         MemCache.setItem('hasListData', true);
-                        MemCache.setItem('resultCount', data.count);
                         if (searchStore.getAttr('pageIdx') <= 1 && !isNearBy) {
                             self.displayGPSInfo(data.curpos || {}, isNearBy);
                         }
