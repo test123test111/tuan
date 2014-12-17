@@ -193,6 +193,47 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             }
         },
         /**
+         * 获取分享配置
+         * @returns {Object}
+         */
+        //由于APP bug暂不能用
+        /*prepareShareData: function () {
+            var self = this,
+                data,
+                shareInfo = ShareToSNSInfo,
+                detailData = self.detailData,
+                productUrl = 'http://m.ctrip.com/webapp/tuan/detail/' + self.productId + '.html?cityid=' + self.cityId,
+                hotelInfo = detailData.hotels[0] || detailData.recommendHotel.hotel || {name: detailData.name}, //如果多店酒店，则显示推荐酒店信息
+                images = detailData.images,
+                imgUrl = images && images.length && images[0].small,
+                shareTitle = detailData.name || hotelInfo.name;
+
+            data = [{
+                shareType: 'Default',//默认所有分享方式都取这条数据
+                imageUrl: imgUrl,
+                text: _.template(shareInfo.content)({
+                    price: detailData.price && detailData.price.dPrice || '',
+                    name: shareTitle,
+                    score: hotelInfo.score,
+                    addr: hotelInfo && hotelInfo.addr || '',
+                    link: productUrl
+                }),
+                title: hotelInfo.name,
+                linkUrl: productUrl
+            }];
+            return data;
+        },*/
+        /**
+         * @since app v6.1 (app有问题暂没用)
+         * @param dataList {Array} 分享的内容
+         * @param businessCode {String} 分享的业务ID，可以为空，设置后，方便BI统计数据
+         * @param callback {Function} (optional) 分享回调
+         */
+        /*shareToVendor: function (dataList, businessCode, callback) {
+            HybridShell.Fn('call_custom_share', callback || NOOP).run(dataList, businessCode);
+        },*/
+
+        /**
         * 分享按钮事件
         */
         bindShareEvent: function () {
@@ -205,6 +246,10 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 hybridCallback: function () {
                     Guider.register({
                         tagname: Facade.METHOD_SHARE, callback: function () {
+                            /* 新版分享，APP问题暂不能用
+                             var data = self.prepareShareData();
+
+                             self.shareToVendor(data);*/
                             self.prepareShareData(function(data){
                                 Guider.shareToVendor(data);
                             });
