@@ -3,6 +3,7 @@
  * @date: 2014/12/16 15:52
  * @descriptions 下拉修饰模块
  */
+
 define(['cBase'],function (cBase) {
 
     var PulldownDecorator,
@@ -30,22 +31,30 @@ define(['cBase'],function (cBase) {
             this.view = view;
         },
         /**
-         * 当滚动条在顶部时才支持下拉
+         * 当滚动条在顶部时才支持下拉，且未非下拉状态
          * @returns {boolean}
          */
         ready: function(){
-            return !(document.body.scrollTop || document.documentElement.scrollTop);
+            return !(document.body.scrollTop || document.documentElement.scrollTop) && !this.isPulling;
+        },
+        resolve: function(){
+            if(this.isMax){
+                this._translate(this.view.$el, 0, 100);
+                this.isMax = false;
+                this.isPulling = false;
+            }
+
         },
         __propertys__: function() {
             this.options = {
                 /**
-                 * @cfg {Number} 手指拖动距离与试图移动距离的比例
+                 * @cfg {Number} 手指拖动距离与视图移动距离的比例
                  */
                 offsetRatio: 0.3,
                 /**
-                 * @cfg {int} 拖动到多少位移为有效拖动
+                 * @cfg {int} 拖动到多少位移为有效拖动,单位:px
                  */
-                releasePoint: 100,
+                releasePoint: 50,
                 /**
                  * @event 拖动到开始
                  */
@@ -61,27 +70,31 @@ define(['cBase'],function (cBase) {
                 /**
                  * @event 拖动到有效点
                  */
-                onPullMax: NOOP
+                onPullMax: NOOP,
+                /**
+                 * @event 拖动到有效点，后释放。比onPullEnd先触发
+                 */
+                onPullRelease: NOOP
             };
             this.isPulling = false;
             this.isMax = false;
         },
         _lastTouchStartPos: {pageX:0, pageY:0},
-        _translate: function(dom, offset, direction){
-            direction = direction || 'Y';
-
-            dom.css(CSS3ExpandoPrefix+'transform', 'translate'+direction.toUpperCase()+'('+offset+'px)');
+        _translate: function(dom, offset, duration/*, direction*/){
+            //dom.css(CSS3ExpandoPrefix+'transform', 'translate'+direction.toUpperCase()+'('+offset+'px)');
+            dom.css(CSS3ExpandoPrefix+'transition', duration + 'ms ease-out');//不要用translateX，在chrome下卡
+            dom.css(CSS3ExpandoPrefix+'transform', 'translate(0,' + offset + 'px) translateZ(0)');
         },
         _touchstartHandler: function(e){
+
             var touches = e.touches[0];
-            if(this.ready()){
-                this.isPulling = true;
+
+            if(this.ready()) {
+
                 this._lastTouchStartPos.pageX = touches.pageX;
                 this._lastTouchStartPos.pageY = touches.pageY;
-                this.isMax = false;
-                this.options.onPullStart.call(this, e);
             }
-            //target.
+            start = +new Date();
         },
         _touchmoveHandler: function(event){
             var target = $(event.currentTarget),
@@ -93,9 +106,6 @@ define(['cBase'],function (cBase) {
                 maxpull = options.releasePoint;
 
 
-            if(!this.isPulling){
-                return;
-            }
             //判断多指触摸，缩放
             if ( event.touches.length > 1 || event.scale && event.scale !== 1) {
                 return;
@@ -103,11 +113,23 @@ define(['cBase'],function (cBase) {
 
             touches = event.touches[0];
             pageOffsetY = touches.pageY;
-            if(!isPullDown(lastTouch.pageY, pageOffsetY)){
+
+            offset = (touches.pageY-lastTouch.pageY) * options.offsetRatio;
+            //_log(offset+'/'+this.isPulling +'/'+ this.ready()+'/'+lastTouch.pageY+'/'+pageOffsetY);
+            if(offset>0 && !this.isPulling && this.ready()){
+                event.preventDefault();
+                this.isPulling = true;
+                options.onPullStart.call(this, event);
+                (pageOffsetY>=0 || offset<maxpull) && this._translate(target, offset, 0);
                 return;
             }
-            event.preventDefault();//必须禁止默认行为，否则拖动卡
-            offset = (touches.pageY-lastTouch.pageY) * options.offsetRatio;
+
+            if(!isPullDown(lastTouch.pageY, pageOffsetY) || !this.isPulling){
+                return;
+            }
+
+            //event.preventDefault();//必须禁止默认行为，否则拖动卡
+            //_log('in');
             if(offset>=maxpull){
                 !this.isMax && options.onPullMax.call(this, event, offset, this.isMax);
                 this.isMax = true;
@@ -115,16 +137,20 @@ define(['cBase'],function (cBase) {
                 this.isMax = false;
                 options.onPulling.call(this, event, offset);
             }
-            (pageOffsetY>=0 || offset<maxpull) && this._translate(target, offset, 'y');
+            (pageOffsetY>=0 || offset<maxpull) && this._translate(target, offset, 0);
         },
         _touchendHandler: function(e){
             var wrap = this.view.$el;
             if(this.isPulling){
-                this.isPulling = false;
-                wrap.css(CSS3ExpandoPrefix+'transition', '100ms ease-out');
-                this._translate(wrap, 0, 'y');
-                this.isMax = false;
-                this.options.onPullEnd.call(this, e);
+                this._translate(wrap, this.isMax ? this.options.releasePoint : 0, 100);//如果达到了释放点则回到释放点，等resolve通知
+                if(this.isMax){
+                    this.options.onPullRelease.call(this, e);
+                }else{
+                    this.isPulling = false;
+                    this.isMax = false;
+                    this.options.onPullEnd.call(this, e);
+                }
+
             }
         },
         _bindTouchEvents: function(){

@@ -1,6 +1,6 @@
 ﻿/*jshint -W030 */
-define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'cHybridFacade', 'cCommonPageFactory', 'PageHistory', 'cWidgetFactory', 'cWidgetGuider'],
-function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPageFactory, History, WidgetFactory) {
+define(['c', 'cStore', 'cPageView', 'cCommonListPage', 'cUtility', 'PulldownDecorator', 'cHybridFacade', 'cCommonPageFactory', 'PageHistory', 'cWidgetFactory', 'cWidgetGuider'],
+function (c, AbstractStore, BasePageView, CommonListPage, Util, PulldownDecorator, Facade, CommonPageFactory, History, WidgetFactory) {
 
     var PAGE_NAME = 'TuanBaseView';
     var PAGE_NAMELIST = 'TuanBaseListView';
@@ -62,9 +62,36 @@ function (c, AbstractStore, BasePageView, CommonListPage, Util, Facade, CommonPa
             History.addHistory(this.getViewName(), location.href, 2);
         },
         __onShow: function () {
+            var self = this;
+            //基础类实现功能
+            if(self.enablePulldown){
+                /* <div class="pulldown-loading J_pulldown"  style="text-align:center; position:absolute;top:-50px;line-height:50px;">
+                    下拉即可刷新
+                </div>*/
+                this.pulldown = this.pulldown || new PulldownDecorator(this, {
+                    onPullMax: function(){
+                        self.$el.find('.J_pulldown').html('松开即可刷新...');
+                    },
+                    onPullStart: function(){
+                        self.$el.find('.J_pulldown').html('下拉即可刷新...');
+                    },
+                    onPullEnd: function(){
+
+                    },
+                    onPullRelease: function(){
+                        var hh = this;
+                        self.$el.find('.J_pulldown').html('刷新中...');
+                        setTimeout(function(){
+                            hh.resolve();
+                        },1000);
+                    }
+                });
+                this.pulldown.enable();
+            }
+
         },
         __onHide: function (/*viewname*/) {
-
+            this.pulldown && this.pulldown.disable();
         },
         getHistory: function () {
             return History;

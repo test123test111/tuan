@@ -1,10 +1,10 @@
-﻿/*jshint -W030 */
+/*jshint -W030 */
 /**
  * 首页
  * @url: m.ctrip.com/webapp/tuan 或 m.ctrip.com/webapp/taun/home
  */
-define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'PulldownDecorator', 'StoreManage', 'StringsData', 'cHybridFacade','cHybridShell', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation','bridge','Helper'],
-    function (TuanApp, c, Crypt, UIAlert, TuanBaseView, CommonPageFactory, PulldownDecorator, StoreManage, StringsData, Facade, HybridShell, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
+define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPageFactory', 'StoreManage', 'StringsData', 'cHybridFacade','cHybridShell', 'cWidgetGuider', 'cUtility', 'cGeoService', 'cWidgetFactory', 'TuanStore', 'TuanModel', 'LazyLoad', 'text!HomeTpl', 'cWidgetGeolocation','bridge','Helper'],
+    function (TuanApp, c, Crypt, UIAlert, TuanBaseView, CommonPageFactory, StoreManage, StringsData, Facade, HybridShell, WidgetGuider, Util, GeoService, WidgetFactory, TuanStore, TuanModels, LazyLoad, html) {
         'use strict';
         var isInApp = Util.isInApp(),
             Mask = c.ui.Mask,
@@ -101,18 +101,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
             },
             onShow: function () {
                 this.LazyLoad = new LazyLoad({ wrap: this.$el });
-                this.pulldown = this.pulldown || new PulldownDecorator(this, {
-                    onPullMax: function(){
-                        console.log('onPullMax')
-                    },
-                    onPullStart: function(){
-                        console.log('onPullStart')
-                    },
-                    onPullEnd: function(){
-                        console.log('onPullEnd')
-                    }
-                });
-                this.pulldown.enable();
+
             },
             onHide: function () {
                 GeoLocation.UnSubscribe('tuan/home');
@@ -124,7 +113,6 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                 this.$el.find('.ad_link').hide(); //默认不显示广告
                 this.hideOfflineAlert();
                 this.hideSwitchAlert();
-                this.pulldown && this.pulldown.disable();
             },
             getCityFromAppCached: function(cb) {
                 if (!isInApp) {
