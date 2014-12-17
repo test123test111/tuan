@@ -46,6 +46,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                     btnMinus: this.$el.find('#J_minus'),
                     btnPlus: this.$el.find('#J_plus'),
                     $types: this.$el.find('.J_refundType'),
+                    $reasons: this.$el.find('.J_refundRsn'),
                     $numStep: this.$el.find('.J_numberStep')
                 };
             },
@@ -54,7 +55,7 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             },
             events: {
                 'click .J_btnSubmit': 'onSubmitRefund',
-                'click .apply_refund_reason>li': 'onRefundReasonChange',
+                'click .J_refundRsn': 'onRefundReasonChange',
                 'click .J_refundType': 'selectRefundType'
             },
             _createNumberStep: function() {
@@ -118,8 +119,8 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
             onRefundReasonChange: function (e) {
                 var cur = $(e.currentTarget),
                 reasontext = cur.text();
-                cur.parent().find("li").removeClass("choosed");
-                cur.addClass("choosed");
+                cur.parent().find("li").removeClass(chooseCls + ' ' + errorCls);
+                cur.addClass(chooseCls);
                 if (reasontext == "其他") {
                     this.$el.find(".reason_other_text").show();
                 } else {
@@ -265,6 +266,13 @@ define(['TuanApp', 'libs', 'c', 'cUtility', 'cWidgetFactory', 'CommonStore', 'cW
                 if (!this.els.$types.filter('.' + chooseCls).length) {
                     this.showToast('请选择退款方式',3, function() {
                         self.els.$types.addClass(errorCls);
+                    });
+                    return false;
+                }
+
+                if (!this.els.$reasons.filter('.' + chooseCls).length) {
+                    this.showToast('请选择退款原因',3, function() {
+                        self.els.$reasons.addClass(errorCls);
                     });
                     return false;
                 }
