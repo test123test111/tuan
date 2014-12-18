@@ -446,7 +446,7 @@
     T.TuanNearListModel = new cBase.Class(AbstractModel, {
         __propertys__: function(){
             this.url = '/json/NearGroup';
-            this.param = {};
+            this.param = {ver: VERSION};
             this.method = 'POST';
             this.result = TuanStore.TuanNearListStore.getInstance();
         }

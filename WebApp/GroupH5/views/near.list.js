@@ -3,7 +3,7 @@
  * @url: m.ctrip.com/webapp/tuan/nearlist
  */
 /*jshint -W030*/
-define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore', 'TuanModel', 'text!NearListTpl', 'Helper'], function (TuanApp, TuanBaseView, CommonPageFactory, LazyLoad, TuanStore, TuanModel, html) {
+define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore', 'TuanModel', 'text!DetailNearTpl', 'StringsData', 'Helper'], function (TuanApp, TuanBaseView, CommonPageFactory, LazyLoad, TuanStore, TuanModel, html, StringsData) {
     var tuanNearListModel = TuanModel.TuanNearListModel.getInstance();
     var searchStore = TuanStore.GroupSearchStore.getInstance();
     var pageTitle = '周边团购';
@@ -37,11 +37,12 @@ define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore'
         onLoad: function() {
             var pid = Lizard.P('pid');
             var title = Lizard.P('title');
+            this.category = Lizard.P('category');
             //如果没有产品ID则回退回去
             if (!pid) {
                 this.back();
             }
-            this.setHeader(title);
+            this.setHeader(title || '周边'+StringsData.groupType[this.category || 1].name+'团购');
             this.getNearList(pid);
         },
         onHide: function() {
@@ -78,7 +79,7 @@ define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore'
         },
         renderList: function(data) {
             data.ctype = searchStore.getAttr('ctype');
-            var item = this.itemRenderFn(data);
+            var item = this.itemRenderFn({data: data});
             this.$el.html($.trim(item));
             this.LazyLoad && this.LazyLoad.updateDom();
         },
@@ -90,3 +91,7 @@ define(['TuanApp', 'TuanBaseView', 'cCommonPageFactory', 'LazyLoad', 'TuanStore'
     });
     return View;
 });
+/**
+ * changelog:
+ * @since 6.1, 修改模板，引用detail.near.html 移除 near.list.html
+ */

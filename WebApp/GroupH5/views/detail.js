@@ -3,8 +3,8 @@
  * 详情页
  * @url m.ctrip.com/webapp/tuan/detail/{pid}.html
  */
-define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'cWidgetFactory', 'CallPhone', 'WechatShare', 'SmoothSlide'],
-function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, html, WidgetFactory, CallPhone, WechatShare) {
+define(['TuanApp', 'libs', 'c', 'MemCache', 'cUtility', 'cHybridFacade', 'cWidgetMember', 'cWidgetGuider', 'TuanStore', 'TuanBaseView', 'cCommonPageFactory', 'TuanModel', 'CommonStore', 'text!DetailTpl', 'text!DetailNearTpl', 'cWidgetFactory', 'CallPhone', 'WechatShare', 'Helper', 'SmoothSlide'],
+function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, TuanStore, TuanBaseView, CommonPageFactory, TuanModel, CommonStore, html, nearHtml, WidgetFactory, CallPhone, WechatShare) {
     var MSG = {
             pageTitle: '团购详情',
             delFavoriteSuccess: '已取消收藏',
@@ -25,6 +25,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         tuanDetailStore = TuanStore.TuanDetailsStore.getInstance(),
         tuanAddFavorite = TuanModel.TuanAddFavorite.getInstance(),
         tuanDelFavorite = TuanModel.TuanDelFavorite.getInstance(),
+        tuanNearListModel = TuanModel.TuanNearListModel.getInstance(),
 
         geolocationStore = TuanStore.GroupGeolocation.getInstance(), //经纬度信息
         userStore = CommonStore.UserStore.getInstance(), //用户信息
@@ -34,7 +35,8 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         Guider = WidgetFactory.create('Guider'),
         getQuery = Lizard.P,
         Slide = WidgetFactory.create('SmoothSlide'),
-        LINE_CONFIG = 4;
+        $body = $('body'),
+        LINE_CONFIG = 5;
 
     /**
     * 获取yyyy-mm-dd格式时间
@@ -54,10 +56,15 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             TuanApp.tHome();
         },
         events: {
+            'click #J_return ': 'returnHandler',
             'click #J_submit': 'submit',
+            'click #J_favBtn': 'favorite',
+            'click #J_share': 'shareHandler',
             'click .J_relatedProducts': 'gotoRelatedProducts',
             'click .J_tips': 'showTips',
             'click .J_viewMoreBtn': 'ctrlInfoTip',
+            'click .J_showNotePop': 'showNotePop',
+            'click .J_notesPopBox': 'hideNotePop',
             'click .J_picItem': 'showImageSlide',
             'click #J_branch': 'showBranch', //分店
             'click .J_showDetailMap': 'showMap', //地图
@@ -100,40 +107,17 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         },
         recommendNearby: function(){
             var cityId = this.cityId;
-            this.forwardJump('nearlist','/webapp/tuan/nearlist?pid=' + this.productId + (cityId ? '&cityid=' + cityId : ''));
+            var category = this.$el.find('.J_nearTabs .cur').attr('data-category') || 1;
+            this.forwardJump('nearlist','/webapp/tuan/nearlist?pid=' + this.productId + '&category='+ category + (cityId ? '&cityid=' + cityId : ''));
         },
-        setHeader: function (favorited) {
-            var self = this,
-                headerData;
-
-            headerData = {
-                title: MSG.pageTitle,
-                back: true,
-                view: this,
-                favorited: !!favorited, //Hybrid配置
-                favorite: !favorited,   //Hybrid配置
-                share: true, //分享，图片-native预置
-                events: {
-                    returnHandler: function () {
-                        self.$el.html('');
-                        self.backAction();
-                    }
-                }
-            };
-            if(!isInApp){//如果是H5则配置对应的收藏按钮，hybrid不能配置
-                var cls = favorited ? 'icon_fav i_bef' : 'icon_unfav i_bef';
-                headerData.events.commitHandler = function(){
-                    self.favorite();    
-                };
-                headerData.btn = {
-                    title: '',
-                    id: 'favorite',
-                    classname: cls
-                };
+        updateHeader: function(isfav) {
+            if (!isInApp) {
+                this.$el.find('#J_share').remove();
+            } else {
+                this.$head && this.$head.addClass('headerview_detail_app');
+                this.$buyCon && this.$buyCon.addClass('tuan_buy_app');
             }
-            this.header.set(headerData);
-
-            this.header.show();
+            this.$el.find('#J_favBtn').attr('class', isfav ? 'icon_fav i_bef' : 'icon_unfav i_bef');
         },
         /**
          * 收藏操作
@@ -233,29 +217,9 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             HybridShell.Fn('call_custom_share', callback || NOOP).run(dataList, businessCode);
         },*/
 
-        /**
-        * 分享按钮事件
-        */
-        bindShareEvent: function () {
-            var self = this;
-
-            Guider.apply({
-                callback: function () {
-                    //h5暂不支持
-                },
-                hybridCallback: function () {
-                    Guider.register({
-                        tagname: Facade.METHOD_SHARE, callback: function () {
-                            /* 新版分享，APP问题暂不能用
-                             var data = self.prepareShareData();
-
-                             self.shareToVendor(data);*/
-                            self.prepareShareData(function(data){
-                                Guider.shareToVendor(data);
-                            });
-                        }
-                    });
-                }
+        shareHandler: function() {
+            this.prepareShareData(function(data){
+                Guider.shareToVendor(data);
             });
         },
         /**
@@ -266,36 +230,12 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         updateFavorStatus: function(status, favorId){
             var self = this;
 
-            self.updateFavorButton(status);
+            this.updateHeader(status);
             self.favorInfo = {
                 isFavor: !!status,
                 favorId: favorId
             };
             tuanDetailStore.setAttr('favorInfo', self.favorInfo);
-        },
-        /**
-         * 更新收藏按钮
-         */
-        updateFavorButton: function(status){
-            var self = this;
-
-            self.setHeader(status);
-            Guider.apply({
-                callback: function(){
-                },
-                hybridCallback: function(){
-                    Guider.register({
-                        tagname: Facade.METHOD_FAVORITE, callback: function () {
-                            self.favorite();
-                        }
-                    });
-                    Guider.register({
-                        tagname: Facade.METHOD_FAVORITED, callback: function () {
-                            self.favorite();
-                        }
-                    });
-                }
-            });
         },
         /**
          * 添加收藏
@@ -359,14 +299,18 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         },
         onShow: function () {
             this.hideLoading();
+            this.header && this.header.hide();
+            //document.addEventListener('scroll', this.onScroll.bind(this));
+            this.$el.on('touchmove', this.onScroll.bind(this));
             this._onLoad();
         },
         onHide: function () {
-            this.timer && clearInterval(this.timer);
             this.hideLoading();
             this.hideWarning404();
             this.mask && this.mask.hide();
             this.CallPhone && this.CallPhone.hideMask();
+            this.$el.off('touchmove', this.onScroll.bind(this));
+            if (!TuanApp.isInApp && this.header && this.header.rootBox) {this.header.rootBox.show();}
         },
         /**
          * 判断是否从hybrid的公共收藏列表页过来
@@ -377,6 +321,10 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
         },
         isFromHotel: function(url){
             return url.indexOf('/hotel/')>-1;         
+        },
+        returnHandler: function() {
+            this.$el.html('');
+            this.backAction();
         },
         backAction: function () {
             if(this.isFromHybridFavorPage()){
@@ -451,8 +399,6 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 self.productInfo = data;
                 //更新收藏状态
                 self.updateFavorStatus(favorInfo && favorInfo.isFavor, favorInfo && favorInfo.favorId);
-                //绑定分享
-                self.bindShareEvent();
             }, function () {
                 var self = this;
                 this.showWarning404($.proxy(self.getTuanDetail, self));
@@ -469,10 +415,20 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
 
             data.isInApp = isInApp;
             this.$el.html($.trim(this.htmlfun({ data: data })));
+
+            this.$purNotes = this.$el.find('.J_purchaseNotes');
+            this.$popNotes = this.$el.find('.J_notesPopBox');
+            this.$head = this.$el.find('#J_headerview');
+            this.$buyCon = this.$el.find('.J_sticky');
+
+            this.renderArround(1);//附近酒店推荐
+
             //初始化幻灯片
             this.initImageSlider(data.images);
-            //隐藏多余的tips
+            //隐藏多余的tips (老版)
             this.hideMoreContent();
+            //新版
+            this.hideMoreNotes();
 
             btnSubmit = this.$el.find('#J_submit');
             if (labelVal == 98) { //即将结束
@@ -490,8 +446,6 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 btnSubmit.attr('class', disabledCls);
             }
 
-            //开启倒计时
-            this.showTimer(data.etime);
             this.productData = data;
 
             this.CallPhone = new CallPhone({
@@ -500,13 +454,26 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
 
             this.isFromWeChat && this.initWechatShare();
         },
+        renderArround: function(category) {
+            var $con = this.$el.find('.J_aroundProduct');
+            tuanNearListModel.setParam({category: category, id: this.productId, environment:TuanApp.environment});
+            tuanNearListModel.excute(function(data) {
+                if (data && data.products && data.products.length) {
+                    $con.append(_.template(nearHtml, {data: data, num: 4}));
+                } else {
+                    $con.remove();
+                }
+            }, function() {
+                $con.remove();
+            }, false, this);
+        },
         hideMoreContent: function () {
             var panel = this.$el.find('.J_moreOrLessPanel'),
                 h = this.lineHeight,
                 t;
             $.each(panel, function() {
                 t = $(this);
-                if (t.height() < LINE_CONFIG * h) {
+                if (t.height() <= LINE_CONFIG * h) {
                     t.next().remove();
                     t.removeClass('shadow');
                 } else {
@@ -514,8 +481,13 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 }
             });
         },
+        hideMoreNotes: function() {
+            if (this.$purNotes.find('p').length >= 5) {
+
+            }
+        },
         initImageSlider: function(images) {
-            var width = $('body').offset().width,
+            var width = $body.offset().width,
                 container = this.$el.find('#J_pic'),
                 currentIndex = tuanDetailStore.getAttr('imageIndex') | 0,
                 self = this;
@@ -535,6 +507,7 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 width: width,
                 onTouchEnd: function(index, direct, distance) {
                     if (index === images.length-1 && direct === 'left' && distance > 10) {
+                        tuanDetailStore.setAttr('imageIndex', index);
                         self.showImages();
                     }
                 },
@@ -624,13 +597,12 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
             this.forwardJump('hotelsubbranch','/webapp/tuan/hotelsubbranch' + (cityId ? '?cityid=' + cityId : ''));
         },
         showMap: function (e) {
-            var target = $(e.currentTarget),
-                coords = target.attr('data-coords').split(','),
-                lng = coords[0],
-                lat = coords[1],
-                hotelName = target.attr('data-hotel-name');
-
-            this.showCommonMap(hotelName, lng, lat);
+            var target = $(e.currentTarget), coords;
+            if (!/J_phone/ig.test(target.attr('class'))) {
+                coords = target.attr('data-coords').split(',');
+                //name, lng, lat
+                this.showCommonMap(target.attr('data-hotel-name'), coords[0], coords[1]);
+            }
         },
         showComment: function () {
             this.forwardJump('hotelcomments', '/webapp/tuan/hotelcomments');
@@ -649,43 +621,18 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 .attr('class', expanded?'view_unfold':'view_fold');
 
         },
-        showTimer: function (couponEdate) {
-            var dayTemp = Date.parse(couponEdate.replace(/\-/g, '/')); //ios safari can not parse '2014-01-01';
-            var dayNow = this.getServerDate();
-            this.dateDiff = (dayTemp - dayNow);
-            //单位时间长度
-            var day = 24 * 60 * 60 * 1000;
-            //如果小于三天，则开始倒计时
-            if ((this.dateDiff / day) < 3) {
-                this.timer = setInterval(_.bind(this.updateTimer, this), 600);
-
-            }
+        showNotePop: function() {
+            var $pop = this.$popNotes,
+                $notes = this.$purNotes && this.$purNotes[0];
+            $pop.html($notes ? $notes.outerHTML : '');
+            $pop.find('.J_showNotePop').remove();
+            !this.mask && (this.mask = new c.ui.Mask());
+            $pop.show();
+            this.mask.show();
         },
-        updateTimer: function () {
-            if (this.dateDiff > 0) {
-                var day = 24 * 60 * 60 * 1000;
-                var hour = 60 * 60 * 1000;
-                var min = 60 * 1000;
-                var second = 1000;
-                //余下的时间
-                var remainTime = this.dateDiff;
-                var diffDay = Math.floor(remainTime / day);
-                remainTime = remainTime % day;
-                var diffHour = Math.floor(remainTime / hour);
-                remainTime = remainTime % hour;
-                var diffMin = Math.floor(remainTime / min);
-                remainTime = remainTime % min;
-                var diffSec = Math.floor(remainTime / second);
-                this.$el.find(".tuan_hotel_time").text("剩余  " + diffDay + "天" + diffHour + "小时" + diffMin + "分" + diffSec + "秒");
-                this.dateDiff = this.dateDiff - 1000;
-            } else {
-                this.endTimer();
-            }
-        },
-        endTimer: function () {
-            clearInterval(this.timer);
-            this.$el.find(".tuan_hotel_time").text("0天0小时0分0秒");
-            this.$el.find("#J_submit").addClass(disabledCls);
+        hideNotePop: function() {
+            this.mask && this.mask.hide();
+            this.$popNotes && this.$popNotes.hide();
         },
         getAppUrl: function () {
             var productId = getQuery('pid');
@@ -728,6 +675,20 @@ function (TuanApp, libs, c, MemCache, Util, Facade, WidgetMember, WidgetGuider, 
                 'http://m.ctrip.com/webapp/hotel/hoteldetail/' + hotelId + '.html?from=' + fromUrl;
 
             TuanApp.jumpToPage(url, this);
+        },
+        onScroll: function () {
+            var scroll = this.$buyCon;
+            var boundaryH = 180 - (isInApp ? 61 : 41);
+            if (!scroll) { return; }
+            if (window.scrollY >= boundaryH) {
+                scroll.prev().css('marginBottom', scroll.height() + (parseInt(scroll.css('margin-bottom'), 10) || 0));
+                scroll.addClass('tuan_buy_fixed');
+                this.$head && this.$head.addClass('headerview_bgcolor');
+            } else {
+                scroll.prev().css('marginBottom', '0');
+                scroll.removeClass('tuan_buy_fixed');
+                this.$head && this.$head.removeClass('headerview_bgcolor');
+            }
         }
     });
     return View;

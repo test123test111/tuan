@@ -1,0 +1,35 @@
+<%
+    var products = data && data.products;
+    var max = typeof num === 'undefined' ? products.length : num;
+%>
+
+<%if(typeof products!='undefined' && products && products.length>0) {%>
+<ul class="tab_bd pro_list pro_list4">
+    <%_.each(products, function(t, i) {
+        if (i < max) {
+    %>
+
+    <li class="arr_r J_nearProducts" data-id="<%=t.id%>">
+        <div class="pro_list_imgbox">
+            <%if (max === products.length) {%>
+            <img data-img="<%=i %>" onerror="javascript:noPic(this);" data-lazy="<%=t.imgUrl?Helper.imgShowering(t.imgUrl):'http://pic.c-ctrip.com/common/pic_alpha.gif' %>" width="70" height="70" src="http://pic.c-ctrip.com/common/pic_alpha.gif" alt="<%=t.name%>图片"/>
+            <%} else {%>
+            <img src="<%=t.imgUrl%>" width="70" height="70" alt="<%=t.name%>图片">
+            <%}%>
+            <!--<span class="pro_list_label"></span>-->
+        </div>
+        <div class="pro_list_info">
+            <h4 class="pro_list_tit"><%=t.hotelname%></h4>
+            <p class="pro_list_subtit"><%=t.name%></p>
+            <p class="pro_list_dist subb_address i_bef">距离该商户<%=t.distance > 1 ? (t.distance.toFixed(1) + '公里') : (Math.round(t.distance * 1000) + '米')%></p>
+            <p class="pro_list_price">&yen;<i><%=t.price.dPrice%></i></p>
+
+            <%if (t.labels && t.labels.length) {%><p class="wrap_label"><span class="onsale_label02"><%=t.labels[0]&&t.labels[0].labelTxt%></span></p><%}%>
+        </div>
+    </li>
+    <%}});%>
+    <%if(products.length > 4 && max !== products.length){ %>
+    <li class="more view_unfold" id="J_recommendNearby">查看更多</li>
+    <%} %>
+</ul>
+<%}%>

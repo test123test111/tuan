@@ -21,6 +21,7 @@ widget/slide.js
 widget/tabslide.js
 com/switch.js
 widget/voicesearch.js
+util/helper.js
 util/httperrortpl.js
 com/numberstep.js
 widget/payment.js
@@ -33,6 +34,7 @@ com/lazyload.js
 com/callPhone.js
 util/filterxss.js
 debug/console.js
+com/pulldown.js
 com/baseview.js
 util/form/validator.js
 util/form/field.js
@@ -44,6 +46,7 @@ text!BookingSuccessTpl
 text!CityListTpl
 text!CouponTpl
 text!DetailTpl
+text!DetailNearTpl
 text!DetailTipsTpl
 text!HotelCommentsTpl
 text!HotelImagesTpl
@@ -54,7 +57,6 @@ text!HotelSubbranchTpl
 text!LashouTpl
 text!InvoiceTpl
 text!KeywordSearchTpl
-text!NearListTpl
 text!RefundTpl
 text!RefundTipTpl
 text!TuanOrderDetailTpl

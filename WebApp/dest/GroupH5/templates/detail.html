@@ -1,9 +1,13 @@
-﻿<article class="cont_wrap">
+﻿<div id="J_headerview" style="height:48px;" class="headerview_detail">
+    <header>
+        <b class="icon_share i_bef" id="J_share"></b>
+        <b class="icon_unfav i_bef" id="J_favBtn"></b>
+        <i id="J_return" class="returnico"></i>
+    </header>
+</div>
+<article class="cont_wrap">
 <%
-var MAX_WORDS = 100;
 var STRIP_TAGS = /\<\/*br\s*\/*\>/img;  //匹配HTML
-var imgCount=0;
-var imgSrc='http://pic.c-ctrip.com/common/pic_alpha.gif';
 //去除HTML
 var stripTags = function(str) {
     return str.replace(STRIP_TAGS, '\n').replace(/<[^>]+>/gm, '');
@@ -12,19 +16,8 @@ var stripTags = function(str) {
 var replaceBrTag = function(str) {
     return str.replace(/\n/img, '<br/>');
 };
-//从字符串指定位置查找第一个非数字、字母的字符的位置
-var getNonWordNum = function(str, num) {
-    if (str[num] && /[0-9a-zA-Z]/.test(str[num])) {
-        return getNonWordNum(str, num + 1);
-    } else {
-        return num;
-    }
-};
-if (data.images && data.images[0]) {
-    imgCount = data.images.length ;
-    if (data.images[0].large) imgSrc = data.images[0].large;
-}
-var project = '', prompt = '', lightspot = '', lashouProject = '', tips = '', lashouTitle = '';
+
+    var project = '', prompt = '', lightspot = '', lashouProject = '', tips = '', lashouTitle = '';
 if (data.contents && data.contents.length) {
     for (var n = 0, content, type; n < data.contents.length; n++) {
         content = data.contents[n];
@@ -46,279 +39,300 @@ if (data.contents && data.contents.length) {
 var category = data.category;
 //是否在线订门票
 var isOnlineBookingTicket = category ? (category.ctgoryid == 6) && (category.subctgory == 2) : false;
+//是否是尾房或者指定日预售
+var isLeft, isAppoint;
+if (data.psubtype !== 'undefined') {
+    isLeft = data.psubtype === 1;
+    isAppoint = data.psubtype === 2;
+}
+//是否使用新后台数据
+var isNewP = data.isnewp && data.pextend;
+//是否有免费设施
+var hasFeature = data.features && data.features.length;
+var featuresClsMap;
+hasFeature && (featuresClsMap= {MFTC: 'icon_parking',
+    MFTX: 'icon_slippers',
+    MF24XSRS: 'icon_hotwater',
+    MFPZS: 'icon_water',
+    MFXYYP: 'icon_toiletries',
+    MFWIFI: 'icon_wifi',
+    MFKD: 'icon_net',
+    MFZC: 'icon_breakfast'
+});
 %>
-<nav class="tuan_pic" id="J_pic">
-    <img src="<%=imgSrc%>"/>
-    <div class="total_num">共<%=imgCount%>张</div>
-</nav>
+<nav class="tuan_pic" id="J_pic"></nav>
+<!--新的 立即抢购按钮模块 todo: 页签描述-->
+<div class="tuan_detail_buy J_sticky">
+    <div class="item1">
+        <span class="price_2"><i>&yen;</i><%=data.price.dPrice %></span>
+        <del><i>&yen;</i><%=data.price.cPrice %></del>
+        <span class="buybtn" id="J_submit">立即抢购</span>
+    </div>
+    <%if (data.labellist && data.labellist.length) {%>
+    <div class="item2">
+        <%_.each(data.labellist, function(t, i) {
+        if (i <2) {%>
+        <span class="icon_rebate"><%=t.name %><b><%=t.desc%></b></span>
+        <%}});%>
+    </div>
+    <%}%>
+</div>
 <nav class="tuan_name">
-    <div class="title"><%=data.name %></div>
+    <div class="title"><%=data.hotelname %><%if(data.star){%><span class="tuan_hotel_star"><%=data.star %></span><%}%></div>
+    <p class="title_desc"><%=data.name%></p>
     <% if (!isOnlineBookingTicket) {%>
-        <%if (lightspot && lightspot.length) {%>
-        <p class="tuan_hotel_intro"><%=lightspot%></p>
-        <%}%>
-        <p class="tuan_hotel_info">
-            <span>已售<%=data.cSold %></span>
-            <span class="tuan_hotel_time"><%if (data.groupFlag && (parseInt(data.groupFlag) < 48)) {%>剩余48小时<%}else{%>剩余2天以上<%}%></span>
-            <span class="tuan_hotel_star"><%=data.star %></span>
-        </p>
+        <!-- 有效期展示-->
+        <%if((data.unavailableDate||data.couponEdate)&&data.type!=2) {%><!--type==2为零元团，不展示有效期-->
+        <ul class="subblist">
+            <li class="info_valid">
+                <%if(data.couponEdate) {%><span class="subb_valid i_bef">有效期至<%=data.couponEdate%></span><%} %>
+                <%if (isLeft && data.availableDate) {%>
+                    <div class="info_suit_not" style="display:none">可用日期：<%=data.availableDate %></div>
+                    <div class="align_r"><span class="view_unfold" id="J_expandInvalid">查看可用日期</span></div>
+                <%} else if(!isLeft && data.unavailableDate){%>
+                    <div class="info_suit_not" style="display:none">不适用日期：<%=data.unavailableDate %></div>
+                    <div class="align_r"><span class="view_unfold" id="J_expandInvalid">查看不适用日期</span></div>
+                <%}%>
+            </li>
+        </ul>
+        <%} %>
+
+        <!--增信列表：未消费退款，过期返还，不满意免单-->
         <%if(data.additions && data.additions.length>0){%>
         <ul class="tuan_policy dflex" id="J_service">
-            <%
-            for(var i=0; i<data.additions.length; i++){
-            switch(data.additions[i].type){
+            <%_.each(data.additions, function(t) {
+            switch(t.type){
             case 2:%>
-            <li class="ico_return"><%=data.additions[i].txt%></li>
+            <li class="ico_return"><%=t.txt%></li>
             <%break; case 1:%>
-            <li class="ico_refund"><%=data.additions[i].txt%></li>
+            <li class="ico_refund"><%=t.txt%></li>
             <%break; case 3:%>
-            <li class="ico_free"><%=data.additions[i].txt%></li>
+            <li class="ico_free"><%=t.txt%></li>
             <%break;}%>
-            <%
-            }
-            %>
+            <%});%>
         </ul>
         <%}else{%>
         <ul class="tuan_policy dflex no_tuan_policy">
             <li class="ico_refund">不支持未消费退款</li><li class="ico_return">不支持过期退款</li>
         </ul>
         <%}%>
-        <!-- 有效期展示-->
-        <%if((data.unavailableDate||data.couponBdate)&&data.type!=2) {%><!--type==2为零元团，不展示有效期-->
-        <ul class="subblist">
-            <li class="info_valid">
-                <%if(data.couponBdate) {%>
-                <span class="subb_valid i_bef">有效期：<%=data.couponBdate %>至<%=data.couponEdate%></span>
-                <%} %>
-                <%if(data.unavailableDate) {%>
-                <div class="info_suit_not" style="display:none">不适用日期：<%=data.unavailableDate %></div>
-                <div class="align_r"><span class="view_unfold" id="J_expandInvalid">查看不适用日期</span></div>
-                <%} %>
-            </li>
-        </ul>
-        <%} %>
     <%}%>
 </nav>
+<!-- 单店 多店 合一 @since6.1-->
+<%
+    var isSingle = data.hotels && data.hotels.length;
+    var isMuti = data.recommendHotel && data.recommendHotel.hotel;
+    var hotel, addr, hotelId, coords, isShowMap, hotelTel;
+    if (isSingle) {
+        hotel = data.hotels[0];
+        coords = hotel && hotel.coords[0];
+        hotelId = hotel && hotel.id
+    } else if (isMuti) {
+        hotel = data.recommendHotel && data.recommendHotel.hotel;
+        hotel && _.each(hotel.coords, function(item) {(item.type==3) && (coords = item.lon + ',' + item.lat);});
+    }
+    isShowMap=addr&&coords&&coords.lat&&coords.lon&&(coords.lat>-1&&coords.lat<1000)&&(coords.lon>-1&&coords.lon<1000);
+    addr = hotel && hotel.addr;
+    hotelTel = hotel && hotel.phoneList;
 
-<%if (data.hotels && data.hotels.length) {%>
-    <div class="neg_mb10">
-        <div class="hot_tit">商户信息</div>
-    </div>
-    <ul class="subblist">
-    <%if(data.pcId!=2 && data.score&&(data.score>0)){ %>
-        <!--餐饮不显示点评 -->
-         <li class="<%if(data.ccount>0){%>arr_r <%}%>comm_qr" <%if(data.ccount>0){%>id="J_comment"<%}%>>
-            <!-- 根据实际的分数改变宽度值即可 -->
-            <div class="comm_fen"><div class="comm_fen_in" style="width:<%=data.score*100/5%>%;"></div></div>
-            <div class="comm_fen_num"><%=data.score.toFixed(1)%></div>
-            <span class="icon_txt"><%=data.ccount %>人点评</span>
-         </li>
-    <% }%>
-    <%
-    var hotel = data.hotels[0];
-    var addr = hotel && hotel.addr;
-    var hotelId = hotel && hotel.id;
-    var coords = hotel.coords[0];
-    var isShowMap=addr&&coords&&coords.lat&&coords.lon&&(coords.lat>-1&&coords.lat<1000)&&(coords.lon>-1&&coords.lon<1000);
-    var hotelTel = hotel.phoneList;
-    %>
-    <% if(addr || (hotelTel && hotelTel.length) || (data.features && data.features.length)){ %>
-        <% if(addr){ %>
-        <li class="<%if(addr&&isShowMap) {%>arr_r J_showDetailMap<%} %>" data-hotel-name="<%=hotel.shortName || hotel.name%>" data-coords="<%=coords.lon%>,<%=coords.lat%>">
-              <span class="subb_address i_bef"><%=(addr?addr:"暂无地址信息") %></span>
-              <%if(isShowMap){ %><span class="icon_txt">地图</span><%} %>
-        </li>
-        <%}%>
-    <%if(hotelTel && hotelTel.length){
-        var phones = _.map(hotelTel, function(p) {return p.phone;});
-    %>
-        <li class="arr_r wrap_phone J_phone" data-phone='<%=phones.join(",") %>'>
-            <span class="subb_phone i_bef"><%_.each(phones, function(t) {%><span><%=t %></span><%}); %></span>
-            <i class="icon_txt"><a <%if (phones.length === 1) {%>href="tel:<%=phones[0] %>"<%} else {%>href="javascript:void(0);"<%}%>>预约/咨询</a></i>
-        </li>
-    <%} %>
-    <!-- 特色服务 -->
-    <%if(data.features && data.features.length){
-        var features = data.features,
-            featuresCount = features.length,
-            i=0,
-            feature,
-            featuresClsMap = {
-                MFTC: 'ico_parking',
-                MFTX: 'ico_slippers',
-                MF24XSRS: 'ico_hotwater',
-                MFPZS: 'ico_water',
-                MFXYYP: 'ico_toiletries',
-                MFWIFI: 'ico_wifi_free',
-                MFKD: 'ico_net',
-                MFZC: 'ico_breakfast'
-            };
-    %>
-    <li class="info_service noactive">
-      <%for(; i < featuresCount; i++) {
-         feature=features[i];
-      %>
-          <span><b class="<%=featuresClsMap[feature.code] %>"></b><%=feature.name %></span>
-      <%} %>
-    </li>
-    <%} %>
-  <%}%>
-  </ul>
-<%}%>
-    <%if(data.pcId === 1 && hotelId){%>
-    <ul class="subblist">
-        <li class="arr_r" data-hotel-id="<%=hotelId%>" id="J_gotoHotelDetail">查看更多商户信息</li>
-    </ul>
-    <%}%>
-    <%
-    var recommendHotel = data.recommendHotel;
-    var hotelData = recommendHotel && recommendHotel.hotel;
-    var coords;
-    if(hotelData){
-        _.each(hotelData.coords, function(item) {
-            if (item.type==3) {
-              coords = item.lon + ',' + item.lat;
-            }
-        });
-    %>
-        <div class="neg_mb10">
-            <div class="hot_tit"><%=recommendHotel.title%></div>
-        </div>
-        <ul class="subblist">
-            <li class="arr_r J_showDetailMap" data-hotel-name="<%=hotelData.shortName || hotelData.name%>" data-coords="<%=coords%>">
-                <span class="subb_address i_bef"><%=hotelData.addr%></span>
-                <i class="icon_txt">地图</i>
-            </li>
-            <%if(hotelData.phoneList && hotelData.phoneList.length){
-                var phones = _.map(hotelData.phoneList, function(p) {return p.phone;});
-            %>
-            <li class="arr_r wrap_phone J_phone" data-phone="<%=phones.join(',')%>">
-                <span class="subb_phone i_bef"><%_.each(phones, function(t) {%><span><%=t %></span><%}); %></span>
-                <i class="icon_txt"><a <%if (phones.length === 1) {%>href="tel:<%=phones[0] %>"<%} else {%>href="javascript:void(0);"<%}%>>预约/咨询</a></i>
-            </li>
+%>
+<%if (hotel) {%>
+    <!--商户信息模块-->
+    <ul class="subblist subblist_detail">
+    <%if(addr || (hotelTel && hotelTel.length)){ %>
+        <li class="<%if(addr&&isShowMap) {%>J_showDetailMap<%} %>" data-hotel-name="<%=hotel.shortName || hotel.name%>" data-coords="<%=coords.lon%>,<%=coords.lat%>">
+            <span class="subb_address i_bef"><%=(addr || "暂无地址信息") %></span>
+            <%if (hotel.poi){%><span class="dist"><%=hotel.poi%></span><%}%> <!--POI位置信息-->
+            <%if(hotelTel && hotelTel.length){var phones = _.map(hotelTel, function(p) {return p.phone;});%>
+               <a class="btnphone J_phone" data-phone='<%=phones.join(",") %>' <%if (phones.length === 1) {%>href="tel:<%=phones[0] %>"<%} else {%>href="javascript:void(0);"<%}%>>电话预约</a>
             <%}%>
-        </ul>
+        </li>
+        <%if(isMuti && data.cGroups>1){%>
+        <li id="J_branch" class="arr_r"><span class="bluetext">查看全部<%=data.cGroups%>家分店</span></li>
+        <%}%>
+        <!--需要判断单店的时候增加附近交通信息-->
     <%}%>
-    <%if(data.cGroups>1){%>
-    <ul class="subblist">
-        <li id="J_branch" class="arr_r">查看全部<%=data.cGroups%>家商户</li>
     </ul>
-    <%}%>
+    <!--评分模块-->
+   <%if(isSingle && data.pcId!=2 && data.score&&(data.score>0)){ %>
+    <ul class="subblist">
+        <!--餐饮不显示点评 -->
+        <li class="<%if(data.ccount>0){%>arr_r <%}%>comm_qr" <%if(data.ccount>0){%>id="J_comment"<%}%>>
+        <!-- 根据实际的分数改变宽度值即可 -->
+        <div class="comm_fen"><div class="comm_fen_in" style="width:<%=data.score*100/5%>%;"></div></div>
+        <div class="comm_fen_num"><%=data.score.toFixed(1)%></div>
+        <span class="icon_txt"><%=data.ccount %>人点评</span>
+        </li>
+    </ul>
+   <% }%>
+<%}%>
 
-    <!--判断非拉手产品 -->
-    <%if(!lashouProject || isOnlineBookingTicket){%>
+<%if(data.pcId === 1 && hotelId){%>
+<ul class="subblist"><li class="arr_r" data-hotel-id="<%=hotelId%>" id="J_gotoHotelDetail">查看更多商户信息</li></ul>
+<%}%>
+
+<!--判断非拉手产品 -->
+<%if(!lashouProject || isOnlineBookingTicket){%>
+    <%if (isNewP) {var contain = data.pextend.contain;%>
+    <ul class="detail_list">
+        <li class="title"><i class="icon_contain"></i>团购包含</li>
+        <li class="table_desc">
+            <table><tbody>
+                <tr>
+                    <%if (contain.roomname) {%><td><%=contain.roomname.name%></td><td><%=contain.roomname.limitunit%></td><%}%>
+                    <td rowspan="2"><del>&yen;<%=data.price.cPrice%></del></td>
+                    <td rowspan="2"><span class="price3">&yen;<%=data.price.dPrice%></span></td>
+                </tr>
+                <%if (contain.breakfast > 0) {%><tr><td>早餐</td><td><%=contain.breakfast%>份/天</td></tr><%}%>
+                <%if (contain.isaddbed) {%><tr><td rowspan="2">免费加床</td></tr><%}%>
+            </tbody></table>
+        </li>
+        <!-- 特色服务, 老版本不展示-->
+        <%if(hasFeature){%>
+        <li class="offer_service">
+            <!--最多显示4个-->
+            <%_.each(data.features, function(t, i) {%>
+            <%if(i < 4){%><p><i class="<%=featuresClsMap[t.code] %>"></i><span><%=t.name %></span></p><%}%>
+            <%});%>
+        </li>
+        <%} %>
+
+        <%if (contain.containitem) {%>
+            <li class="dotitem"><p><%=contain.containitem%></p></li>
+        <%}%>
+    </ul>
+    <%} else {%>
     <div class="neg_mb10">
         <div class="hot_tit">团购包含</div>
     </div>
     <nav class="tuan_content">
-        <%
-            project = stripTags(project);
-            var nonWordNum = getNonWordNum(project, MAX_WORDS);
-        %>
-        <p><%=(replaceBrTag(project.substr(0, nonWordNum)) || "暂无相关信息")%>
-            <%if (project.length > nonWordNum) {%>
-                <span style="display:none" class="J_tipsHidden"><%=replaceBrTag(project.substr(nonWordNum))%></span>
-            <%}%>
-        </p>
-        <%if (project.length > nonWordNum) {%>
+        <p class="J_moreOrLessPanel shadow"><%=(replaceBrTag(stripTags(project)) || "暂无相关信息")%></p>
         <p class="tac"><a href="javascript:;" class="view_unfold J_viewMoreBtn" data-state="hide">查看全部</a></p>
-        <%}%>
     </nav>
     <%}%>
+<%}%>
+<!--购买须知， 对应老版本中的特别提示-->
+<%if (isNewP) {
+    var notes = data.pextend.purnotes;
+    var info, service,spec;
+    if (notes) {
+        info = notes && notes.reserveinfo;
+        service = notes && notes.service;
+        spec = notes && notes.specialtip;
+    }
+%>
+
+    <ul class="detail_list J_purchaseNotes">
+        <li class="title"><i class="icon_info"></i>购买须知</li>
+        <li>
+            <dl class="order_dl">
+                <dt>预约信息</dt>
+                <dd class="dotitem">
+                    <!--尾房仅限当日预约。 预约时间为空显示无需预约-->
+                    <%if (isLeft){%>
+                    <p>此产品仅限入住当日预约</p>
+                    <%} else if (info && info.rtime){%>
+                    <p>请提前<%=info.runit%>预约；</p>
+                    <%}else {%>
+                    <p>无需预约</p>
+                    <%}%>
+                    <%if (info && info.phone){%><p>预约电话: <%=info.phone%></p><%}%>
+                    <%if (info && info.rtime){%><p>预约时间: <%=info.rtime%></p><%}%>
+                </dd>
+                <dt>使用有效期</dt>
+                <dd class="dotitem">
+                    <p><%=data.couponBdate%>至<%=data.couponEdate%></p>
+                </dd>
+                <!--指定日预售隐藏不适用日期，显示可用日期-->
+                <%if (isAppoint) {%>
+                    <%if (data.availableDate) {%>
+                    <dt>可用日期</dt>
+                    <dd class="dotitem">
+                        <p><%=data.availableDate %></p>
+                    </dd>
+                    <%}%>
+                <%} else {%>
+                    <%if (data.unavailableDate) {%>
+                    <dt>不适用日期</dt>
+                    <dd class="dotitem">
+                        <p><%=data.unavailableDate %></p>
+                    </dd>
+                    <%}%>
+                <%}%>
+                <dt>发票信息</dt>
+                <dd class="dotitem"><p><%=['携程提供', '商家提供', '不提供发票'][notes.isinvoice] || ''%></p></dd>
+                <%if (service){ %>
+                <dt>附加服务</dt>
+                <dd class="dotitem"><p>
+                <%if (service.breaknum) {%>提供收费早餐<%=service.feebreak %>/<%=service.breaknum%>份<%} else {%>不提供早餐<%}%>
+                </p></dd>
+                <%if (service.feebed && (service.feebed | 0) > 0) {%><dd class="dotitem"><p>提供收费加床<%=service.feebed%>元</p></dd><%}%>
+                <%if (service.upgrades) {%><dd class="dotitem"><p><%=service.upgrades %></p></dd><%}%>
+                <%}%>
+                <%if (spec) {%>
+                <dt>特别提示</dt>
+                <dd class="dotitem"><p>退房当日<%=spec.refundt%>点前,如需提前入住或延时退房,请咨询店家</p></dd>
+                <%if (spec.refundd){%><dd class="dotitem"><p><%=spec.refundd%><p></dd><%}%>
+                <%}%>
+            </dl>
+            <div class="actmore view_unfold J_showNotePop">查看全部</div>
+        </li>
+    </ul>
+<%} else {%>
     <div class="neg_mb10">
         <div class="hot_tit">特别提示</div>
     </div>
     <nav class="tuan_content" data-id="2">
         <%if(prompt && prompt.length > 0){%>
-            <%
-                prompt = stripTags(prompt);
-                var nonWordNum = getNonWordNum(prompt, MAX_WORDS);
-            %>
-            <div class="tipsPanel"><%=replaceBrTag(prompt.substr(0, nonWordNum))%>
-                <%if (prompt.length > nonWordNum) {%>
-                <span style="display:none" class="J_tipsHidden"><%=replaceBrTag(prompt.substr(nonWordNum))%></span>
-                <%}%>
-            </div>
-            <%if (prompt.length > nonWordNum) {%>
-            <p class="tac"><a href="javascript:;" class="view_unfold J_viewMoreBtn" data-state="hide">查看全部</a></p>
-            <%}%>
+        <div class="tipsPanel J_moreOrLessPanel shadow">
+            <%=replaceBrTag(stripTags(prompt)) %>
+        </div>
+        <p class="tac"><a href="javascript:;" class="view_unfold J_viewMoreBtn" data-state="hide">查看全部</a></p>
         <%}else{%>暂无相关信息<%}%>
     </nav>
-    <!--拉手产品的详情需要展示在特别提示的后面 @since v2.6-->
-    <% if (lashouProject){%>
-    <ul class="subblist">
-        <li id="J_groupContain" class="arr_r"><span><%=lashouTitle || '团购包含'%></span><i class="icon_txt"><a href="###">查看详情</a></i></li>
-    </ul>
-    <%}%>
-    <%if(data.relatedProducts&&data.relatedProducts.length>0) {%>
-    <div class="neg_mb10">
-          <div class="hot_tit">该商户其他团购</div>
-    </div>
-    <ul class="tuan_list_other">
-      <% var MAX_VISIBLE = 10;//最大显示数量
-      _.each(data.relatedProducts,function(data, num){
-       %>
-      <li <%if(num>=MAX_VISIBLE){%>style="display:none"<%}%> class="J_relatedProducts <%if(num>=MAX_VISIBLE){%>J_relatedRest<%}%> arr_r" data-id="<%=data.id %>">
-        <div class="ellipsis"><%=data.name %></div>
-        <div class="tuan_price">
-          &yen;<%=data.dPrice %>
+<%}%>
+
+<!--拉手产品的详情需要展示在特别提示的后面 @since v2.6-->
+<% if (lashouProject){%>
+<ul class="subblist">
+    <li id="J_groupContain" class="arr_r"><span><%=lashouTitle || '团购包含'%></span><i class="icon_txt"><a href="###">查看详情</a></i></li>
+</ul>
+<%}%>
+
+<%if(data.relatedProducts&&data.relatedProducts.length>0) {%>
+<ul class="detail_list detail_list_other">
+    <li class="title"><i class="icon_other"></i><%=data.hotelname%>其他团购</li>
+    <%var MAX_VISIBLE = 5;//最大显示数量
+    _.each(data.relatedProducts,function(t, num){%>
+    <li <%if(num>=MAX_VISIBLE){%>style="display:none"<%}%> class="arr_r J_relatedProducts <%if(num>=MAX_VISIBLE){%>J_relatedRest<%}%> arr_r" data-id="<%=t.id %>">
+        <p class="room"><%=t.name%></p>
+        <%if (t.highdesc){%><p class="desc"><%=t.highdesc%></p><%}%><!--亮点描述-->
+        <div class="info">
+            <span class="price3"><i>&yen;</i><%=t.dPrice%></span>
+            <%if (t.labels && t.labels[0]) {%><span class="onsale_label02"><%=t.labels[0].labelTxt%></span><%}%>
         </div>
-      </li>
-      <%}) %>
-    </ul>
-    <%if(data.relatedProducts&&data.relatedProducts.length>MAX_VISIBLE) {%>
+    </li>
+    <%});%>
+</ul>
+    <%if(data.relatedProducts.length>=MAX_VISIBLE) {%>
     <p class="tuan_list_more"><a href="javascript:;" id="J_morehotel" class="view_unfold">更多</a></p>
     <%}%>
-    <%} %>
-    <%if(data.nearGroupsCount>=2 && data.price.dPrice>0){%>
-    <div class="mod_group">
-        <div class="mod_group_tit">小伙伴们还看了
-            <%if(data.nearGroupsCount!=2 && data.nearGroupsCount!=4){ %>
-                <span id="J_recommendNearby" >更多</span>
-            <%} %>
-        </div>
-        <div class="mod_group_list">
-            <ul>
-            <% _.each(data.nearGroups,function(data,num){%>
-                <li class="J_nearProducts" data-id="<%=data.id %>">
-                    <div class="pic_thumb">
-                        <img src="<%=data.imgUrl %>" alt="" width="150" height="112">
-                    </div>
-                    <div class="hotel_info">
-                        <div class="hotel_tit"><%=data.name %></div>
-                        <div class="hotel_price">
-                            <span class="txt_color01"><dfn>¥</dfn><%=data.price.dPrice %></span>
-                            <del class="txt_color02">
-                                <dfn>¥</dfn><%=data.price.cPrice %>
-                            </del>
-                        </div>
-                    </div>
-                    <div class="ui-distance"><span class="subb_address i_bef"></span>距离该商户<%=data.distance > 1 ? (data.distance.toFixed(1) + '公里') : (Math.round(data.distance * 1000) + '米')%></div>
-                </li>
-            <%})%>
-            </ul>
-        </div>
-    </div>
-    <%}%>
-    <%if(tips&&tips.length>0){%>
-        <a class="linktips J_tips" style="margin-bottom:0" href="javascript:;" data-id="4">点击马上团代表您已阅读并同意<span>携程团购温馨提示</span></a>
-    <%}%>
-    <div style="height:45px;"></div>
-    <ul class="btm_price">
-        <li class="item01"><del>&yen;<%=data.price.cPrice %></del></li>
-        <li class="item02">
-            <%if(data.activities && data.activities[0]){
-                var type = data.activities[0].type;
-            %>
-            <%if(type==2) {%>
-            <span class="ico-text">返<i>¥</i><%=data.activities[0].arg%></span><!--返现-->
-            <%}%>
-            <%if(type==3) {%>
-            <span class="ico-text">礼<i>&yen;</i><%=data.activities[0].arg%></span><!--礼品卡-->
-            <%}%>
-            <%}%>
-            &yen;<%=data.price.dPrice %><!--原价-->
-        </li>
-        <li class="btm_tuan_btn" id="J_submit">马上团</li>
+<%} %>
+<!--周边团购推荐-->
+<div class="detail_list detail_around J_aroundProduct">
+    <div class="title"><i class="icon_around"></i>周边团购推荐</div>
+    <!--6.1只做酒店-->
+    <ul class="tab_hd J_nearTabs" style="display: none;">
+        <li data-category="1" class="cur">酒店</li>
+        <li data-category="8">美食</li>
+        <li data-category="6">门票</li>
+        <li data-category="9">娱乐</li>
     </ul>
+</div>
+
+<%if(tips&&tips.length>0){%>
+    <a class="linktips J_tips" href="javascript:;" data-id="4">点击立即抢购代表您已阅读并同意<span>携程团购温馨提示</span></a>
+<%}%>
+
+<div class="layer_detail_notice fadein J_notesPopBox" style="display: none; z-index: 3100;"></div>
 </article>

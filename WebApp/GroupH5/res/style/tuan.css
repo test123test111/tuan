@@ -401,6 +401,8 @@ header .search_title .num{opacity: 0.7; margin-left: -60px;}
 .tuan_detail_buy .icon_rebate i{margin-left: 4px;}
 .tuan_detail_buy .icon_rebate b{font-size: 14px;}
 .tuan_detail_buy .desc{color: #666;}
+.tuan_buy_fixed{position: fixed; z-index: 101; width: 100%; left:0; top: 48px;}
+.tuan_buy_fixed.tuan_buy_app{margin-top: 20px;}
 /**/
 .cui-slide-nav-item{width:6px;height:6px;margin-right:6px;overflow:hidden;background-color:rgba(255,255,255,.6);}
 body .cui-slide-nav-item-current{background-color:#099fde;}
@@ -468,7 +470,7 @@ body .cui-slide-nav-item-current{background-color:#099fde;}
 .dotitem p{padding-left: 8px; position: relative; font-size: 13px; color: #666; line-height: 1.4; padding-bottom: 5px;}
 .dotitem p:before{content: ''; position: absolute; left: 0; top: 8px; width: 2px; height: 2px; background-color: #666;}
 .detail_list li.dotitem{padding-top: 10px; padding-bottom: 5px;}
-.detail_list .order_dl{background: none; font-size: 13px; line-height: 1.4; padding-top: 12px;}
+.detail_list .order_dl{background: none; font-size: 13px; line-height: 1.4; padding-top: 12px; padding-bottom: 0; margin-bottom: 10px; max-height: 135px; overflow: hidden;}
 .detail_list .order_dl dt{padding-left: 0; padding-right: 15px; width: 65px; text-align: right; }
 .detail_list dd.dotitem{padding-bottom: 5px;}
 .detail_list .actmore{text-align: right; color: #099fde; margin-top: -20px; padding-bottom: 10px;}
@@ -534,7 +536,7 @@ body .cui-slide-nav-item-current{background-color:#099fde;}
 .view_unfold:after{margin-bottom:2px;-webkit-transform:rotateZ(-45deg);-ms-transform:rotateZ(-45deg);transform:rotateZ(-45deg);}
 .view_fold:after{margin-bottom:-2px;-webkit-transform:rotateZ(135deg);-ms-transform:rotateZ(135deg);transform:rotateZ(135deg);}
 .dp_score, .othertxt { position: absolute; right: 30px; display: inline-block;height: 20px; font-weight: 600; color: #525252;  }
-.linktips { display: block; height: 45px; margin-bottom: 45px;font-size: .928em; line-height: 45px; text-align: center; font-weight: 600;}
+.linktips { display: block; height: 45px;font-size: .928em; line-height: 45px; text-align: center; font-weight: 600;}
 .linktips span{color:#099fde; margin-left: 10px;}
 .btm_price{position:fixed;z-index:99;bottom:0;left:0;width:100%;height:44px;background-color:#ff9a14;color:#fff2e1;line-height:44px;}
 .btm_price li{float:left; box-sizing:border-box;}
@@ -830,12 +832,14 @@ input:checked + .btn_switch:before{width:44px; background-color:#099fde;}
 .icon_fav:before{background-position: -220px 0;}
 .icon_unfav:before{background-position: -190px -90px;}
 .returnico:before,.icon_share:before,.icon_fav:before,.icon_unfav:before{z-index: 2;}
-.headerview_detail{position: fixed; z-index: 100; left: 0; top: 0;}
+.headerview_detail{position: fixed; z-index: 100; left: 0; top: 0; width: 100%;}
 .headerview_detail header{background-color: transparent;}
 .headerview_detail .returnico:after,.headerview_detail .icon_share:after,.headerview_detail .icon_fav:after,.headerview_detail .icon_unfav:after{background-color: rgba(9,159,222,0.6); width: 30px; height: 30px; content: ''; position: absolute; left: 6px; top: 9px; z-index: 1; -webkit-border-radius: 50%; border-radius: 50%;}
 .headerview_detail .returnico:after{left: 16px;}
-.headerview_bgcolor header{background-color: rgba(9,159,222,0.8);}
+.headerview_bgcolor{background-color: rgba(9,159,222,0.8);}
 .headerview_bgcolor .returnico:after,.headerview_bgcolor .icon_share:after,.headerview_bgcolor .icon_fav:after,.headerview_bgcolor .icon_unfav:after{background-color: transparent;}
+.headerview_detail_app{padding-top: 20px;}
+.headerview_detail_app header{top: 20px;}
 
 /*首页入口*/
 .index_link{background: #fff no-repeat left bottom;background-image:-webkit-linear-gradient(top, transparent 50%, #ddd 50%);background-size:100% 1px; margin-bottom: 10px;}
@@ -1389,16 +1393,17 @@ img.fade-in{-webkit-animation:opacity-fade-in 550ms ease-in-out;-ms-animation:op
 .layer_list_search .icon_search_w:after{content: ''; position: absolute; left: 0; top: 0; -webkit-border-radius: 50%; border-radius: 50%; background: -webkit-radial-gradient(rgba(9,159,222,1) 0%,rgba(10,73,99,1) 100%); z-index: 1; -webkit-filter:blur(6px);}
 .layer_list_search .icon_search_w:before{z-index: 2;}
 /*详情页浮层*/
-.layer_detail_notice{position: fixed; width: 100%; height: 100%; left: 0; top: 0; z-index: 100; background-color: rgba(0,0,0,0.8);}
+.layer_detail_notice{position: fixed; width: 100%; height: 100%; left: 0; top: 0; z-index: 100; background-color: rgba(0,0,0,0.8); overflow: auto;}
 .layer_detail_notice .detail_list{background: none; padding-right: 15px;}
 .layer_detail_notice .detail_list li:not(:first-child){background: none;}
 .layer_detail_notice .detail_list li:first-child{background-color: transparent;}
+.layer_detail_notice .order_dl{max-height: none;}
 .layer_detail_notice .order_dl dt{color: #25b5ff;}
 .layer_detail_notice .dotitem p,.layer_detail_notice .bluetext{color: rgba(255,255,255,0.8);}
 .layer_detail_notice .dotitem p:before{background-color: rgba(255,255,255,0.8);}
 .layer_detail_notice .detail_list .title{color: #fefefe; text-align: center; font-size: 18px; padding-top: 30px; padding-bottom: 10px; margin-bottom: 10px;}
 
-.shadow{-webkit-mask: -webkit-gradient(linear,0 84, 0 bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));-webkit-mask-position: 0px 0px;}
+.shadow{-webkit-mask: -webkit-gradient(linear,0 105, 0 bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));-webkit-mask-position: 0px 0px;}
 
 
 /* 把列表页头部的ICON放入CSS，方便Hybrid打包(junyizhang@ctrip.com) */
