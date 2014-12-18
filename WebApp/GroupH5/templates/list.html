@@ -55,7 +55,7 @@
 
         </div>
         <div class="pro_list_info">
-            <h4 class="pro_list_tit"><%=p.name%></h4>
+            <h4 class="pro_list_tit"><%=p.hotelname || ''%></h4>
             <%if(p.distance>0 && ctype!==7){%>
             <p class="pro_list_dist">
                 <%if(p.distance>=1){%>
@@ -65,7 +65,7 @@
                 <%}%>
             </p>
             <%}%>
-            <p class="pro_list_subtit" style="height:18px"><%if (!(isNearBy || hasPosition)) {%><%=p.descriptionhead ? '[' + p.descriptionhead + ']' : ''%><%}%><%=p.hotdescription || ''%></p>
+            <p class="pro_list_subtit" style="height:18px"><%if (!(isNearBy || hasPosition)) {%><%=p.descriptionhead ? '[' + p.descriptionhead + ']' : ''%><%}%><%=p.name || ''%></p>
             <p class="pro_list_price">&yen;<i><%=p.price.dPrice%></i></p>
             <p class="wrap_label">
                 <%if(labelsNum <= 2){%>

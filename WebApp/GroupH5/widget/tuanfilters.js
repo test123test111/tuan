@@ -43,13 +43,15 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             '<%}%>'
         ].join('')),
         tabLabelTpl = _.template([
-            '<ul class="pop_filter_tabs">',
-                '<li data-tab="price"><i class="pop_filter_point"<%if(!customdata.price || (customdata.price && customdata.price.val == "1|1")){%> style="display:none"<%}%>></i>价格</li>',
-                '<%if(category=="vacation"){%><li data-tab="day"><i class="pop_filter_point"<%if(!customdata.day){%> style="display:none"<%}%>></i>天数</li><%}%>',
-                '<%if(category=="hotel"){%><li data-tab="star"><i class="pop_filter_point"<%if(!customdata.star){%> style="display:none"<%}%>></i>星级</li><%}%>',
-                '<%if(category=="hotel"){%><li data-tab="brand"><i class="pop_filter_point"<%if(!customdata.brand){%> style="display:none"<%}%>></i>品牌</li><%}%>',
-                '<%if(category=="hotel"){%><li data-tab="trait"><i class="pop_filter_point"<%if(!customdata.trait){%> style="display:none"<%}%>></i>特色</li><%}%>',
-                '<%if((isNearBy && ["all", "hotel", "catering", "ticket", "entertainment"].indexOf(category)!=-1) || isUniversityNearBy){%><li data-tab="distance"><i class="pop_filter_point"<%if(!customdata.distance){%> style="display:none"<%}%>></i>距离</li><%}%>',
+            '<div id="J_tabLabelWrapper" style="height:285px;overflow:hidden;max-height:285px;">',
+                '<ul class="pop_filter_tabs" style="min-height:285px">',
+                    '<li data-tab="price"><i class="pop_filter_point"<%if(!customdata.price || (customdata.price && customdata.price.val == "1|1")){%> style="display:none"<%}%>></i>价格</li>',
+                    '<%if(category=="vacation"){%><li data-tab="day"><i class="pop_filter_point"<%if(!customdata.day){%> style="display:none"<%}%>></i>天数</li><%}%>',
+                    '<%if(category=="hotel"){%><li data-tab="star"><i class="pop_filter_point"<%if(!customdata.star){%> style="display:none"<%}%>></i>星级</li><%}%>',
+                    '<%if(category=="hotel"){%><li data-tab="brand"><i class="pop_filter_point"<%if(!customdata.brand){%> style="display:none"<%}%>></i>品牌</li><%}%>',
+                    '<%if(category=="hotel"){%><li data-tab="trait"><i class="pop_filter_point"<%if(!customdata.trait){%> style="display:none"<%}%>></i>特色</li><%}%>',
+                    '<%if((isNearBy && ["all", "hotel", "catering", "ticket", "entertainment"].indexOf(category)!=-1) || isUniversityNearBy){%><li data-tab="distance"><i class="pop_filter_point"<%if(!customdata.distance){%> style="display:none"<%}%>></i>距离</li><%}%>',
+                '</ul>',
             '</ul>'
         ].join('')),
         brandTpl = _.template([
@@ -254,7 +256,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         * 初始化团购分类
         */
         initCategory: function () {
-            var self = this;
+            var self = this, cateScroller;
             var trigger = this.options.categoryTrigger;
             var panel = this.options.categoryPanel;
 
@@ -282,6 +284,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         self.initCategoryTab();
                         self._categoryInited = true;
                     }
+                    cateScroller = new Scroll({wrapper: panel.find('#J_cateWrapper')});
                 } else {
                     panel.hide();
                     self.mask.hide();
@@ -344,7 +347,6 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     page.toolbarSpace.css('height', page.toolbarHeight);
                     page.controlGPSInfoWrap(!isVacation);
                     page.updateTitle(searchStore.getAttr('ctyName'), true);
-                    page.controlTopShop(tuanType == 8);
 
                     self.options.categoryTrigger.html(subName || StringsData.groupType[tuanType].name);
                     self.resetPosition(tuanType);
@@ -373,11 +375,6 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     ret.tuanType = $.grep(groupCondition, function (v) { return v.type == 16; });
                     ret.subTuanType = $.grep(groupCondition, function (v) { return v.type == 32; });
                     this.options.categoryPanel.html(tuanTypeTpl(ret));
-                    wrapper = categoryPanel.find('#J_cateWrapper');
-                    scroller = new Scroll({
-                        wrapper: wrapper,
-                        scroller: wrapper.find('ul')
-                    });
                 }
             }
         },
@@ -397,7 +394,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         * 初始化位置区域
         */
         initPosition: function () {
-            var self = this;
+            var self = this, posScroller;
             var trigger = this.options.positionTrigger;
             var panel = this.options.positionPanel;
 
@@ -431,6 +428,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     self.mask.hide();
                     self._positionStatus = false;
                 }
+                posScroller = new Scroll({wrapper: panel.find('#J_posWrapper')});
             });
             panel.on('touchmove', function (e) {
                 e.preventDefault();
@@ -653,14 +651,6 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
             this.updatePositionName();
             tuanType = tuanType || searchStore.getAttr('ctype') || 0;
             ret.tuanType = tuanType;
-            function setPosScroll() {
-                var scroller, wrapper;
-                wrapper = positionPanel.find('#J_posWrapper');
-                scroller = new Scroll({
-                    wrapper: wrapper,
-                    scroller: wrapper.find('ul')
-                });
-            }
 
             if (conditionData && $.isArray(conditionData.categroy) && conditionData.categroy.length > 0) {
                 var categroy = $.grep(conditionData.categroy, function (v) { return v.ctype == tuanType; });
@@ -687,7 +677,6 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     if (ret.Zone.length || ret.Location.length || ret.College.length) {
                         positionTrigger.show();
                         positionPanel.html(positionTpl(ret));
-                        setPosScroll();
                         callback && callback();
                     } else {
                         positionTrigger.hide();
@@ -696,7 +685,6 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     if (ret.Zone.length || ret.Location.length || ret.College.length || ret.AirportStation.length || ret.SubwayLine.length || ret.Attraction.length) {
                         positionTrigger.show();
                         positionPanel.html(positionTpl(ret));
-                        setPosScroll();
                         callback && callback();
                     } else {
                         positionTrigger.hide();
@@ -754,11 +742,10 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         * 初始化筛选条件
         */
         initCustomFilter: function () {
-            var self = this;
+            var self = this, filterLabelScroller, priceScroller;
             var customFilter = self.options.customFilter;
             var viewWrap = this.page.$el;
             var panel = viewWrap.find('#J_filterPanel');
-            // var pricePanel = viewWrap.find('#J_pricePanel');
             var checkboxWrap = viewWrap.find('#J_checkboxWrap');
             var cancelBtn = viewWrap.find('.pop_filter_cancel');
             var sureBtn = viewWrap.find('.pop_filter_sure');
@@ -789,6 +776,8 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         self._customFilterInited = true;
                     }
                     self._customFilterStatus = true;
+                    filterLabelScroller = new Scroll({wrapper: panel.find('#J_tabLabelWrapper')});
+                    priceScroller = new Scroll({wrapper: panel.find('div[data-tab="price"]')});
                 } else {
                     panel.hide();
                     self.mask.hide();
@@ -904,7 +893,6 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                         customFiltersStore.setAttr('brand', brand);
                         label.find('li[data-tab="brand"]>i')[!$.isEmptyObject(brand) ? 'show' : 'hide']();
                     }
-
                 }
                 clearBtn[self.customFilterSelectedCount() ? 'removeClass' : 'addClass']('sta-disabled');
             });
@@ -915,7 +903,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
         * param {Boolean} isShowPanel
         */
         renderTabWrap: function (tab, panel, isShowPanel) {
-            var brandSroll, traitScroll, distanceSroll;
+            var brandSroll, traitScroll, distanceScroll;
             var customdata = customFiltersStore.get();
             var wrap = panel.find('div[data-tab="' + tab + '"]');
             isShowPanel && wrap.show();
@@ -960,7 +948,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     var brandSroller = wrap.find('#J_brand');
                     if (brandSroller.length) {
                         var brandWrapper = brandSroller.parent();
-                        brandWrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
+                        brandWrapper.css({ 'overflow': 'hidden', 'max-height': '285px' });
                         brandSroller.html(brandTpl(this.getDataFromCondition('brand', 1)));
                         brandSroll = new Scroll({
                             wrapper: brandWrapper,
@@ -972,7 +960,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     var traitScroller = wrap.find('#J_trait');
                     if (traitScroller.length) {
                         var traitWrapper = traitScroller.parent();
-                        traitWrapper.css({ 'overflow': 'hidden', 'max-height': '295px' });
+                        traitWrapper.css({ 'overflow': 'hidden', 'max-height': '285px' });
                         traitScroller.html(traitTpl(this.getDataFromCondition('trait', 8192)));
                         traitScroll = new Scroll({
                             wrapper: traitWrapper,
@@ -982,7 +970,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     break;
                 case 'distance':
                     if (!wrap.data('scrolled')) {
-                        distanceSroll = new Scroll({
+                        distanceScroll = new Scroll({
                             wrapper: wrap,
                             scroller: wrap.find('ul')
                         });

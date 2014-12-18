@@ -308,7 +308,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 var toolbar = this.toolbar,
                     space = this.toolbarSpace,
                     direction = data.direction;
-                if (direction.toLowerCase() == 'down') {
+               if (direction.toLowerCase() == 'down') {
                     //if (data.y > this.toolbarHeight) {
                     toolbar.removeClass('list_s_fixed');
                     space.hide();
@@ -505,7 +505,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     this.updateTitle(keywordData.word, false);
                 }
                 this.hideForbiddens(!isNearby, '.J_forbidden');
-                this.controlTopShop(ctype == 8);
+                this.controlTopShop(!keywordData);
 
                 //if (isNearby && ctype === 0) { //'我的附近'进入
                 if (categoryfilterStore.getAttr('category') === 'nearby') { //'我的附近'进入
@@ -748,11 +748,12 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     this.listWrap.append('<p class="sec-waiting" style="display:block;">没有更多结果了</p>');
                 }
                 var hasKeyword = StoreManage.getCurrentKeyWord();
-                if (!hasKeyword && data.hotkey && data.pageIdx <= 1) {
+                if (!hasKeyword && data.hotkey.length && data.pageIdx <= 1) {
                     this.renderHotWord(data.hotkey);
                 } else {
                     this.quickOpBar.hide();
                     this.toolbarHeight -= this.toolbarHeight >= 45 ? 45 : 0;
+                    this.toolbarSpace.css('height', this.toolbarHeight);
                 }
             },
             /**

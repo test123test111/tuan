@@ -24,6 +24,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
             adTpl = _.template('<%_.each(ads, function(ad){%><li data-id="<%=ad.toUrl%>"><a href="javascript:;"><img src="<%=ad.imgUrl%>" /></a></li><%})%>'),
             IGNORE_CITY_CHANGE_KEY = 'TUAN_IGNORE_CITY_CHANGE',
             DOWNLOAD_LINK = 'http://m.ctrip.com/m/c312', //android app下载地址
+            WELCOME_IMAGE = 'http://pic.c-ctrip.com/h5/tuan/layer_index_sale.png',
             SOURCE_ID_FOR_TUAN = '55559355', //下单统计sourceid
             EMPTY = '',
             NOOP = function(){},
@@ -173,7 +174,7 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
                     //更新广告信息
                     self.updateAdInfo();
 
-                    !localStorage.getItem(IS_FIRST_IN_HOME) && self.initWelcomeLayer();
+                    self.initWelcomeLayer();
                 });
             },
             getSelectedCity: function () {
@@ -742,15 +743,32 @@ define(['TuanApp', 'c', 'cUtilityCrypt', 'cUIAlert', 'TuanBaseView', 'cCommonPag
             },
             initWelcomeLayer: function () {
                 var self = this;
+                if (!localStorage.getItem(IS_FIRST_IN_HOME)) {
+                    if (isInApp) {
+                        Guider.downloadData({
+                            url: WELCOME_IMAGE,
+                            callback: function(ret){
+                                self.showWelcomeLayer(ret.savedPath);
+                            }
+                        });
+                    } else {
+                        self.showWelcomeLayer(WELCOME_IMAGE);
+                    }
+                }
+            },
+            showWelcomeLayer: function (imgPath) {
+                var self = this;
                 var layer = this.$el.find('#J_welcomeLayer');
                 var mask = this.welcomeLayerMask = new Mask();
                 mask.show();
                 layer.show();
+                layer.css('background-image', 'url(' + imgPath + ')');
                 layer.find('.close').on('click', function() {
                     mask.hide();
                     layer.hide();
                     localStorage.setItem(IS_FIRST_IN_HOME, 1);
                 });
+
             }
         });
         return View;
