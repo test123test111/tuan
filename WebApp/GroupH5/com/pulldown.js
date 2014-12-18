@@ -1,3 +1,4 @@
+/*jshint -W030 */
 /**
  * @author: xuweichen
  * @date: 2014/12/16 15:52
@@ -81,7 +82,6 @@ define(['cBase'],function (cBase) {
         },
         _lastTouchStartPos: {pageX:0, pageY:0},
         _translate: function(dom, offset, duration/*, direction*/){
-            //dom.css(CSS3ExpandoPrefix+'transform', 'translate'+direction.toUpperCase()+'('+offset+'px)');
             dom.css(CSS3ExpandoPrefix+'transition', duration + 'ms ease-out');//不要用translateX，在chrome下卡
             dom.css(CSS3ExpandoPrefix+'transform', 'translate(0,' + offset + 'px) translateZ(0)');
         },
@@ -94,7 +94,6 @@ define(['cBase'],function (cBase) {
                 this._lastTouchStartPos.pageX = touches.pageX;
                 this._lastTouchStartPos.pageY = touches.pageY;
             }
-            start = +new Date();
         },
         _touchmoveHandler: function(event){
             var target = $(event.currentTarget),
