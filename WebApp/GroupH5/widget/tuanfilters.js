@@ -344,6 +344,7 @@ define(['cBase', 'cUtility', 'cWidgetFactory', 'cUIMask', 'cUIScroll', 'DropDown
                     page.toolbarSpace.css('height', page.toolbarHeight);
                     page.controlGPSInfoWrap(!isVacation);
                     page.updateTitle(searchStore.getAttr('ctyName'), true);
+                    page.controlTopShop(tuanType == 8);
 
                     self.options.categoryTrigger.html(subName || StringsData.groupType[tuanType].name);
                     self.resetPosition(tuanType);

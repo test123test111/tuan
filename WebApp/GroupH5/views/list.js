@@ -61,6 +61,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 this.quickWrapper = wrap.find('#J_quickWrapper');
                 this.toolbar = wrap.find('#J_toolbar');
                 this.toolbarSpace = wrap.find('#J_toolbarSpace');
+                this.topShop = wrap.find('#J_topShop');
             },
             events: {
                 'click li[data-id]': 'detailHandler', //详情页
@@ -71,6 +72,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 'click .J_phone': 'callPhone',
                 'click #J_deleteFilter li': 'deleteFilter',
                 'click #J_quickWrapper li': 'hotWordSearch',
+                'click #J_topShop': 'topShopHandler', //高端美食
                 'click .J_filtersAndSortPanel': function () {
                     //为了不挡住公司的广告（z-index:2002），把filterWrap的z-index默认设置为2001，这里点击之后再设置为9999
                     this.filterWrap.css('z-index', '9999');
@@ -342,12 +344,11 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 var refer = this.referUrl;
                 return refer && refer.match(/listmap/i);
             },
-            isFromKeywordSearch: function () {
-                var refer = this.referUrl;
-                return refer && refer.match(/keywordsearch/i);
-            },
             controlGPSInfoWrap: function (visible) {
                 this.gpsInfoWrap[visible ? 'show' : 'hide']();
+            },
+            controlTopShop: function (visible) {
+                this.topShop[visible ? 'show' : 'hide']();
             },
             /**
              * @param {Object} searchData 所有查询条件键值对
@@ -432,7 +433,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     down: '<i class="i_tri"></i>',
                     returnico: '<i id="js_return" class="returnico"></i>'
                 };
-                //var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
                 var hasKeyword = StoreManage.getCurrentKeyWord();
                 //if (!hasKeyword) {
                 headerData.moreRightMenus = [{
@@ -505,6 +505,7 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     this.updateTitle(keywordData.word, false);
                 }
                 this.hideForbiddens(!isNearby, '.J_forbidden');
+                this.controlTopShop(ctype == 8);
 
                 //if (isNearby && ctype === 0) { //'我的附近'进入
                 if (categoryfilterStore.getAttr('category') === 'nearby') { //'我的附近'进入
@@ -746,7 +747,6 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                 if (data.count > 0 && data.pageIdx >= this.totalPages) {
                     this.listWrap.append('<p class="sec-waiting" style="display:block;">没有更多结果了</p>');
                 }
-                //var hasKeyword = this.isFromKeywordSearch() && StoreManage.getCurrentKeyWord();
                 var hasKeyword = StoreManage.getCurrentKeyWord();
                 if (!hasKeyword && data.hotkey && data.pageIdx <= 1) {
                     this.renderHotWord(data.hotkey);
@@ -913,6 +913,18 @@ define(['TuanApp', 'c', 'TuanBaseView', 'cCommonPageFactory', 'cWidgetGuider', '
                     cid = searchStore.getAttr('ctyId');
                 this._saveScrollPos();
                 this.forwardJump('detail', '/webapp/tuan/detail/' + id + '.html' + (cid ? '?cityid=' + cid : ''));
+            },
+            topShopHandler: function () {
+                var from = encodeURIComponent(location.href);
+                if (!isInApp) {
+                    location.href = '/webapp/topshop/index.html?from=' + from;
+                } else {
+                    Guider.jump({
+                        targetModel: 'open',
+                        url: 'topshop/index.html?from=' + from,
+                        title: ''
+                    });
+                }
             },
             clearPagePos: function () {
                 MemCache.setItem(PAGE_POSITION, null);
