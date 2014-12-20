@@ -133,8 +133,12 @@ define(['cBase'],function (cBase) {
                 !this.isMax && options.onPullMax.call(this, event, offset, this.isMax);
                 this.isMax = true;
             }else{
-                this.isMax = false;
+                if(this.isMax){
+                    options.onPullMax.call(this, event, offset, this.isMax);
+                    this.isMax = false;
+                }
                 options.onPulling.call(this, event, offset);
+
             }
             (pageOffsetY>=0 || offset<maxpull) && this._translate(target, offset, 0);
         },

@@ -69,20 +69,26 @@ function (c, AbstractStore, BasePageView, CommonListPage, Util, PulldownDecorato
                     下拉即可刷新
                 </div>*/
                 this.pulldown = this.pulldown || new PulldownDecorator(this, {
-                    onPullMax: function(){
-                        self.$el.find('.J_pulldown').html('松开即可刷新...');
+                    onPullMax: function(e, offset, isMax){
+                        console.log('onPullMax'+isMax);
+                        self.$el.find('.J_pulldown').html((isMax?'下拉':'松开')+'即可刷新...');
                     },
                     onPullStart: function(){
+                        console.log('onPullStart');
                         self.$el.find('.J_pulldown').html('下拉即可刷新...');
                     },
                     onPullEnd: function(){
-
+                        console.log('onPullEnd');
                     },
                     onPullRelease: function(){
+                        console.log('onPullRelease');
                         var hh = this;
                         self.$el.find('.J_pulldown').html('刷新中...');
                         setTimeout(function(){
-                            hh.resolve();
+                            self.$el.find('.J_pulldown').html('刷新完成！');
+                            setTimeout(function(){
+                                hh.resolve();
+                            }, 1000);
                         },1000);
                     }
                 });
